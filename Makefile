@@ -6,8 +6,13 @@ BIN_DIR = build
 # Compiler and flags
 CC = clang
 CFLAGS = -I$(SRC_DIR) \
+		-I$(SRC_DIR)/hash \
+		-I$(SRC_DIR)/mac \
  		-I$(SRC_DIR)/misc/prime \
-		-I$(SRC_DIR)/rng
+		-I$(SRC_DIR)/pke \
+		-I$(SRC_DIR)/rng \
+		-I$(SRC_DIR)/sign \
+		-I$(SRC_DIR)/ske
 LDFLAGS = -lgmp
 
 # Source files
@@ -42,6 +47,14 @@ $(BIN_DIR):
 # Clean up build artifacts
 clean:
 	rm -rf $(OBJ_DIR) $(BIN_DIR)
+
+info:
+	$(info $(SRCS))
+	$(info $(OBJS))
+	$(info $(TEST_SRCS))
+	$(info $(TEST_OBJS))
+	$(info $(NON_TEST_SRCS))
+	$(info $(NON_TEST_OBJS))
 
 test: $(TEST_EXECS)
 	@for exec in $(TEST_EXECS); do \
