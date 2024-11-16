@@ -23,54 +23,34 @@ int check_w_has_0(mpz_t *w, int k)
 
 void gen_prime(mpz_t n, gmp_randstate_t state, int b, int k, int t, PRIMALITY_TEST test)
 {
-    mpz_t q;
-    mpz_init(q);
-    mpz_urandomb(q, state, b);
+    mpz_t q, tmp;
+    mpz_inits(q, tmp, NULL);
+    mpz_urandomb(q, state, b - 1);
+    mpz_ui_pow_ui(tmp, 2, b - 1);
+    mpz_add(q, q, tmp);
     if (mpz_divisible_ui_p(q, 2))
         mpz_add_ui(q, q, 1);
-    mpz_t *w = (mpz_t *)malloc(k * sizeof(mpz_t));
-    if (w == NULL)
-    {
-        printf("Memory allocation failed\n");
-        exit(1);
-    }
 
     mpz_t *small_primes = (mpz_t *)malloc(k * sizeof(mpz_t));
     prepare_small_primes(small_primes, k);
 
-    for (int i = 1; i < k; i++)
+    int j = 1;
+    while (j < k)
     {
-        mpz_init(w[i]);
-        mpz_mod(w[i], q, small_primes[i]);
-    }
-
-    int repeat = 0;
-    while (check_w_has_0(w, k) != 0 || repeat)
-    {
-        repeat = 0;
-        for (int i = 1; i < k; i++)
+        if (mpz_divisible_p(q, small_primes[j]))
         {
-            mpz_add_ui(w[i], w[i], 2);
-            mpz_mod(w[i], w[i], small_primes[i]);
-        }
-        mpz_add_ui(q, q, 2);
-
-        if (!primality_test(q, state, t, test))
-        {
-            for (int i = 1; i < k; i++)
-            {
-                mpz_add_ui(w[i], w[i], 2);
-                mpz_mod(w[i], w[i], small_primes[i]);
-            }
             mpz_add_ui(q, q, 2);
-            repeat = 1;
+            j = 1;
+            continue;
+        }
+        else
+            j++;
+        if (j == k && !primality_test(q, state, t, test))
+        {
+            mpz_add_ui(q, q, 2);
+            j = 1;
         }
     }
     mpz_set(n, q);
     mpz_clear(q);
-    for (int i = 1; i < k; i++)
-    {
-        mpz_clear(w[i]);
-    }
-    free(w);
 }

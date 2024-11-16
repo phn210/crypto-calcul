@@ -15,6 +15,9 @@ CFLAGS = -I$(SRC_DIR) \
 		-I$(SRC_DIR)/ske
 LDFLAGS = -lgmp
 
+# Parameters
+SECURITY_LEVEL ?= PARAM_L1
+
 # Source files
 SRCS = $(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/**/*.c) $(wildcard $(SRC_DIR)/**/**/*.c)
 TEST_SRCS = $(filter %.test.c, $(SRCS))
@@ -30,7 +33,7 @@ all: $(TEST_EXECS)
 # Create executables for test files
 $(BIN_DIR)/%: $(OBJ_DIR)/%.o $(NON_TEST_OBJS) | $(BIN_DIR)
 	@mkdir -p $(dir $@)
-	$(CC) -o $@ $^ $(LDFLAGS)
+	$(CC) -D$(SECURITY_LEVEL) -o $@ $^ $(LDFLAGS)
 
 # Compile source files to object files
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)

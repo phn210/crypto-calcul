@@ -14,8 +14,8 @@ int main()
     mpz_t prime;
     mpz_init(prime);
 
-    int b = 128; // Number of bits for the prime number
-    int k = 20;  // Number of small primes
+    int b = 512; // Number of bits for the prime number
+    int k = 100; // Number of small primes
     int t = 25;  // Number of iterations for the primality test
 
     // Generate a prime number
@@ -27,9 +27,9 @@ int main()
     int is_prime_miller_rabin = primality_test(prime, state, t, MILLER_RABIN_TEST);
     int is_prime_gmp = primality_test(prime, state, t, GMP_TEST);
 
-    printf("Fermat test: %s\n", is_prime_fermat ? "Prime" : "Composite");
-    printf("Miller-Rabin test: %s\n", is_prime_miller_rabin ? "Prime" : "Composite");
-    printf("GMP test: %s\n", is_prime_gmp ? "Prime" : "Composite");
+    printf("Fermat test: %s\n", is_prime_fermat > 0 ? "Prime" : "Composite");
+    printf("Miller-Rabin test: %s\n", is_prime_miller_rabin > 0 ? "Prime" : "Composite");
+    printf("GMP test: %s\n", is_prime_gmp > 0 ? "Prime" : "Composite");
 
     mpz_clear(prime);
     gmp_randclear(state);

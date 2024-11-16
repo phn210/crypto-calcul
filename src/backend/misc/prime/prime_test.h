@@ -1,4 +1,3 @@
-#include <gmp.h>
 #include "common.h"
 
 #define GMP_TEST 0
