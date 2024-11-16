@@ -19,7 +19,7 @@ int main()
     int t = 25;  // Number of iterations for the primality test
 
     // Generate a prime number
-    gen_prime(prime, state, b, k, t, MILLER_RABIN_TEST);
+    gen_prime_b(prime, state, b, k, t, MILLER_RABIN_TEST);
     gmp_printf("Generated prime: %Zd\n", prime);
 
     // Test the generated prime using different methods

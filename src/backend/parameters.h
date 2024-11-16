@@ -9,5 +9,7 @@
 #endif
 #ifdef PARAM_L5
 #define PARAM_SECURITY 256
-#error "Security level not identified"
+#endif
+#ifndef PARAM_SECURITY
+#define PARAM_SECURITY 128
 #endif

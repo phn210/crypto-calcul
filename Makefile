@@ -8,6 +8,7 @@ CC = clang
 CFLAGS = -I$(SRC_DIR) \
 		-I$(SRC_DIR)/hash \
 		-I$(SRC_DIR)/mac \
+ 		-I$(SRC_DIR)/misc \
  		-I$(SRC_DIR)/misc/prime \
 		-I$(SRC_DIR)/pke \
 		-I$(SRC_DIR)/rng \
@@ -16,7 +17,7 @@ CFLAGS = -I$(SRC_DIR) \
 LDFLAGS = -lgmp
 
 # Parameters
-SECURITY_LEVEL ?= PARAM_L1
+SECURITY_LEVEL ?= PARAM_L0
 
 # Source files
 SRCS = $(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/**/*.c) $(wildcard $(SRC_DIR)/**/**/*.c)
