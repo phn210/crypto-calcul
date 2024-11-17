@@ -17,7 +17,7 @@ CFLAGS = -I$(SRC_DIR) \
 LDFLAGS = -lgmp
 
 # Parameters
-SECURITY_LEVEL ?= PARAM_L0
+SECURITY_LEVEL ?= PARAM_L1
 
 # Source files
 SRCS = $(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/**/*.c) $(wildcard $(SRC_DIR)/**/**/*.c)

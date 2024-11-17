@@ -1,3 +1,6 @@
+#ifndef PKE_ELGAMAL_H
+#define PKE_ELGAMAL_H
+
 #include "common.h"
 #include "parameters.h"
 
@@ -28,3 +31,5 @@ typedef struct
 void keygen(priv_key *sk, pub_key *pk);
 void encrypt(mpz_t c1, mpz_t c2, const mpz_t m, const pub_key pk);
 void decrypt(mpz_t m, const mpz_t c1, const mpz_t c2, const priv_key sk, const pub_key pk);
+
+#endif
