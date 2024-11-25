@@ -1,6 +1,10 @@
 # Build files
 build
 obj
+*_wrapper.c
+
+# Environment files
+.venv
 
 # Editor files
 .vscode

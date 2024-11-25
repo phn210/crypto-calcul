@@ -5,24 +5,16 @@ BIN_DIR = build
 
 # Compiler and flags
 CC = clang
-CFLAGS = -I$(SRC_DIR) \
-		-I$(SRC_DIR)/hash \
-		-I$(SRC_DIR)/mac \
- 		-I$(SRC_DIR)/misc \
- 		-I$(SRC_DIR)/misc/prime \
-		-I$(SRC_DIR)/pke \
-		-I$(SRC_DIR)/rng \
-		-I$(SRC_DIR)/sign \
-		-I$(SRC_DIR)/ske
+CFLAGS = $(addprefix -I, $(shell find $(SRC_DIR) -type d))
 LDFLAGS = -lgmp
 
 # Parameters
 SECURITY_LEVEL ?= PARAM_L1
 
 # Source files
-SRCS = $(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/**/*.c) $(wildcard $(SRC_DIR)/**/**/*.c)
-TEST_SRCS = $(filter %.test.c, $(SRCS))
-NON_TEST_SRCS = $(filter-out %.test.c, $(SRCS))
+SRCS = $(filter-out %wrapper.c, $(shell find $(SRC_DIR) -name "*.c"))
+TEST_SRCS = $(filter %.test.c, $(filter-out %wrapper.c, $(SRCS)))
+NON_TEST_SRCS = $(filter-out %.test.c %wrapper.c, $(SRCS))
 OBJS = $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 TEST_OBJS = $(TEST_SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 NON_TEST_OBJS = $(NON_TEST_SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
@@ -48,21 +40,32 @@ $(OBJ_DIR):
 $(BIN_DIR):
 	mkdir -p $(BIN_DIR)
 
+build_cython: clean_cython
+	python3 src/backend/setup.py build_ext --inplace
+
 # Clean up build artifacts
-clean:
+clean: clean_cython
 	rm -rf $(OBJ_DIR) $(BIN_DIR)
 
-info:
-	$(info $(SRCS))
-	$(info $(OBJS))
-	$(info $(TEST_SRCS))
-	$(info $(TEST_OBJS))
-	$(info $(NON_TEST_SRCS))
-	$(info $(NON_TEST_OBJS))
+clean_cython:
+	rm -rf ./*cpython-*
+	rm -rf ./**/*cpython-*
 
-test: $(TEST_EXECS)
+info:
+	$(info "SRCS:" $(SRCS))
+	$(info "OBJS:" $(OBJS))
+	$(info "TEST_SRCS:" $(TEST_SRCS))
+	$(info "TEST_OBJS:" $(TEST_OBJS))
+	$(info "NON_TEST_SRCS:" $(NON_TEST_SRCS))
+	$(info "NON_TEST_OBJS:" $(NON_TEST_OBJS))
+	$(info "TEST_EXECS:" $(TEST_EXECS))
+	$(info "SHARED_LIBS:" $(SHARED_LIBS))
+
+test:
 	@for exec in $(TEST_EXECS); do \
 		$$exec; \
 	done
 
 .PHONY: all clean test
+
+.PRECIOUS: obj/%.o
