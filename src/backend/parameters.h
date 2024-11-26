@@ -1,15 +1,10 @@
-#ifdef PARAM_L0
-#define PARAM_SECURITY 112
-#endif
-#ifdef PARAM_L1
-#define PARAM_SECURITY 128
-#endif
-#ifdef PARAM_L3
-#define PARAM_SECURITY 192
-#endif
-#ifdef PARAM_L5
-#define PARAM_SECURITY 256
-#endif
-#ifndef PARAM_SECURITY
-#define PARAM_SECURITY 128
+#ifndef PARAMETERS_H
+#define PARAMETERS_H
+
+#define SECURITY_LEVEL unsigned int
+#define L0 112
+#define L1 128
+#define L2 192
+#define L3 256
+
 #endif

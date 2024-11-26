@@ -8,9 +8,6 @@ CC = clang
 CFLAGS = $(addprefix -I, $(shell find $(SRC_DIR) -type d))
 LDFLAGS = -lgmp
 
-# Parameters
-SECURITY_LEVEL ?= PARAM_L1
-
 # Source files
 SRCS = $(filter-out %wrapper.c, $(shell find $(SRC_DIR) -name "*.c"))
 TEST_SRCS = $(filter %.test.c, $(filter-out %wrapper.c, $(SRCS)))
@@ -26,7 +23,7 @@ all: $(TEST_EXECS)
 # Create executables for test files
 $(BIN_DIR)/%: $(OBJ_DIR)/%.o $(NON_TEST_OBJS) | $(BIN_DIR)
 	@mkdir -p $(dir $@)
-	$(CC) -D$(SECURITY_LEVEL) -o $@ $^ $(LDFLAGS)
+	$(CC) -o $@ $^ $(LDFLAGS)
 
 # Compile source files to object files
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
@@ -61,7 +58,7 @@ info:
 	$(info "TEST_EXECS:" $(TEST_EXECS))
 	$(info "SHARED_LIBS:" $(SHARED_LIBS))
 
-test:
+test: $(TEST_EXECS)
 	@for exec in $(TEST_EXECS); do \
 		$$exec; \
 	done
