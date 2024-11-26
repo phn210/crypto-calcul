@@ -11,7 +11,7 @@
 #define L1_P "FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129024E088A67CC74020BBEA63B139B22514A08798E3404DDEF9519B3CD3A431B302B0A6DF25F14374FE1356D6D51C245E485B576625E7EC6F44C42E9A637ED6B0BFF5CB6F406B7EDEE386BFB5A899FA5AE9F24117C4B1FE649286651ECE45B3DC2007CB8A163BF0598DA48361C55D39A69163FA8FD24CF5F83655D23DCA3AD961C62F356208552BB9ED529077096966D670C354E4ABC9804F1746C08CA18217C32905E462E36CE3BE39E772C180E86039B2783A2EC07A28FB5C55DF06F4C52C9DE2BCBF6955817183995497CEA956AE515D2261898FA051015728E5A8AAAC42DAD33170D04507A33A85521ABDF1CBA64ECFB850458DBEF0A8AEA71575D060C7DB3970F85A6E1E4C7ABF5AE8CDB0933D71E8C94E04A25619DCEE3D2261AD2EE6BF12FFA06D98A0864D87602733EC86A64521F2B18177B200CBBE117577A615D6C770988C0BAD946E208E24FA074E5AB3143DB5BFCE0FD108E4B82D120A93AD2CAFFFFFFFFFFFFFFFF"
 #define L1_G "02"
 
-void setup(public_params *pp, SECURITY_LEVEL level)
+void setup(public_params_t *pp, SECURITY_LEVEL level)
 {
     mpz_inits(pp->p, pp->g, NULL);
 
@@ -40,26 +40,24 @@ void setup(public_params *pp, SECURITY_LEVEL level)
     }
 }
 
-void keygen(priv_key *sk, pub_key *pk, const public_params pp)
+void keygen(priv_key_t *sk, pub_key_t *pk, const public_params_t pp)
 {
-    gmp_randstate_t state;
-    rng_init(state);
-
     mpz_inits(sk->x, pk->y, NULL);
 
-    gen_prime_m(sk->x, state, pp.p, 100, 25, GMP_TEST);
+    gmp_randstate_t state;
+    rng_init(state);
+    rand_int_m(sk->x, state, pp.p);
 
     mpz_powm(pk->y, pp.g, sk->x, pp.p);
 }
 
-void encrypt(mpz_t c1, mpz_t c2, const mpz_t m, const pub_key pk, const public_params pp)
+void encrypt(mpz_t c1, mpz_t c2, const mpz_t m, const pub_key_t pk, const public_params_t pp)
 {
-    gmp_randstate_t state;
-    rng_init(state);
-
     mpz_t k;
     mpz_inits(k, c1, c2, NULL);
 
+    gmp_randstate_t state;
+    rng_init(state);
     rand_int_m(k, state, pp.p);
     mpz_powm(c1, pp.g, k, pp.p);
     mpz_powm(c2, pk.y, k, pp.p);
@@ -69,7 +67,7 @@ void encrypt(mpz_t c1, mpz_t c2, const mpz_t m, const pub_key pk, const public_p
     mpz_clear(k);
 }
 
-void decrypt(mpz_t m, const mpz_t c1, const mpz_t c2, const priv_key sk, const public_params pp)
+void decrypt(mpz_t m, const mpz_t c1, const mpz_t c2, const priv_key_t sk, const public_params_t pp)
 {
     mpz_t s;
     mpz_init(s);

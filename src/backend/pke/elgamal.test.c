@@ -1,6 +1,6 @@
 #include "elgamal.h"
 
-void test_setup(public_params *pp, SECURITY_LEVEL level)
+void test_setup(public_params_t *pp, SECURITY_LEVEL level)
 {
     setup(pp, level);
 
@@ -8,7 +8,7 @@ void test_setup(public_params *pp, SECURITY_LEVEL level)
     gmp_printf("Public Parameters (g): %Zd\n", pp->g);
 }
 
-void test_keygen(priv_key *sk, pub_key *pk, public_params pp)
+void test_keygen(priv_key_t *sk, pub_key_t *pk, const public_params_t pp)
 {
     keygen(sk, pk, pp);
 
@@ -16,7 +16,7 @@ void test_keygen(priv_key *sk, pub_key *pk, public_params pp)
     gmp_printf("Public Key (y): %Zd\n", pk->y);
 }
 
-void test_encrypt_decrypt(priv_key sk, pub_key pk, public_params pp)
+void test_encrypt_decrypt(priv_key_t sk, pub_key_t pk, public_params_t pp)
 {
     mpz_t m, c1, c2, decrypted_m;
 
@@ -46,11 +46,11 @@ int main()
 {
     printf("\n===================== ELGAMAL TEST =====================\n\n");
 
-    public_params pp;
-    priv_key sk;
-    pub_key pk;
+    public_params_t pp;
+    priv_key_t sk;
+    pub_key_t pk;
 
-    test_setup(&pp, L1);
+    test_setup(&pp, L0);
     test_keygen(&sk, &pk, pp);
     test_encrypt_decrypt(sk, pk, pp);
 
