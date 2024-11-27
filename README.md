@@ -38,10 +38,10 @@ To build the library, follow these steps:
    pip install -r requirements.txt
    ```
 
-5. Run Cython setup script to wrap C libraries into Python modules:
+5. Wrap C libraries into Python modules:
 
    ```
-   python3 src/backend/test.py
+   make wrap
    ```
 
 ## Running Tests
@@ -51,8 +51,14 @@ To run the tests, follow these steps:
 1. Ensure you have built the library as described above.
 
 2. Run the tests:
+
    ```
    make test
+   ```
+
+3. Test Cython wrapper for UI:
+   ```
+   python3 src/frontend/test.py
    ```
 
 This will execute all the test executables and display the results.

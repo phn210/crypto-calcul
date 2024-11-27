@@ -1,11 +1,12 @@
 # Directories
 SRC_DIR = src/backend
+INC_DIR = src/backend/include
 OBJ_DIR = obj
 BIN_DIR = build
 
 # Compiler and flags
 CC = clang
-CFLAGS = $(addprefix -I, $(shell find $(SRC_DIR) -type d))
+CFLAGS = -I$(INC_DIR)
 LDFLAGS = -lgmp
 
 # Source files
@@ -37,16 +38,17 @@ $(OBJ_DIR):
 $(BIN_DIR):
 	mkdir -p $(BIN_DIR)
 
-build_cython: clean_cython
-	python3 src/backend/setup.py build_ext --inplace
+wrap: clean_wrapper
+	python3 src/backend/wrappers/setup.py build_ext --inplace --build-lib $(BIN_DIR)
+	rm ./*.so
 
 # Clean up build artifacts
-clean: clean_cython
+clean: clean_wrapper
 	rm -rf $(OBJ_DIR) $(BIN_DIR)
 
-clean_cython:
-	rm -rf ./*cpython-*
+clean_wrapper:
 	rm -rf ./**/*cpython-*
+	find . -type f -path "*/wrappers/*.c" -exec rm {} \;
 
 info:
 	$(info "SRCS:" $(SRCS))
