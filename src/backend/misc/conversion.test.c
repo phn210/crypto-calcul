@@ -1,4 +1,3 @@
-#include <string.h>
 #include "conversion.h"
 
 void test_hex_to_bigint()

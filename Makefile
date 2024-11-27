@@ -81,6 +81,9 @@ test_sha_3: $(BIN_DIR)/hash/sha_3.test
 test_dsa: $(BIN_DIR)/sign/dsa.test
 	$(BIN_DIR)/sign/dsa.test
 
+test_hmac: $(BIN_DIR)/mac/hmac.test
+	$(BIN_DIR)/mac/hmac.test
+
 
 .PHONY: all clean test
 

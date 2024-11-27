@@ -1,4 +1,3 @@
-#include <string.h>
 #include "sha_3.h"
 
 #ifndef ROTL64

@@ -1,4 +1,3 @@
-#include <string.h>
 #include "dsa.h"
 
 void test_setup(public_params_t *pp, SECURITY_LEVEL level, HASH_FUNCTION hash)
