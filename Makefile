@@ -5,7 +5,7 @@ OBJ_DIR = obj
 BIN_DIR = build
 
 # Compiler and flags
-CC = clang
+CC = gcc
 CFLAGS = -I$(INC_DIR)
 LDFLAGS = -lgmp
 
