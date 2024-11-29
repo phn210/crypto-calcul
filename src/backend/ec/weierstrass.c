@@ -168,52 +168,102 @@ void add(point_t *r, const point_t p, const point_t q, const curve_t curve)
     }
 
     // Projective coordinates for short Weierstrass curves
+    // https://www.hyperelliptic.org/EFD/g1p/auto-shortw-projective-3.html#addition-add-2015-rcb
     // https://www.hyperelliptic.org/EFD/g1p/auto-shortw-projective.html#addition-madd-2015-rcb
 
     mpz_t b3, t0, t1, t2, t3, t4, t5, X3, Y3, Z3;
     mpz_inits(b3, t0, t1, t2, t3, t4, t5, X3, Y3, Z3, NULL);
     mpz_mul_ui(b3, curve.b, 3);
 
-    mpz_mul(t0, p.x, q.x);    // t0 = X1*X2
-    mpz_mul(t1, p.y, q.y);    // t1 = Y1*Y2
-    mpz_mul(t2, p.z, q.z);    // t2 = Z1*Z2
-    mpz_add(t3, p.x, p.y);    // t3 = X1+Y1
-    mpz_add(t4, q.x, q.y);    // t4 = X2+Y2
-    mpz_mul(t3, t3, t4);      // t3 = t3*t4
-    mpz_add(t4, t0, t1);      // t4 = t0+t1
-    mpz_sub(t3, t3, t4);      // t3 = t3-t4
-    mpz_add(t4, p.x, p.z);    // t4 = X1+Z1
-    mpz_add(t5, q.x, q.z);    // t5 = X2+Z2
-    mpz_mul(t4, t4, t5);      // t4 = t4*t5
-    mpz_add(t5, t0, t2);      // t5 = t0+t2
-    mpz_sub(t4, t4, t5);      // t4 = t4-t5
-    mpz_add(t5, p.y, p.z);    // t5 = Y1+Z1
-    mpz_add(X3, q.y, q.z);    // X3 = Y2+Z2
-    mpz_mul(t5, t5, X3);      // t5 = t5*X3
-    mpz_add(X3, t1, t2);      // X3 = t1+t2
-    mpz_sub(t5, t5, X3);      // t5 = t5-X3
-    mpz_mul(Z3, curve.a, t4); // Z3 = a*t4
-    mpz_mul(X3, b3, t2);      // X3 = b3*t2
-    mpz_add(Z3, X3, Z3);      // Z3 = X3+Z3
-    mpz_sub(X3, t1, Z3);      // X3 = t1-Z3
-    mpz_add(Z3, t1, Z3);      // Z3 = t1+Z3
-    mpz_mul(Y3, X3, Z3);      // Y3 = X3*Z3
-    mpz_add(t1, t0, t0);      // t1 = t0+t0
-    mpz_add(t1, t1, t0);      // t1 = t1+t0
-    mpz_mul(t2, curve.a, t2); // t2 = a*t2
-    mpz_mul(t4, b3, t4);      // t4 = b3*t4
-    mpz_add(t1, t1, t2);      // t1 = t1+t2
-    mpz_sub(t2, t0, t2);      // t2 = t0-t2
-    mpz_mul(t2, curve.a, t2); // t2 = a*t2
-    mpz_add(t4, t4, t2);      // t4 = t4+t2
-    mpz_mul(t0, t1, t4);      // t0 = t1*t4
-    mpz_add(Y3, Y3, t0);      // Y3 = Y3+t0
-    mpz_mul(t0, t5, t4);      // t0 = t5*t4
-    mpz_mul(X3, t3, X3);      // X3 = t3*X3
-    mpz_sub(X3, X3, t0);      // X3 = X3-t0
-    mpz_mul(t0, t3, t1);      // t0 = t3*t1
-    mpz_mul(Z3, t5, Z3);      // Z3 = t5*Z3
-    mpz_add(Z3, Z3, t0);      // Z3 = Z3+t0
+    if (mpz_cmp_si(curve.a, -3) == 0)
+    {
+        mpz_mul(t0, p.x, q.x);
+        mpz_mul(t1, p.y, q.y);
+        mpz_mul(t2, p.z, q.z);
+        mpz_add(t3, p.x, p.y);
+        mpz_add(t4, q.x, q.y);
+        mpz_mul(t3, t3, t4);
+        mpz_add(t4, t0, t1);
+        mpz_sub(t3, t3, t4);
+        mpz_add(t4, p.y, p.z);
+        mpz_add(X3, q.y, q.z);
+        mpz_mul(t4, t4, X3);
+        mpz_add(X3, t1, t2);
+        mpz_sub(t4, t4, X3);
+        mpz_add(X3, p.x, p.z);
+        mpz_add(Y3, q.x, q.z);
+        mpz_mul(X3, X3, Y3);
+        mpz_add(Y3, t0, t2);
+        mpz_sub(Y3, X3, Y3);
+        mpz_mul(Z3, curve.b, t2);
+        mpz_sub(X3, Y3, Z3);
+        mpz_add(Z3, X3, X3);
+        mpz_add(X3, X3, Z3);
+        mpz_sub(Z3, t1, X3);
+        mpz_add(X3, t1, X3);
+        mpz_mul(Y3, curve.b, Y3);
+        mpz_add(t1, t2, t2);
+        mpz_add(t2, t1, t2);
+        mpz_sub(Y3, Y3, t2);
+        mpz_sub(Y3, Y3, t0);
+        mpz_add(t1, Y3, Y3);
+        mpz_add(Y3, t1, Y3);
+        mpz_add(t1, t0, t0);
+        mpz_add(t0, t1, t0);
+        mpz_sub(t0, t0, t2);
+        mpz_mul(t1, t4, Y3);
+        mpz_mul(t2, t0, Y3);
+        mpz_mul(Y3, X3, Z3);
+        mpz_add(Y3, Y3, t2);
+        mpz_mul(X3, t3, X3);
+        mpz_sub(X3, X3, t1);
+        mpz_mul(Z3, t4, Z3);
+        mpz_mul(t1, t3, t0);
+        mpz_add(Z3, Z3, t1);
+    }
+    else
+    {
+        mpz_mul(t0, p.x, q.x);
+        mpz_mul(t1, p.y, q.y);
+        mpz_mul(t2, p.z, q.z);
+        mpz_add(t3, p.x, p.y);
+        mpz_add(t4, q.x, q.y);
+        mpz_mul(t3, t3, t4);
+        mpz_add(t4, t0, t1);
+        mpz_sub(t3, t3, t4);
+        mpz_add(t4, p.x, p.z);
+        mpz_add(t5, q.x, q.z);
+        mpz_mul(t4, t4, t5);
+        mpz_add(t5, t0, t2);
+        mpz_sub(t4, t4, t5);
+        mpz_add(t5, p.y, p.z);
+        mpz_add(X3, q.y, q.z);
+        mpz_mul(t5, t5, X3);
+        mpz_add(X3, t1, t2);
+        mpz_sub(t5, t5, X3);
+        mpz_mul(Z3, curve.a, t4);
+        mpz_mul(X3, b3, t2);
+        mpz_add(Z3, X3, Z3);
+        mpz_sub(X3, t1, Z3);
+        mpz_add(Z3, t1, Z3);
+        mpz_mul(Y3, X3, Z3);
+        mpz_add(t1, t0, t0);
+        mpz_add(t1, t1, t0);
+        mpz_mul(t2, curve.a, t2);
+        mpz_mul(t4, b3, t4);
+        mpz_add(t1, t1, t2);
+        mpz_sub(t2, t0, t2);
+        mpz_mul(t2, curve.a, t2);
+        mpz_add(t4, t4, t2);
+        mpz_mul(t0, t1, t4);
+        mpz_add(Y3, Y3, t0);
+        mpz_mul(t0, t5, t4);
+        mpz_mul(X3, t3, X3);
+        mpz_sub(X3, X3, t0);
+        mpz_mul(t0, t3, t1);
+        mpz_mul(Z3, t5, Z3);
+        mpz_add(Z3, Z3, t0);
+    }
 
     mpz_mod(X3, X3, curve.p);
     mpz_mod(Y3, Y3, curve.p);
@@ -241,37 +291,77 @@ void dbl(point_t *r, const point_t p, const curve_t curve)
     mpz_inits(b3, t0, t1, t2, t3, X3, Y3, Z3, NULL);
     mpz_mul_ui(b3, curve.b, 3);
 
-    mpz_powm_ui(t0, p.x, 2, curve.p); // t0 = X1^2
-    mpz_powm_ui(t1, p.y, 2, curve.p); // t1 = Y1^2
-    mpz_powm_ui(t2, p.z, 2, curve.p); // t2 = Z1^2
-    mpz_mul(t3, p.x, p.y);            // t3 = X1*Y1
-    mpz_add(t3, t3, t3);              // t3 = t3+t3
-    mpz_mul(Z3, p.x, p.z);            // Z3 = X1*Z1
-    mpz_add(Z3, Z3, Z3);              // Z3 = Z3+Z3
-    mpz_mul(X3, curve.a, Z3);         // X3 = a*Z3
-    mpz_mul(Y3, b3, t2);              // Y3 = b3*t2
-    mpz_add(Y3, X3, Y3);              // Y3 = X3+Y3
-    mpz_sub(X3, t1, Y3);              // X3 = t1-Y3
-    mpz_add(Y3, t1, Y3);              // Y3 = t1+Y3
-    mpz_mul(Y3, X3, Y3);              // Y3 = X3*Y3
-    mpz_mul(X3, t3, X3);              // X3 = t3*X3
-    mpz_mul(Z3, b3, Z3);              // Z3 = b3*Z3
-    mpz_mul(t2, curve.a, t2);         // t2 = a*t2
-    mpz_sub(t3, t0, t2);              // t3 = t0-t2
-    mpz_mul(t3, curve.a, t3);         // t3 = a*t3
-    mpz_add(t3, t3, Z3);              // t3 = t3+Z3
-    mpz_add(t0, t0, t0);              // t0 = t0+t0
-    mpz_add(t0, t0, t0);              // t0 = t0+t0
-    mpz_add(t0, t0, t2);              // t0 = t0+t2
-    mpz_mul(t0, t0, t3);              // t0 = t0*t3
-    mpz_add(Y3, Y3, t0);              // Y3 = Y3+t0
-    mpz_mul(t2, p.y, p.z);            // t2 = Y1*Z1
-    mpz_add(t2, t2, t2);              // t2 = t2+t2
-    mpz_mul(t0, t2, t3);              // t0 = t2*t3
-    mpz_sub(X3, X3, t0);              // X3 = X3-t0
-    mpz_mul(Z3, t2, t1);              // Z3 = t2*t1
-    mpz_add(Z3, Z3, Z3);              // Z3 = Z3+Z3
-    mpz_add(Z3, Z3, Z3);              // Z3 = Z3+Z3
+    if (mpz_cmp_si(curve.a, -3) == 0)
+    {
+        mpz_powm_ui(t0, p.x, 2, curve.p);
+        mpz_powm_ui(t1, p.y, 2, curve.p);
+        mpz_powm_ui(t2, p.z, 2, curve.p);
+        mpz_mul(t3, p.x, p.y);
+        mpz_add(t3, t3, t3);
+        mpz_mul(Z3, p.x, p.z);
+        mpz_add(Z3, Z3, Z3);
+        mpz_mul(Y3, curve.b, t2);
+        mpz_sub(Y3, Y3, Z3);
+        mpz_add(X3, Y3, Y3);
+        mpz_add(Y3, X3, Y3);
+        mpz_sub(X3, t1, Y3);
+        mpz_add(Y3, t1, Y3);
+        mpz_mul(Y3, X3, Y3);
+        mpz_mul(X3, X3, t3);
+        mpz_add(t3, t2, t2);
+        mpz_add(t2, t2, t3);
+        mpz_mul(Z3, curve.b, Z3);
+        mpz_sub(Z3, Z3, t2);
+        mpz_sub(Z3, Z3, t0);
+        mpz_add(t3, Z3, Z3);
+        mpz_add(Z3, Z3, t3);
+        mpz_add(t3, t0, t0);
+        mpz_add(t0, t3, t0);
+        mpz_sub(t0, t0, t2);
+        mpz_mul(t0, t0, Z3);
+        mpz_add(Y3, Y3, t0);
+        mpz_mul(t0, p.y, p.z);
+        mpz_add(t0, t0, t0);
+        mpz_mul(Z3, t0, Z3);
+        mpz_sub(X3, X3, Z3);
+        mpz_mul(Z3, t0, t1);
+        mpz_add(Z3, Z3, Z3);
+        mpz_add(Z3, Z3, Z3);
+    }
+    else
+    {
+        mpz_powm_ui(t0, p.x, 2, curve.p);
+        mpz_powm_ui(t1, p.y, 2, curve.p);
+        mpz_powm_ui(t2, p.z, 2, curve.p);
+        mpz_mul(t3, p.x, p.y);
+        mpz_add(t3, t3, t3);
+        mpz_mul(Z3, p.x, p.z);
+        mpz_add(Z3, Z3, Z3);
+        mpz_mul(X3, curve.a, Z3);
+        mpz_mul(Y3, b3, t2);
+        mpz_add(Y3, X3, Y3);
+        mpz_sub(X3, t1, Y3);
+        mpz_add(Y3, t1, Y3);
+        mpz_mul(Y3, X3, Y3);
+        mpz_mul(X3, t3, X3);
+        mpz_mul(Z3, b3, Z3);
+        mpz_mul(t2, curve.a, t2);
+        mpz_sub(t3, t0, t2);
+        mpz_mul(t3, curve.a, t3);
+        mpz_add(t3, t3, Z3);
+        mpz_add(Z3, t0, t0);
+        mpz_add(t0, Z3, t0);
+        mpz_add(t0, t0, t2);
+        mpz_mul(t0, t0, t3);
+        mpz_add(Y3, Y3, t0);
+        mpz_mul(t2, p.y, p.z);
+        mpz_add(t2, t2, t2);
+        mpz_mul(t0, t2, t3);
+        mpz_sub(X3, X3, t0);
+        mpz_mul(Z3, t2, t1);
+        mpz_add(Z3, Z3, Z3);
+        mpz_add(Z3, Z3, Z3);
+    }
 
     mpz_mod(X3, X3, curve.p);
     mpz_mod(Y3, Y3, curve.p);
@@ -293,8 +383,7 @@ void mul(point_t *r, const point_t p, const mpz_t k, const curve_t curve)
     size_t i = mpz_sizeinbase(k, 2);
     for (int j = i - 1; j >= 0; j--)
     {
-        // dbl(&q, q, curve);
-        add(&q, q, q, curve);
+        dbl(&q, q, curve);
         if (mpz_tstbit(k, j))
             add(&q, q, p, curve);
     }

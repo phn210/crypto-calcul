@@ -9,7 +9,7 @@ void test_curve(WEIERSTRASS_CURVE curve_id)
 
     // gmp_printf("Curve's p: %Zd\n", curve.p);
     // gmp_printf("Curve's r: %Zd\n", curve.r);
-    // gmp_printf("Curve's a: %Zd\n", curve.a);
+    gmp_printf("Curve's a: %Zd\n", curve.a);
     // gmp_printf("Curve's b: %Zd\n", curve.b);
     // gmp_printf("Curve's G.x: %Zd\n", curve.G.x);
     // gmp_printf("Curve's G.y: %Zd\n", curve.G.y);
@@ -32,7 +32,7 @@ void test_curve(WEIERSTRASS_CURVE curve_id)
     // Test point addition (p + p)
     add(&q, p, p, curve);
     printf("Addition (q = p + p)\n");
-    gmp_printf("x: %Zd\ny: %Zd\nz: %Zd\n", q.x, q.y, q.z);
+    // gmp_printf("x: %Zd\ny: %Zd\nz: %Zd\n", q.x, q.y, q.z);
 
     neg(&r, p, curve);
     add(&r, q, r, curve);
@@ -42,7 +42,7 @@ void test_curve(WEIERSTRASS_CURVE curve_id)
     // Test point doubling (2p)
     dbl(&r, p, curve);
     printf("Doubling (r = 2p)\n");
-    gmp_printf("x: %Zd\ny: %Zd\nz: %Zd\n", r.x, r.y, r.z);
+    // gmp_printf("x: %Zd\ny: %Zd\nz: %Zd\n", r.x, r.y, r.z);
     printf("Equals (q == r): %s\n", equals(q, r, curve) == 0 ? "False" : "True");
 
     printf("Is on curve (p): %s\n", is_on_curve(p, curve) == 0 ? "False" : "True");
