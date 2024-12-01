@@ -32,9 +32,10 @@
 
 #define MONTGOMERY_CURVE unsigned char
 #define C25519 0
+#define C448 1
 
 #define EDWARDS_CURVE unsigned char
-#define E25519 0
-#define E448 1
+#define ED25519 0
+#define ED448 1
 
 #endif

@@ -1,5 +1,5 @@
-obj/ec/weierstrass.test.o
-obj/ec/weierstrass.o
+obj/ec/montgomery.test.o
+obj/ec/montgomery.o
 obj/ec/ec.o
 obj/misc/conversion.o
 obj/hash/sha_2.o

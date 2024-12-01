@@ -1,41 +1,5 @@
-#include "weierstrass.h"
+#include "ec.h"
 #include "conversion.h"
-
-void init_point(point_t *p)
-{
-    mpz_inits(p->x, p->y, p->z, NULL);
-}
-
-void free_point(point_t *p)
-{
-    mpz_clears(p->x, p->y, p->z, NULL);
-}
-
-void copy_point(point_t *r, const point_t p)
-{
-    mpz_set(r->x, p.x);
-    mpz_set(r->y, p.y);
-    mpz_set(r->z, p.z);
-}
-
-void init_affine(point_affine_t *p)
-{
-    mpz_inits(p->x, p->y, NULL);
-}
-
-void free_affine(point_affine_t *p)
-{
-    mpz_clears(p->x, p->y, NULL);
-}
-
-void copy_affine(point_affine_t *r, const point_affine_t p)
-{
-    mpz_set(r->x, p.x);
-    mpz_set(r->y, p.y);
-}
-
-void to_bytes(unsigned char *buf, const point_t p);
-void from_bytes(point_t *r, const unsigned char *buf);
 
 void init_curve(curve_t *curve, WEIERSTRASS_CURVE curve_id)
 {
@@ -117,12 +81,6 @@ void init_curve(curve_t *curve, WEIERSTRASS_CURVE curve_id)
     }
 }
 
-void free_curve(curve_t *curve)
-{
-    free_affine(&curve->G);
-    mpz_clears(curve->p, curve->r, curve->a, curve->b, NULL);
-}
-
 char is_infinity(const point_t p)
 {
     return mpz_sgn(p.x) == 0 && mpz_sgn(p.z) == 0;
@@ -151,6 +109,7 @@ void neg(point_t *r, const point_t p, const curve_t curve)
 {
     copy_point(r, p);
     mpz_neg(r->y, r->y);
+    mpz_mod(r->y, r->y, curve.p);
 }
 
 void add(point_t *r, const point_t p, const point_t q, const curve_t curve)
@@ -431,9 +390,6 @@ void infinity(point_t *p)
 
 void affine(point_affine_t *r, const point_t p, const curve_t curve)
 {
-    // Projective coordinates for short Weierstrass curves
-    // https://www.hyperelliptic.org/EFD/g1p/auto-shortw-projective.html#scaling-z
-
     if (is_infinity(p))
     {
         mpz_set_ui(r->x, 0);

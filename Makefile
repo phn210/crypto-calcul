@@ -89,6 +89,12 @@ test_hmac: $(BIN_DIR)/mac/hmac.test
 test_weierstrass: $(BIN_DIR)/ec/weierstrass.test
 	$(BIN_DIR)/ec/weierstrass.test
 
+test_edwards: $(BIN_DIR)/ec/edwards.test
+	$(BIN_DIR)/ec/edwards.test
+
+test_montgomery: $(BIN_DIR)/ec/montgomery.test
+	$(BIN_DIR)/ec/montgomery.test
+
 .PHONY: all clean test
 
 .PRECIOUS: obj/%.o

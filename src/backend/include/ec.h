@@ -1,63 +1,59 @@
-#ifndef CURVES_H
-#define CURVES_H
+#ifndef WEIERSTRASS_H
+#define WEIERSTRASS_H
 
-#include <sha_2.h>
+#include <common.h>
+#include <ec_param.h>
 
-// Weierstrass curves
+typedef struct point
+{
+    mpz_t x;
+    mpz_t y;
+    mpz_t z;
+} point_t;
 
-#define P224_HASH SHA2 // hash type to use with this curve
-#define P224_MD_LEN 28 // hash length in bytes
-#define P224_EFS 28    // elliptic curve field size in bytes
-#define P224_COF 1
-#define P224_p "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000000000000000000001" // modulo
-#define P224_r "FFFFFFFFFFFFFFFFFFFFFFFFFFFF16A2E0B8F03E13DD29455C5C2A3D" // group order
-#define P224_A -3
-#define P224_B "B4050A850C04B3ABF54132565044B0B7D7BFD8BA270B39432355FFB4"
-#define P224_Gx "B70E0CBD6BB4BF7F321390B94A03C1D356C21122343280D6115C1D21"
-#define P224_Gy "BD376388B5F723FB4C22DFE6CD4375A05A07476444D5819985007E34"
+typedef struct point_affine
+{
+    mpz_t x;
+    mpz_t y;
+} point_affine_t;
 
-#define P256_HASH SHA2 // hash type to use with this curve
-#define P256_MD_LEN 32 // hash length in bytes
-#define P256_EFS 32    // elliptic curve field size in bytes
-#define P256_COF 1
-#define P256_p "FFFFFFFF00000001000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF" // modulo
-#define P256_r "FFFFFFFF00000000FFFFFFFFFFFFFFFFBCE6FAADA7179E84F3B9CAC2FC632551" // group order
-#define P256_A -3
-#define P256_B "5AC635D8AA3A93E7B3EBBD55769886BC651D06B0CC53B0F63BCE3C3E27D2604B"
-#define P256_Gx "6B17D1F2E12C4247F8BCE6E563A440F277037D812DEB33A0F4A13945D898C296"
-#define P256_Gy "4FE342E2FE1A7F9B8EE7EB4A7C0F9E162BCE33576B315ECECBB6406837BF51F5"
+typedef struct curve
+{
+    int cof;
+    size_t efs;
+    mpz_t p;
+    mpz_t r;
+    mpz_t a;
+    mpz_t b;
+    point_affine_t G;
+    int md_len;
+    void *(*hash)(const void *, size_t, void *, int);
+} curve_t;
 
-#define P384_HASH SHA2 // hash type to use with this curve
-#define P384_MD_LEN 48 // hash length in bytes
-#define P384_EFS 48    // elliptic curve field size in bytes
-#define P384_COF 1
-#define P384_p "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFF0000000000000000FFFFFFFF" // modulo
-#define P384_r "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC7634D81F4372DDF581A0DB248B0A77AECEC196ACCC52973" // group order
-#define P384_A -3
-#define P384_B "B3312FA7E23EE7E4988E056BE3F82D19181D9C6EFE8141120314088F5013875AC656398D8A2ED19D2A85C8EDD3EC2AEF"
-#define P384_Gx "AA87CA22BE8B05378EB1C71EF320AD746E1D3B628BA79B9859F741E082542A385502F25DBF55296C3A545E3872760AB7"
-#define P384_Gy "3617DE4A96262C6F5D9E98BF9292DC29F8F41DBD289A147CE9DA3113B5F0B8C00A60B1CE1D7E819D7A431D7C90EA0E5F"
+void init_point(point_t *p);
+void free_point(point_t *p);
+void copy_point(point_t *r, const point_t p);
+void swap_points(point_t *p, point_t *q);
+void to_bytes(unsigned char *buf, const point_t p);
+void from_bytes(point_t *r, const unsigned char *buf);
 
-#define P521_HASH SHA2 // hash type to use with this curve
-#define P521_MD_LEN 64 // hash length in bytes
-#define P521_EFS 66    // elliptic curve field size in bytes
-#define P521_COF 1
-#define P521_p "1FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF" // modulo
-#define P521_r "1FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFA51868783BF2F966B7FCC0148F709A5D03BB5C9B8899C47AEBB6FB71E91386409" // group order
-#define P521_A -3
-#define P521_B "051953EB9618E1C9A1F929A21A0B68540EEA2DA725B99B315F3B8B489918EF109E156193951EC7E937B1652C0BD3BB1BF073573DF883D2C34F1EF451FD46B503F00"
-#define P521_Gx "C6858E06B70404E9CD9E3ECB662395B4429C648139053FB521F828AF606B4D3DBAA14B5E77EFE75928FE1DC127A2FFA8DE3348B3C1856A429BF97E7E31C2E5BD66"
-#define P521_Gy "11839296A789A3BC0045C8A5FB42C7D1BD998F54449579B446817AFBD17273E662C97EE72995EF42640C550B9013FAD0761353C7086A272C24088BE94769FD16650"
+void init_affine(point_affine_t *p);
+void free_affine(point_affine_t *p);
+void copy_affine(point_affine_t *r, const point_affine_t p);
 
-#define P256K1_HASH SHA2 // hash type to use with this curve
-#define P256K1_MD_LEN 32 // hash length in bytes
-#define P256K1_EFS 32    // elliptic curve field size in bytes
-#define P256K1_COF 1
-#define P256K1_p "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F" // modulo
-#define P256K1_r "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141" // group order
-#define P256K1_A 0
-#define P256K1_B "7"
-#define P256K1_Gx "79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798"
-#define P256K1_Gy "483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8"
+void init_curve(curve_t *curve, WEIERSTRASS_CURVE curve_id);
+void free_curve(curve_t *curve);
+
+char is_infinity(const point_t p);
+char equals(const point_t p, const point_t q, const curve_t curve);
+void neg(point_t *r, const point_t p, const curve_t curve);
+void add(point_t *r, const point_t p, const point_t q, const curve_t curve);
+void dadd(point_t *r, const point_t p, const point_t q, const point_t w, const curve_t curve);
+void dbl(point_t *r, const point_t p, const curve_t curve);
+void mul(point_t *r, const point_t p, const mpz_t k, const curve_t curve);
+void rhs(mpz_t r, const mpz_t x, const curve_t curve);
+char is_on_curve(const point_t p, const curve_t curve);
+void infinity(point_t *p);
+void affine(point_affine_t *r, const point_t p, const curve_t curve);
 
 #endif
