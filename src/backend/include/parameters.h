@@ -29,6 +29,8 @@
 #define P384 2
 #define P521 3
 #define P256K1 4
+#define W25519 5
+#define W448 6
 
 #define MONTGOMERY_CURVE unsigned char
 #define C25519 0
@@ -37,5 +39,6 @@
 #define EDWARDS_CURVE unsigned char
 #define ED25519 0
 #define ED448 1
+#define E448 2
 
 #endif

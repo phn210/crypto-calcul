@@ -10,6 +10,8 @@ void init_curve(curve_t *curve, EDWARDS_CURVE curve_id)
     {
     case ED448:
     {
+        curve->name = (char *)malloc(strlen(ED448_NAME) + 1);
+        memcpy(curve->name, ED448_NAME, strlen(ED448_NAME));
         // curve->hash = sha2;
         curve->md_len = ED448_MD_LEN;
         curve->efs = ED448_EFS;
@@ -22,8 +24,26 @@ void init_curve(curve_t *curve, EDWARDS_CURVE curve_id)
         hex_to_bigint(curve->G.y, ED448_Gy);
         break;
     }
+    case E448:
+    {
+        curve->name = (char *)malloc(strlen(E448_NAME) + 1);
+        memcpy(curve->name, E448_NAME, strlen(E448_NAME));
+        // curve->hash = sha2;
+        curve->md_len = E448_MD_LEN;
+        curve->efs = E448_EFS;
+        curve->cof = E448_COF;
+        hex_to_bigint(curve->p, E448_p);
+        hex_to_bigint(curve->r, E448_r);
+        mpz_set_si(curve->a, E448_A);
+        hex_to_bigint(curve->b, E448_B);
+        hex_to_bigint(curve->G.x, E448_Gx);
+        hex_to_bigint(curve->G.y, E448_Gy);
+        break;
+    }
     default: // ED25519
     {
+        curve->name = (char *)malloc(strlen(ED25519_NAME) + 1);
+        memcpy(curve->name, ED25519_NAME, strlen(ED25519_NAME));
         // curve->hash = sha2;
         curve->md_len = ED25519_MD_LEN;
         curve->efs = ED25519_EFS;
@@ -130,7 +150,7 @@ void dbl(point_t *r, const point_t p, const curve_t curve)
         return;
     }
 
-    // Projective coordinates for short Weierstrass curves
+    // Projective coordinates for twisted Edwards curves
     // https://www.hyperelliptic.org/EFD/g1p/auto-twisted-projective.html#doubling-dbl-2008-bbjlp
 
     mpz_t B, C, D, E, F, H, J, X3, Y3, Z3;

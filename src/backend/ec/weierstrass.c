@@ -10,6 +10,8 @@ void init_curve(curve_t *curve, WEIERSTRASS_CURVE curve_id)
     {
     case P224:
     {
+        curve->name = (char *)malloc(strlen(P224_NAME) + 1);
+        memcpy(curve->name, P224_NAME, strlen(P224_NAME));
         // curve->hash = sha2;
         curve->md_len = P224_MD_LEN;
         curve->efs = P224_EFS;
@@ -24,6 +26,8 @@ void init_curve(curve_t *curve, WEIERSTRASS_CURVE curve_id)
     }
     case P384:
     {
+        curve->name = (char *)malloc(strlen(P384_NAME) + 1);
+        memcpy(curve->name, P384_NAME, strlen(P384_NAME));
         // curve->hash = sha2;
         curve->md_len = P384_MD_LEN;
         curve->efs = P384_EFS;
@@ -38,6 +42,8 @@ void init_curve(curve_t *curve, WEIERSTRASS_CURVE curve_id)
     }
     case P521:
     {
+        curve->name = (char *)malloc(strlen(P521_NAME) + 1);
+        memcpy(curve->name, P521_NAME, strlen(P521_NAME));
         // curve->hash = sha2;
         curve->md_len = P521_MD_LEN;
         curve->efs = P521_EFS;
@@ -52,6 +58,8 @@ void init_curve(curve_t *curve, WEIERSTRASS_CURVE curve_id)
     }
     case P256K1:
     {
+        curve->name = (char *)malloc(strlen(P256K1_NAME) + 1);
+        memcpy(curve->name, P256K1_NAME, strlen(P256K1_NAME));
         // curve->hash = sha2;
         curve->md_len = P256K1_MD_LEN;
         curve->efs = P256K1_EFS;
@@ -64,8 +72,42 @@ void init_curve(curve_t *curve, WEIERSTRASS_CURVE curve_id)
         hex_to_bigint(curve->G.y, P256K1_Gy);
         break;
     }
+    case W25519:
+    {
+        curve->name = (char *)malloc(strlen(W25519_NAME) + 1);
+        memcpy(curve->name, W25519_NAME, strlen(W25519_NAME));
+        // curve->hash = sha2;
+        curve->md_len = W25519_MD_LEN;
+        curve->efs = W25519_EFS;
+        curve->cof = W25519_COF;
+        hex_to_bigint(curve->p, W25519_p);
+        hex_to_bigint(curve->r, W25519_r);
+        hex_to_bigint(curve->a, W25519_A);
+        hex_to_bigint(curve->b, W25519_B);
+        hex_to_bigint(curve->G.x, W25519_Gx);
+        hex_to_bigint(curve->G.y, W25519_Gy);
+        break;
+    }
+    case W448:
+    {
+        curve->name = (char *)malloc(strlen(W448_NAME) + 1);
+        memcpy(curve->name, W448_NAME, strlen(W448_NAME));
+        // curve->hash = sha2;
+        curve->md_len = W448_MD_LEN;
+        curve->efs = W448_EFS;
+        curve->cof = W448_COF;
+        hex_to_bigint(curve->p, W448_p);
+        hex_to_bigint(curve->r, W448_r);
+        hex_to_bigint(curve->a, W448_A);
+        hex_to_bigint(curve->b, W448_B);
+        hex_to_bigint(curve->G.x, W448_Gx);
+        hex_to_bigint(curve->G.y, W448_Gy);
+        break;
+    }
     default: // P256
     {
+        curve->name = (char *)malloc(strlen(P256_NAME) + 1);
+        memcpy(curve->name, P256_NAME, strlen(P256_NAME));
         // curve->hash = sha2;
         curve->md_len = P256_MD_LEN;
         curve->efs = P256_EFS;

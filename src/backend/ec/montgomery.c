@@ -10,6 +10,8 @@ void init_curve(curve_t *curve, MONTGOMERY_CURVE curve_id)
     {
     case C448:
     {
+        curve->name = (char *)malloc(strlen(C448_NAME) + 1);
+        memcpy(curve->name, C448_NAME, strlen(C448_NAME));
         // curve->hash = sha2;
         curve->md_len = C448_MD_LEN;
         curve->efs = C448_EFS;
@@ -24,6 +26,8 @@ void init_curve(curve_t *curve, MONTGOMERY_CURVE curve_id)
     }
     default: // C25519
     {
+        curve->name = (char *)malloc(strlen(C25519_NAME) + 1);
+        memcpy(curve->name, C25519_NAME, strlen(C25519_NAME));
         // curve->hash = sha2;
         curve->md_len = C25519_MD_LEN;
         curve->efs = C25519_EFS;
@@ -72,24 +76,24 @@ void dadd(point_t *r, const point_t p, const point_t q, const point_t w, const c
         return;
     }
 
-    // Projective coordinates for twisted Edwards curves
+    // XZ coordinates for Montgomery curves
     // https://www.hyperelliptic.org/EFD/g1p/auto-montgom-xz.html#diffadd-dadd-1987-m-3
 
     mpz_t A, B, C, D, E, F, X5, Z5;
     mpz_inits(A, B, C, D, E, F, X5, Z5, NULL);
 
-    mpz_add(A, q.x, q.z);
-    mpz_sub(B, q.x, q.z);
-    mpz_add(C, w.x, w.z);
-    mpz_sub(D, w.x, w.z);
+    mpz_add(A, p.x, p.z);
+    mpz_sub(B, p.x, p.z);
+    mpz_add(C, q.x, q.z);
+    mpz_sub(D, q.x, q.z);
     mpz_mul(E, A, D);
     mpz_mul(F, B, C);
     mpz_add(A, E, F);
     mpz_sub(B, E, F);
     mpz_powm_ui(A, A, 2, curve.p);
     mpz_powm_ui(B, B, 2, curve.p);
-    mpz_mul(X5, p.z, A);
-    mpz_mul(Z5, p.x, B);
+    mpz_mul(X5, w.z, A);
+    mpz_mul(Z5, w.x, B);
 
     mpz_mod(X5, X5, curve.p);
     mpz_mod(Z5, Z5, curve.p);
@@ -108,8 +112,8 @@ void dbl(point_t *r, const point_t p, const curve_t curve)
         return;
     }
 
-    // Projective coordinates for short Weierstrass curves
-    // https://www.hyperelliptic.org/EFD/g1p/auto-twisted-projective.html#doubling-dbl-2008-bbjlp
+    // XZ coordinates for Montgomery curves
+    // https://www.hyperelliptic.org/EFD/g1p/auto-montgom-xz.html#doubling-dbl-1987-m-3
     mpz_t a24, A, B, C, X3, Z3;
     mpz_inits(a24, A, B, C, X3, Z3, NULL);
     mpz_add_ui(a24, curve.a, 2);
@@ -159,11 +163,9 @@ void mul(point_t *r, const point_t p, const mpz_t k, const curve_t curve)
     mpz_set_ui(D.z, 1);
 
     nb = mpz_sizeinbase(k, 2);
-    printf("nb: %d\n", nb);
     for (i = nb - 2; i >= 0; i--)
     {
         b = mpz_tstbit(k, i);
-        printf("%d ", b);
         dadd(r, R1, R0, D, curve);
         if (b)
             swap_points(&R0, &R1);
@@ -172,7 +174,6 @@ void mul(point_t *r, const point_t p, const mpz_t k, const curve_t curve)
         if (b)
             swap_points(&R0, &R1);
     }
-    printf("\n");
     copy_point(r, R0);
 
     free_point(&R0);

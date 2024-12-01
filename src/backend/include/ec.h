@@ -28,14 +28,13 @@ typedef struct curve
     point_affine_t G;
     int md_len;
     void *(*hash)(const void *, size_t, void *, int);
+    char *name;
 } curve_t;
 
 void init_point(point_t *p);
 void free_point(point_t *p);
 void copy_point(point_t *r, const point_t p);
 void swap_points(point_t *p, point_t *q);
-void to_bytes(unsigned char *buf, const point_t p);
-void from_bytes(point_t *r, const unsigned char *buf);
 
 void init_affine(point_affine_t *p);
 void free_affine(point_affine_t *p);
@@ -55,5 +54,7 @@ void rhs(mpz_t r, const mpz_t x, const curve_t curve);
 char is_on_curve(const point_t p, const curve_t curve);
 void infinity(point_t *p);
 void affine(point_affine_t *r, const point_t p, const curve_t curve);
+void point_to_bytes(unsigned char *buf, const point_t p, const curve_t curve);
+void point_from_bytes(point_t *r, const unsigned char *buf, const curve_t curve);
 
 #endif

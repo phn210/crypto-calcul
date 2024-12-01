@@ -45,9 +45,21 @@ void copy_affine(point_affine_t *r, const point_affine_t p)
 
 void free_curve(curve_t *curve)
 {
+    free(curve->name);
     free_affine(&curve->G);
     mpz_clears(curve->p, curve->r, curve->a, curve->b, NULL);
 }
 
-void to_bytes(unsigned char *buf, const point_t p);
-void from_bytes(point_t *r, const unsigned char *buf);
+void point_to_bytes(unsigned char *buf, const point_t p, const curve_t curve)
+{
+    mpz_export(buf, NULL, 1, 1, 0, 0, p.x);
+    mpz_export(buf + curve.efs, NULL, 1, 1, 0, 0, p.y);
+    mpz_export(buf + 2 * curve.efs, NULL, 1, 1, 0, 0, p.z);
+}
+
+void point_from_bytes(point_t *r, const unsigned char *buf, const curve_t curve)
+{
+    mpz_import(r->x, 1, 1, 1, 0, 0, buf);
+    mpz_import(r->y, 1, 1, 1, 0, 0, buf + curve.efs);
+    mpz_import(r->z, 1, 1, 1, 0, 0, buf + 2 * curve.efs);
+}
