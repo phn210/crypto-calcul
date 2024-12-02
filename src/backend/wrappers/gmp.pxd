@@ -1,6 +1,4 @@
-cdef extern from "stdlib.h":
-    void *malloc(size_t size)
-    void free(void *ptr)
+from libc.stdlib cimport malloc, free
 
 cdef extern from "gmp.h":
     # GMP Integer and Random State Structures

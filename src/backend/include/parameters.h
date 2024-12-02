@@ -18,7 +18,7 @@
 #define SHA2 2
 #define SHA3 3
 
-#define ECC unsigned char
+#define EC unsigned char
 #define WEIERSTRASS 0
 #define MONTGOMERY 1
 #define EDWARDS 2

@@ -22,7 +22,7 @@ typedef struct public_params
     mpz_t p;
     mpz_t q;
     mpz_t g;
-    int md_len;
+    size_t md_len;
     void *(*hash)(const void *, size_t, void *, int);
 } public_params_t;
 

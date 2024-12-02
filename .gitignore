@@ -1,7 +1,7 @@
 # Build files
 build
 obj
-*_wrapper.c
+**/wrappers/*.c
 
 # Environment files
 .venv

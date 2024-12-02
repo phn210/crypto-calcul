@@ -1,4 +1,4 @@
-from gmp_wrapper cimport *
+from wrappers.gmp cimport *
 
 cdef extern from "rng.h":
     void rng_init(gmp_randstate_t state)

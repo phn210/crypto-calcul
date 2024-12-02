@@ -1,6 +1,7 @@
 # Directories
 SRC_DIR = src/backend
 INC_DIR = src/backend/include
+WRAP_DIR = src/backend/wrappers
 OBJ_DIR = obj
 BIN_DIR = build
 
@@ -10,8 +11,8 @@ CFLAGS = -I$(INC_DIR)
 LDFLAGS = -lgmp
 
 # Source files
-SRCS = $(filter-out %wrapper.c, $(shell find $(SRC_DIR) -name "*.c"))
-TEST_SRCS = $(filter %.test.c, $(filter-out %wrapper.c, $(SRCS)))
+SRCS = $(filter-out $(WRAP_DIR)/%.c, $(shell find $(SRC_DIR) -name "*.c"))
+TEST_SRCS = $(filter %.test.c, $(SRCS))
 NON_TEST_SRCS = $(filter-out %.test.c %wrapper.c, $(SRCS))
 OBJS = $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 TEST_OBJS = $(TEST_SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
@@ -39,8 +40,7 @@ $(BIN_DIR):
 	mkdir -p $(BIN_DIR)
 
 wrap: clean_wrapper
-	python3 src/backend/wrappers/setup.py build_ext --inplace --build-lib $(BIN_DIR)
-	rm ./*.so
+	python3 src/backend/wrappers/setup.py build_ext
 
 # Clean up build artifacts
 clean: clean_wrapper

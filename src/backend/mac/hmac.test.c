@@ -9,7 +9,7 @@ void test_hmac_function()
 
     hmac((void *)key, strlen(key), (void *)data, strlen(data), mac, L1, SHA3);
 
-    printf("HMAC Function: ");
+    printf("HMAC: ");
     for (int i = 0; i < 32; i++) // SHA3-256 output length
     {
         printf("%02x", mac[i]);

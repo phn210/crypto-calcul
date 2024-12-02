@@ -26,7 +26,7 @@ typedef struct curve
     mpz_t a;
     mpz_t b;
     point_affine_t G;
-    int md_len;
+    size_t md_len;
     void *(*hash)(const void *, size_t, void *, int);
     char *name;
 } curve_t;

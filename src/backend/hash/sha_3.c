@@ -64,7 +64,7 @@ void sha3_keccakf(uint64_t st[25])
     }
 }
 
-void sha3_init(sha3_ctx_t *ctx, int md_len)
+void sha3_init(sha3_ctx_t *ctx, size_t md_len)
 {
     int i;
     for (i = 0; i < 25; i++)
@@ -96,7 +96,7 @@ void sha3_final(void *md, sha3_ctx_t *ctx)
     memcpy(md, ctx->state.b, ctx->md_len);
 }
 
-void *sha3(const void *m, size_t len, void *md, int md_len)
+void *sha3(const void *m, size_t len, void *md, size_t md_len)
 {
     sha3_ctx_t ctx;
     sha3_init(&ctx, md_len);
@@ -113,17 +113,17 @@ void shake_xof(sha3_ctx_t *ctx)
     ctx->cnt = 0;
 }
 
-void *shake_out(sha3_ctx_t *c, void *out, size_t len)
+void *shake_out(sha3_ctx_t *ctx, void *out, size_t len)
 {
     size_t i;
     for (i = 0; i < len; i++)
     {
-        if (c->cnt >= c->rate)
+        if (ctx->cnt >= ctx->rate)
         {
-            sha3_keccakf(c->state.q);
-            c->cnt = 0;
+            sha3_keccakf(ctx->state.q);
+            ctx->cnt = 0;
         }
-        ((uint8_t *)out)[i] = c->state.b[c->cnt++];
+        ((uint8_t *)out)[i] = ctx->state.b[ctx->cnt++];
     }
     return out;
 }
