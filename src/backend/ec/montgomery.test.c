@@ -25,8 +25,7 @@ void test_curve(MONTGOMERY_CURVE curve_id)
     init_affine(&r_affine);
 
     // Set point p to the generator point G
-    mpz_set(p.x, curve.G.x);
-    mpz_set_ui(p.z, 1);
+    generator(&p, curve);
 
     // Test point doubling (2p)
     dbl(&q, p, curve);

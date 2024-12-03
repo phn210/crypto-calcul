@@ -40,7 +40,7 @@ void init_affine(point_affine_t *p);
 void free_affine(point_affine_t *p);
 void copy_affine(point_affine_t *r, const point_affine_t p);
 
-void init_curve(curve_t *curve, WEIERSTRASS_CURVE curve_id);
+void init_curve(curve_t *curve, unsigned char curve_id);
 void free_curve(curve_t *curve);
 
 char is_infinity(const point_t p);
@@ -53,6 +53,7 @@ void mul(point_t *r, const point_t p, const mpz_t k, const curve_t curve);
 void rhs(mpz_t r, const mpz_t x, const curve_t curve);
 char is_on_curve(const point_t p, const curve_t curve);
 void infinity(point_t *p);
+void generator(point_t *p, const curve_t curve);
 void affine(point_affine_t *r, const point_t p, const curve_t curve);
 void point_to_bytes(unsigned char *buf, const point_t p, const curve_t curve);
 void point_from_bytes(point_t *r, const unsigned char *buf, const curve_t curve);

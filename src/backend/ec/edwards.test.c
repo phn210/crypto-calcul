@@ -25,9 +25,7 @@ void test_curve(EDWARDS_CURVE curve_id)
     init_affine(&r_affine);
 
     // Set point p to the generator point G
-    mpz_set(p.x, curve.G.x);
-    mpz_set(p.y, curve.G.y);
-    mpz_set_ui(p.z, 1);
+    generator(&p, curve);
 
     // Test point addition (p + p)
     add(&q, p, p, curve);

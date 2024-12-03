@@ -63,3 +63,10 @@ void point_from_bytes(point_t *r, const unsigned char *buf, const curve_t curve)
     mpz_import(r->y, 1, 1, 1, 0, 0, buf + curve.efs);
     mpz_import(r->z, 1, 1, 1, 0, 0, buf + 2 * curve.efs);
 }
+
+void generator(point_t *p, const curve_t curve)
+{
+    mpz_set(p->x, curve.G.x);
+    mpz_set(p->y, curve.G.y);
+    mpz_set_ui(p->z, 1);
+}
