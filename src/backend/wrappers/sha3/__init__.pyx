@@ -7,15 +7,15 @@ cdef extern from "sha_3.h":
         pass
     ctypedef sha3_ctx sha3_ctx_t
 
-    void sha3_init(sha3_ctx_t *ctx, size_t md_len);
-    void sha3_update(sha3_ctx_t *ctx, const void *m, size_t len);
-    void sha3_final(void *md, sha3_ctx_t *ctx);
-    char *sha3(const void *m, size_t len, void *md, size_t md_len);
-    void shake128_init(sha3_ctx_t *ctx);
-    void shake256_init(sha3_ctx_t *ctx);
-    void shake_update(sha3_ctx_t *ctx, const void *m, size_t len);
-    void shake_xof(sha3_ctx_t *ctx);
-    void *shake_out(sha3_ctx_t *ctx, void *out, size_t len);
+    void sha3_init(sha3_ctx_t *, size_t);
+    void sha3_update(sha3_ctx_t *, const void *, size_t);
+    void sha3_final(void *, sha3_ctx_t *);
+    char *sha3(const void *, size_t, void *, size_t);
+    void shake128_init(sha3_ctx_t *);
+    void shake256_init(sha3_ctx_t *);
+    void shake_update(sha3_ctx_t *, const void *, size_t);
+    void shake_xof(sha3_ctx_t *);
+    void *shake_out(sha3_ctx_t *, void *, size_t);
 
 cdef class SHA3:
     cdef sha3_ctx_t ctx

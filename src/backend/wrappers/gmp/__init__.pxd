@@ -13,15 +13,18 @@ cdef extern from "gmp.h":
     # GMP Functions
     void mpz_init(mpz_t)
     void mpz_clear(mpz_t)
-    void mpz_set(mpz_t rop, mpz_t op)
-    void mpz_set_ui(mpz_t rop, unsigned long int op)
-    void mpz_set_str(mpz_t rop, const char *str, int base)
+    void mpz_set(mpz_t, mpz_t)
+    void mpz_set_ui(mpz_t, unsigned long int)
+    void mpz_set_str(mpz_t, const char *str, int)
     void mpz_get_str(char *, int, mpz_t)
-    unsigned long int mpz_get_ui (const mpz_t op)
+    unsigned long int mpz_get_ui(const mpz_t)
+    void gmp_randinit_default(gmp_randstate_t)
+    void gmp_randseed_ui(gmp_randstate_t, unsigned long int)
+    void gmp_randclear(gmp_randstate_t)
 
 # Expose the GMPInteger class
 cdef class GMPInteger:
     cdef mpz_t value
 
-    cdef set_value(self, str value, int base)
-    cdef get_value(self, int base)
+    cpdef set_value(self, str value, int base)
+    cpdef get_value(self, int base)

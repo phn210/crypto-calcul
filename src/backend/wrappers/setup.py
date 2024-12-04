@@ -41,28 +41,37 @@ setup(
     name="wrappers",
     ext_modules=cythonize(
         [
-        get_extension(
-            "wrappers.enum",
-            c_sources=[],
-        ),
-        get_extension(
-            "wrappers.gmp",
-            c_sources=[],
-        ),
-        get_extension(
-            "wrappers.rng",
-            c_sources=["rng/rng.c"],
-        ),
-        get_extension(
-            "wrappers.sha3",
-            c_sources=["hash/sha_3.c"],
-        ),
-        get_extension(
-            "wrappers.ec",
-            c_sources=["ec/ec.c", "hash/sha_2.c", "misc/conversion.c"],
-        ),
-    ],
-    compiler_directives=cython_directives),
+            get_extension(
+                "wrappers.enum",
+                c_sources=[],
+            ),
+            get_extension(
+                "wrappers.gmp",
+                c_sources=[],
+            ),
+            get_extension(
+                "wrappers.prime",
+                c_sources=["misc/prime/prime_test.c", "misc/prime/prime_gen.c", "rng/rng.c"],
+            ),
+            get_extension(
+                "wrappers.rng",
+                c_sources=["rng/rng.c"],
+            ),
+            get_extension(
+                "wrappers.sha3",
+                c_sources=["hash/sha_3.c"],
+            ),
+            get_extension(
+                "wrappers.ec",
+                c_sources=["ec/ec.c", "hash/sha_2.c", "misc/conversion.c"],
+            ),
+            get_extension(
+                "wrappers.mac",
+                c_sources=["mac/hmac.c", "hash/md5.c", "hash/sha_1.c", "hash/sha_2.c", "hash/sha_3.c"],
+            )
+        ],
+        compiler_directives=cython_directives
+    ),
     cmdclass={'build_ext': CustomBuildExtension},
     zip_safe=False,
 )
