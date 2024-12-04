@@ -28,12 +28,12 @@ cdef class RNG:
     def rand_int_b(self, unsigned long bits, int base):
         result = GMPInteger()
         rand_int_b(result.value, self.state.state, bits)
-        return result.get_value(base)[2:-1]
+        return result.get_value(base)
 
     def rand_int_m(self, GMPInteger result, GMPInteger modulo, int base):
         result = GMPInteger()
         rand_int_m(result.value, self.state.state, modulo.value)
-        return result.get_value(base)[2:-1]
+        return result.get_value(base)
 
     def rand_bytes(self, int byte_len):
         cdef char *buf = <char *>malloc(byte_len)

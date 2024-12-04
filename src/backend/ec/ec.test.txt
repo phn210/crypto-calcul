@@ -1,5 +1,4 @@
-obj/ec/edwards.test.o
-obj/ec/edwards.o
+obj/ec/ec.test.o
 obj/ec/ec.o
 obj/misc/conversion.o
 obj/hash/sha_2.o

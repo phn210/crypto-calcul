@@ -1,8 +1,9 @@
 from libc.stdlib cimport malloc
-from wrappers.enum import *
+from wrappers.enum cimport SecurityLevel
 
 cdef extern from "sha_3.h":
     ctypedef struct sha3_ctx:
+        size_t md_len
         pass
     ctypedef sha3_ctx sha3_ctx_t
 
@@ -18,41 +19,41 @@ cdef extern from "sha_3.h":
 
 cdef class SHA3:
     cdef sha3_ctx_t ctx
-    cdef int md_len
 
-    def __cinit__(self, int sec_level):
-        if sec_level == SecurityLevel._L0.value:
-            self.md_len = 28
-        elif sec_level == SecurityLevel._L1.value:
-            self.md_len = 32
-        elif sec_level == SecurityLevel._L2.value:
-            self.md_len = 48
-        elif sec_level == SecurityLevel._L3.value:
-            self.md_len = 64
+    def __cinit__(self, SecurityLevel sec_level):
+        md_len = 0
+        if sec_level == SecurityLevel.L0:
+            md_len = 28
+        elif sec_level == SecurityLevel.L1:
+            md_len = 32
+        elif sec_level == SecurityLevel.L2:
+            md_len = 48
+        elif sec_level == SecurityLevel.L3:
+            md_len = 64
         else:
             raise ValueError("Invalid Security Level")
-        sha3_init(&self.ctx, self.md_len)
+        sha3_init(&self.ctx, md_len)
 
     def update(self, bytes m):
         sha3_update(&self.ctx, <char *>m, len(m))
 
     def digest(self):
-        cdef char *md = <char *>malloc(self.md_len)
+        cdef char *md = <char *>malloc(self.ctx.md_len)
         sha3_final(md, &self.ctx)
         return bytes(md)
     
     def hash(self, bytes m):
-        cdef char *md = <char *>malloc(self.md_len)
-        cdef char *out = sha3(<char *>m, len(m), md, self.md_len)
-        return bytes(md)[0:self.md_len]
+        cdef char *md = <char *>malloc(self.ctx.md_len)
+        cdef char *out = sha3(<char *>m, len(m), md, self.ctx.md_len)
+        return bytes(md)[0:self.ctx.md_len]
 
 cdef class SHAKE:
     cdef sha3_ctx_t ctx
 
     def __cinit__(self, int sec_level):
-        if sec_level == SecurityLevel._L1.value:
+        if sec_level == SecurityLevel.L1:
             shake128_init(&self.ctx)
-        elif sec_level == SecurityLevel._L3.value:
+        elif sec_level == SecurityLevel.L3:
             shake256_init(&self.ctx)
         else:
             raise ValueError("Invalid Security Level")

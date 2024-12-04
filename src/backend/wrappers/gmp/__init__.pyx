@@ -19,6 +19,6 @@ cdef class GMPInteger:
     cdef get_value(self, int base):
         cdef char *str_rep = <char *>malloc(256)
         mpz_get_str(str_rep, base, self.value)
-        result = str(str_rep)
+        result = str(str_rep, 'utf-8')
         free(str_rep)
         return result
