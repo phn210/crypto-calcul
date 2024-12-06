@@ -1,11 +1,11 @@
-#include "des.h"
+#include "../include/des.h"
 
 void des_ip(uint64_t *block)
 {
     uint64_t new_block = 0;
     for (int i = 0; i < DES_IP_SIZE; i++)
     {
-        uint64_t bit = (*block >> (64 - des_ip[i])) & 1;
+        uint64_t bit = (*block >> (64 - IP[i])) & 1;
         new_block |= bit << (64 - i - 1);
     }
     *block = new_block;
@@ -16,7 +16,7 @@ void des_pi(uint64_t *block)
     uint64_t new_block = 0;
     for (int i = 0; i < DES_PI_SIZE; i++)
     {
-        uint64_t bit = (*block >> (64 - des_pi[i])) & 1;
+        uint64_t bit = (*block >> (64 - PI[i])) & 1;
         new_block |= bit << (64 - i - 1);
     }
     *block = new_block;
@@ -27,37 +27,49 @@ void des_fp(uint32_t *subblock)
     uint32_t new_subblock = 0;
     for (int i = 0; i < DES_P_SIZE; i++)
     {
-        uint32_t bit = (*subblock >> (32 - des_p[i])) & 1;
+        uint32_t bit = (*subblock >> (32 - P[i])) & 1;
         new_subblock |= bit << (32 - i - 1);
     }
     *subblock = new_subblock;
 }
 
-void des_fexpand(uint32_t *subblock, uint48_t *new_subblock)
+void des_fexpand(uint32_t *subblock, uint64_t *new_subblock)
 {
-    uint48_t new_block = 0;
+    uint64_t new_block = 0;
     for (int i = 0; i < DES_E_SIZE; i++)
     {
-        uint48_t bit = (*subblock >> (32 - des_e[i])) & 1;
+        uint64_t bit = (*subblock >> (32 - E[i])) & 1;
         new_block |= bit << (48 - i - 1);
     }
     *new_subblock = new_block;
 }
 
-void des_feistel(uint64_t *block, des_ctx_t *ctx)
+void des_feistel(uint64_t *block, des_ctx_t *ctx, char mode)
 {
     uint32_t l = *block >> 32;
     uint32_t r = *block & 0xFFFFFFFF;
 
     for(int i = 0; i < DES_ROUNDS; i++)
     {
-        uint32_t new_r = l ^ des_ffunc(r, ctx->keys[i]);
-        l = r;
-        r = new_r;
+        uint32_t tmp = r;
+
+        if (mode == 'e')
+        {
+            des_ffunc(&r, ctx->keys[i]);
+        }
+        else
+        {
+            des_ffunc(&r, ctx->keys[DES_ROUNDS - i - 1]);
+        }
+
+        r = l ^ r;
+        l = tmp;
     }
+
+    *block = ((uint64_t)r << 32) | l;
 }
 
-void des_sbox(uint48_t *subblock, uint32_t *res_subblock)
+void des_sbox(uint64_t *subblock, uint32_t *res_subblock)
 {
     uint32_t new_subblock = 0;
     for (int i = 0; i < 8; i++)
@@ -65,7 +77,7 @@ void des_sbox(uint48_t *subblock, uint32_t *res_subblock)
         uint8_t s_input = ((*subblock >> (48 - 6 * (i + 1))) & 0x3F);
         uint8_t row = ((s_input & 0x20) >> 4) | (s_input & 1);
         uint8_t col = (s_input >> 1) & 0xF;
-        uint8_t s_output = des_sbox[i][row][col];
+        uint8_t s_output = SBOX[i][row][col];
         new_subblock |= s_output << (32 - 4 * (i + 1));
     }
     *res_subblock = new_subblock;
@@ -73,7 +85,7 @@ void des_sbox(uint48_t *subblock, uint32_t *res_subblock)
 
 void des_ffunc(uint32_t *subblock, const uint64_t subkey)
 {
-    uint48_t expanded_subblock;
+    uint64_t expanded_subblock;
     des_fexpand(subblock, &expanded_subblock);
     expanded_subblock ^= subkey;
     des_sbox(&expanded_subblock, subblock);
@@ -85,7 +97,7 @@ void des_key_schedule(const uint64_t key, des_ctx_t *ctx)
     uint64_t pc1_key = 0;
     for (int i = 0; i < 56; i++)
     {
-        uint64_t bit = (key >> (64 - des_pc1[i])) & 1;
+        uint64_t bit = (key >> (64 - PC1[i])) & 1;
         pc1_key |= bit << (56 - i - 1);
     }
 
@@ -95,32 +107,60 @@ void des_key_schedule(const uint64_t key, des_ctx_t *ctx)
 
     for (int i = 0; i < DES_ROUNDS; i++)
     {
-        c = ((c << des_shifts[i]) | (c >> (28 - des_shifts[i]))) & 0xFFFFFFF;
-        d = ((d << des_shifts[i]) | (d >> (28 - des_shifts[i]))) & 0xFFFFFFF;
+        c = ((c << SHIFTS[i]) | (c >> (28 - SHIFTS[i]))) & 0xFFFFFFF;
+        d = ((d << SHIFTS[i]) | (d >> (28 - SHIFTS[i]))) & 0xFFFFFFF;
 
         uint64_t cd = ((uint64_t)c << 28) | d;
         uint64_t subkey = 0;
         for (int j = 0; j < 48; j++)
         {
-            uint64_t bit = (cd >> (56 - des_pc2[j])) & 1;
+            uint64_t bit = (cd >> (56 - PC2[j])) & 1;
             subkey |= bit << (48 - j - 1);
         }
         ctx->keys[i] = subkey;
     }
 }
 
-void des(char *input, char *output, const uint64_t key, const size_t len)
+/*
+    * DES encryption/decryption function
+    * input: array of 64-bit blocks
+    * output: array of 64-bit blocks
+    * key: 64-bit key
+    * len: number of blocks
+    * mode: 'e' for encryption, 'd' for decryption
+*/
+void des(uint64_t *input, uint64_t *output, const uint64_t key, int len, const char mode)
 {
     des_ctx_t ctx;
-    des_key_schedule(&ctx, key);
+    des_key_schedule(key, &ctx);
 
-    for (int i = 0; i < len; i += 8)
+    for (int i = 0; i < len; i++)
     {
-        uint64_t block = 0;
-        memcpy(&block, input + i, 8);
+        uint64_t block = input[i];
+
         des_ip(&block);
-        des_feistel(&block, &ctx);
+
+        des_feistel(&block, &ctx, mode);
+
         des_pi(&block);
-        memcpy(output + i, &block, 8);
+
+        output[i] = block;
+    }
+}
+
+/*
+    * DES padding function (PKCS#7)
+    * input: input string
+    * output: output string
+    * len: length of input string
+*/
+void des_padding(char *input, char *output, size_t len)
+{
+    size_t padded_len = len + (8 - len % 8);
+    size_t padding_value = 8 - (len % 8);
+    memcpy(output, input, len);
+    for (size_t i = len; i < padded_len; i++)
+    {
+        output[i] = padding_value;
     }
 }
