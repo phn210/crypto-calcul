@@ -1,4 +1,4 @@
-#include "des.c"
+#include "des.h"
 
 int main()
 {
