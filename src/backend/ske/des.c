@@ -1,4 +1,4 @@
-#include "../include/des.h"
+#include "des.h"
 
 void des_ip(uint64_t *block)
 {
