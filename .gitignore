@@ -2,6 +2,8 @@
 build
 obj
 **/wrappers/*.c
+**/__init__.c
+**/__init__.html
 
 # Environment files
 .venv

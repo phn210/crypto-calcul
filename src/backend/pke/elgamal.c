@@ -12,7 +12,12 @@ void setup(public_params_t *pp, SECURITY_LEVEL level)
     case L0:
         pp->p_bits = L0_P_BITS;
         hex_to_bigint(pp->p, L0_P);
-        hex_to_bigint(pp->g, "02");
+        hex_to_bigint(pp->g, L0_G);
+        break;
+    case L1:
+        pp->p_bits = L1_P_BITS;
+        hex_to_bigint(pp->p, L1_P);
+        hex_to_bigint(pp->g, L1_G);
         break;
     // case L2:
     //     pp->p_bits = 7680;
@@ -25,14 +30,12 @@ void setup(public_params_t *pp, SECURITY_LEVEL level)
     //     hex_to_bigint(pp->g, G);
     //     break;
     default: // L1
-        pp->p_bits = L1_P_BITS;
-        hex_to_bigint(pp->p, L1_P);
-        hex_to_bigint(pp->g, L1_G);
-        break;
+        fprintf(stderr, "Invalid security level\n");
+        exit(EXIT_FAILURE);
     }
 }
 
-void keygen(priv_key_t *sk, pub_key_t *pk, const public_params_t pp)
+void keygen(priv_key_t *sk, pub_key_t *pk, public_params_t pp)
 {
     mpz_inits(sk->x, pk->y, NULL);
 
@@ -43,7 +46,7 @@ void keygen(priv_key_t *sk, pub_key_t *pk, const public_params_t pp)
     mpz_powm(pk->y, pp.g, sk->x, pp.p);
 }
 
-void encrypt(mpz_t c1, mpz_t c2, const mpz_t m, const pub_key_t pk, const public_params_t pp)
+void encrypt(mpz_t c1, mpz_t c2, const mpz_t m, pub_key_t pk, public_params_t pp)
 {
     mpz_t k;
     mpz_inits(k, c1, c2, NULL);
@@ -59,7 +62,7 @@ void encrypt(mpz_t c1, mpz_t c2, const mpz_t m, const pub_key_t pk, const public
     mpz_clear(k);
 }
 
-void decrypt(mpz_t m, const mpz_t c1, const mpz_t c2, const priv_key_t sk, const public_params_t pp)
+void decrypt(mpz_t m, const mpz_t c1, const mpz_t c2, priv_key_t sk, public_params_t pp)
 {
     mpz_t s;
     mpz_init(s);

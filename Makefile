@@ -86,14 +86,8 @@ test_dsa: $(BIN_DIR)/sign/dsa.test
 test_hmac: $(BIN_DIR)/mac/hmac.test
 	$(BIN_DIR)/mac/hmac.test
 
-test_weierstrass: $(BIN_DIR)/ec/weierstrass.test
-	$(BIN_DIR)/ec/weierstrass.test
-
-test_edwards: $(BIN_DIR)/ec/edwards.test
-	$(BIN_DIR)/ec/edwards.test
-
-test_montgomery: $(BIN_DIR)/ec/montgomery.test
-	$(BIN_DIR)/ec/montgomery.test
+test_ec: $(BIN_DIR)/ec/ec.test
+	$(BIN_DIR)/ec/ec.test
 
 .PHONY: all clean test
 
