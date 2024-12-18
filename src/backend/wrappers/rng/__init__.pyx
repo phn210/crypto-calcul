@@ -20,7 +20,7 @@ cdef class RNG:
         rand_int_b(result.value, self.state.state, bits)
         return result.get_value(base)
 
-    def rand_int_m(self, GMPInteger result, GMPInteger modulo, int base):
+    def rand_int_m(self, GMPInteger modulo, int base):
         result = GMPInteger()
         rand_int_m(result.value, self.state.state, modulo.value)
         return result.get_value(base)
