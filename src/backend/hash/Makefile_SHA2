@@ -1,1 +1,10 @@
+all: sha2
 
+sha2: sha2.o
+	gcc $< -o $@
+
+sha2.o: sha2.c sha2.h
+	gcc -Wall -DTEST_VECTORS -c $<
+
+clean:
+	-rm -rf *.o sha2
