@@ -1,5 +1,5 @@
-#ifndef PKE_RSA_H
-#define PKE_RSA_H
+#ifndef PKE_RSACRT_H
+#define PKE_RSACRT_H
 
 #include "common.h"
 #include "parameters.h"
@@ -21,12 +21,14 @@ typedef struct {
 } pub_key;
 
 typedef struct {
-    mpz_t p;  // first prime
-    mpz_t q;  // second prime
-    mpz_t d;  // private exponent
+    mpz_t p;     // first prime factor
+    mpz_t q;     // second prime factor
+    mpz_t d;     // private exponent
+    mpz_t dp;    // d mod (p-1)
+    mpz_t dq;    // d mod (q-1)
+    mpz_t qinv;  // q^(-1) mod p
 } priv_key;
 
-// Core RSA functions
 void keygen(priv_key *sk, pub_key *pk);
 void encrypt(mpz_t c, const mpz_t m, const pub_key pk);
 void decrypt(mpz_t m, const mpz_t c, const priv_key sk, const pub_key pk);

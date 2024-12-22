@@ -1,5 +1,5 @@
 #include "conversion.h"
-#include "rsa.h"
+#include "rsacrt.h"
 #include "prime_gen.h"
 #include "rng.h"
 
@@ -8,7 +8,7 @@ void keygen(priv_key *sk, pub_key *pk) {
     rng_init(state);
     
     // Initialize all MPZ variables
-    mpz_inits(sk->p, sk->q, sk->d, pk->n, pk->e, NULL);
+    mpz_inits(sk->p, sk->q, sk->d, sk->dp, sk->dq, sk->qinv, pk->n, pk->e, NULL);
     
     // Set public exponent
     mpz_set_str(pk->e, E, 10);
@@ -18,12 +18,12 @@ void keygen(priv_key *sk, pub_key *pk) {
     
     // Generate two distinct primes of equal size
     while (1) {
-        // Generate first prime
-        gen_prime_b(sk->p, state, N_BITS/2, 100, 25, GMP_TEST);
+        // Generate first prime using prime_gen interface
+        gen_prime_b(sk->p, state, N_BITS/2, 100, 25, MILLER_RABIN_TEST);
         
         // Generate second prime
         do {
-            gen_prime_b(sk->q, state, N_BITS/2, 100, 25, GMP_TEST);
+            gen_prime_b(sk->q, state, N_BITS/2, 100, 25, MILLER_RABIN_TEST);
         } while (mpz_cmp(sk->p, sk->q) == 0);
         
         // Compute n = p * q
@@ -39,6 +39,11 @@ void keygen(priv_key *sk, pub_key *pk) {
         if (mpz_cmp_ui(gcd, 1) == 0) {
             // Compute private exponent d = e^(-1) mod φ(n)
             mpz_invert(sk->d, pk->e, phi_n);
+            
+            // Compute CRT components
+            mpz_mod(sk->dp, sk->d, p_1);    // dp = d mod (p-1)
+            mpz_mod(sk->dq, sk->d, q_1);    // dq = d mod (q-1)
+            mpz_invert(sk->qinv, sk->q, sk->p);  // qinv = q^(-1) mod p
             break;
         }
     }
@@ -49,34 +54,32 @@ void keygen(priv_key *sk, pub_key *pk) {
 }
 
 void encrypt(mpz_t c, const mpz_t m, const pub_key pk) {
-    // c = m^e mod n
+    // Standard RSA encryption: c = m^e mod n
     mpz_powm(c, m, pk.e, pk.n);
 }
 
 void decrypt(mpz_t m, const mpz_t c, const priv_key sk, const pub_key pk) {
     // Chinese Remainder Theorem (CRT) optimization for decryption
-    mpz_t m1, m2, h, temp;
-    mpz_inits(m1, m2, h, temp, NULL);
+    mpz_t m1, m2, h;
+    mpz_inits(m1, m2, h, NULL);
     
-    // m1 = c^(d mod (p-1)) mod p
-    mpz_sub_ui(temp, sk.p, 1);
-    mpz_mod(temp, sk.d, temp);
-    mpz_powm(m1, c, temp, sk.p);
+    // m1 = c^dp mod p
+    mpz_powm(m1, c, sk.dp, sk.p);
     
-    // m2 = c^(d mod (q-1)) mod q
-    mpz_sub_ui(temp, sk.q, 1);
-    mpz_mod(temp, sk.d, temp);
-    mpz_powm(m2, c, temp, sk.q);
+    // m2 = c^dq mod q
+    mpz_powm(m2, c, sk.dq, sk.q);
     
-    // h = q^(-1) * (m1 - m2) mod p
-    mpz_sub(temp, m1, m2);
-    mpz_invert(h, sk.q, sk.p);
-    mpz_mul(h, h, temp);
+    // h = qinv * (m1 - m2) mod p
+    mpz_sub(h, m1, m2);
+    if (mpz_sgn(h) < 0) {
+        mpz_add(h, h, sk.p);
+    }
+    mpz_mul(h, sk.qinv, h);
     mpz_mod(h, h, sk.p);
     
     // m = m2 + h * q
-    mpz_mul(temp, h, sk.q);
-    mpz_add(m, m2, temp);
+    mpz_mul(h, h, sk.q);
+    mpz_add(m, m2, h);
     
-    mpz_clears(m1, m2, h, temp, NULL);
+    mpz_clears(m1, m2, h, NULL);
 }

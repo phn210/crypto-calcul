@@ -1,5 +1,5 @@
 #include "conversion.h"
-#include "rsa.h"
+#include "rsa_sig.h"
 #include "prime_gen.h"
 #include "rng.h"
 
@@ -18,12 +18,10 @@ void keygen(priv_key *sk, pub_key *pk) {
     
     // Generate two distinct primes of equal size
     while (1) {
-        // Generate first prime
-        gen_prime_b(sk->p, state, N_BITS/2, 100, 25, GMP_TEST);
+        gen_prime_b(sk->p, state, N_BITS/2, 100, 25, MILLER_RABIN_TEST);
         
-        // Generate second prime
         do {
-            gen_prime_b(sk->q, state, N_BITS/2, 100, 25, GMP_TEST);
+            gen_prime_b(sk->q, state, N_BITS/2, 100, 25, MILLER_RABIN_TEST);
         } while (mpz_cmp(sk->p, sk->q) == 0);
         
         // Compute n = p * q
@@ -43,40 +41,22 @@ void keygen(priv_key *sk, pub_key *pk) {
         }
     }
     
-    // Clear temporary variables
     mpz_clears(p_1, q_1, phi_n, gcd, NULL);
     gmp_randclear(state);
 }
 
-void encrypt(mpz_t c, const mpz_t m, const pub_key pk) {
-    // c = m^e mod n
-    mpz_powm(c, m, pk.e, pk.n);
+void sign(mpz_t s, const mpz_t m, const priv_key sk, const pub_key pk) {
+    // s = m^d mod n
+    mpz_powm(s, m, sk.d, pk.n);
 }
 
-void decrypt(mpz_t m, const mpz_t c, const priv_key sk, const pub_key pk) {
-    // Chinese Remainder Theorem (CRT) optimization for decryption
-    mpz_t m1, m2, h, temp;
-    mpz_inits(m1, m2, h, temp, NULL);
+int verify(const mpz_t m, const mpz_t s, const pub_key pk) {
+    // Verify: m ?= s^e mod n
+    mpz_t m_check;
+    mpz_init(m_check);
+    mpz_powm(m_check, s, pk.e, pk.n);
     
-    // m1 = c^(d mod (p-1)) mod p
-    mpz_sub_ui(temp, sk.p, 1);
-    mpz_mod(temp, sk.d, temp);
-    mpz_powm(m1, c, temp, sk.p);
-    
-    // m2 = c^(d mod (q-1)) mod q
-    mpz_sub_ui(temp, sk.q, 1);
-    mpz_mod(temp, sk.d, temp);
-    mpz_powm(m2, c, temp, sk.q);
-    
-    // h = q^(-1) * (m1 - m2) mod p
-    mpz_sub(temp, m1, m2);
-    mpz_invert(h, sk.q, sk.p);
-    mpz_mul(h, h, temp);
-    mpz_mod(h, h, sk.p);
-    
-    // m = m2 + h * q
-    mpz_mul(temp, h, sk.q);
-    mpz_add(m, m2, temp);
-    
-    mpz_clears(m1, m2, h, temp, NULL);
+    int result = (mpz_cmp(m_check, m) == 0);
+    mpz_clear(m_check);
+    return result;
 }
