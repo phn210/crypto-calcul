@@ -1,6 +1,7 @@
 # Directories
 SRC_DIR = src/backend
 INC_DIR = src/backend/include
+WRAP_DIR = src/backend/wrappers
 OBJ_DIR = obj
 BIN_DIR = build
 
@@ -10,8 +11,8 @@ CFLAGS = -I$(INC_DIR)
 LDFLAGS = -lgmp
 
 # Source files
-SRCS = $(filter-out %wrapper.c, $(shell find $(SRC_DIR) -name "*.c"))
-TEST_SRCS = $(filter %.test.c, $(filter-out %wrapper.c, $(SRCS)))
+SRCS = $(filter-out $(WRAP_DIR)/%.c, $(shell find $(SRC_DIR) -name "*.c"))
+TEST_SRCS = $(filter %.test.c, $(SRCS))
 NON_TEST_SRCS = $(filter-out %.test.c %wrapper.c, $(SRCS))
 OBJS = $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 TEST_OBJS = $(TEST_SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
@@ -39,8 +40,7 @@ $(BIN_DIR):
 	mkdir -p $(BIN_DIR)
 
 wrap: clean_wrapper
-	python3 src/backend/wrappers/setup.py build_ext --inplace --build-lib $(BIN_DIR)
-	rm ./*.so
+	python3 src/backend/wrappers/setup.py build_ext
 
 # Clean up build artifacts
 clean: clean_wrapper
@@ -77,11 +77,17 @@ test_conversion: $(BIN_DIR)/misc/conversion.test
 test_elgamal: $(BIN_DIR)/pke/elgamal.test
 	$(BIN_DIR)/pke/elgamal.test
 
-test_sha_1: $(BIN_DIR)/hash/sha_1.test
-	$(BIN_DIR)/hash/sha_1.test
+test_md5: $(BIN_DIR)/hash/md5.test
+	$(BIN_DIR)/hash/md5.test
 
-test_sha_3: $(BIN_DIR)/hash/sha_3.test
-	$(BIN_DIR)/hash/sha_3.test
+test_sha1: $(BIN_DIR)/hash/sha1.test
+	$(BIN_DIR)/hash/sha1.test
+
+test_sha2: $(BIN_DIR)/hash/sha2.test
+	$(BIN_DIR)/hash/sha2.test
+
+test_sha3: $(BIN_DIR)/hash/sha3.test
+	$(BIN_DIR)/hash/sha3.test
 
 test_dsa: $(BIN_DIR)/sign/dsa.test
 	$(BIN_DIR)/sign/dsa.test
@@ -89,8 +95,8 @@ test_dsa: $(BIN_DIR)/sign/dsa.test
 test_hmac: $(BIN_DIR)/mac/hmac.test
 	$(BIN_DIR)/mac/hmac.test
 
-test_weierstrass: $(BIN_DIR)/ec/weierstrass.test
-	$(BIN_DIR)/ec/weierstrass.test
+test_ec: $(BIN_DIR)/ec/ec.test
+	$(BIN_DIR)/ec/ec.test
 
 .PHONY: all clean test
 

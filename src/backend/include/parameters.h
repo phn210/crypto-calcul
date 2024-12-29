@@ -17,8 +17,9 @@
 #define SHA1 1
 #define SHA2 2
 #define SHA3 3
+#define POSEIDON 4
 
-#define ECC unsigned char
+#define EC unsigned char
 #define WEIERSTRASS 0
 #define MONTGOMERY 1
 #define EDWARDS 2
@@ -29,12 +30,21 @@
 #define P384 2
 #define P521 3
 #define P256K1 4
+#define W25519 5
+#define W448 6
 
 #define MONTGOMERY_CURVE unsigned char
 #define C25519 0
+#define C448 1
 
 #define EDWARDS_CURVE unsigned char
-#define E25519 0
-#define E448 1
+#define ED25519 0
+#define ED448 1
+#define E448 2
+
+#define SECRET_SHARING unsigned char
+#define ADDITIVE 0
+#define MULTIPLICATIVE 1
+#define SHAMIR 2
 
 #endif

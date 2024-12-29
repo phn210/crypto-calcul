@@ -1,7 +1,10 @@
 #include "hmac.h"
-#include "sha_3.h"
+#include "md5.h"
+#include "sha1.h"
+#include "sha2.h"
+#include "sha3.h"
 
-void hmac_init(hmac_ctx *ctx, void *key, const size_t key_len, SECURITY_LEVEL sec_level, HASH_FUNCTION hash_function)
+void hmac_init(hmac_ctx_t *ctx, const void *key, size_t key_len, SECURITY_LEVEL sec_level, HASH_FUNCTION hash_function)
 {
     switch (hash_function)
     {
@@ -14,6 +17,31 @@ void hmac_init(hmac_ctx *ctx, void *key, const size_t key_len, SECURITY_LEVEL se
     case SHA1:
         ctx->b = 64;
         ctx->l = 20;
+        // ctx->hash = ;
+        break;
+
+    case SHA2:
+        switch (sec_level)
+        {
+        case L0:
+            ctx->b = 64;
+            ctx->l = 28;
+            break;
+        case L1:
+            ctx->b = 64;
+            ctx->l = 32;
+            break;
+        case L2:
+            ctx->b = 128;
+            ctx->l = 48;
+            break;
+        case L3:
+            ctx->b = 128;
+            ctx->l = 64;
+            break;
+        default:
+            break;
+        }
         // ctx->hash = ;
         break;
 
@@ -42,32 +70,11 @@ void hmac_init(hmac_ctx *ctx, void *key, const size_t key_len, SECURITY_LEVEL se
         ctx->hash = sha3;
         break;
 
-    default: // SHA2
-        switch (sec_level)
-        {
-        case L0:
-            ctx->b = 64;
-            ctx->l = 28;
-            break;
-        case L1:
-            ctx->b = 64;
-            ctx->l = 32;
-            break;
-        case L2:
-            ctx->b = 128;
-            ctx->l = 48;
-            break;
-        case L3:
-            ctx->b = 128;
-            ctx->l = 64;
-            break;
-        default:
-            break;
-        }
-        // ctx->hash = ;
-        break;
+    default:
+        fprintf(stderr, "Invalid hash function\n");
+        exit(EXIT_FAILURE);
     }
-    const u_int8_t BLOCK_SIZE = ctx->b;
+    const size_t BLOCK_SIZE = ctx->b;
 
     ctx->key = malloc(BLOCK_SIZE);
     ctx->i_key_pad = malloc(BLOCK_SIZE);
@@ -92,7 +99,7 @@ void hmac_init(hmac_ctx *ctx, void *key, const size_t key_len, SECURITY_LEVEL se
     }
 }
 
-void hmac_update(hmac_ctx *ctx, void *data, const size_t data_len)
+void hmac_update(hmac_ctx_t *ctx, const void *data, size_t data_len)
 {
     size_t inner_len = ctx->b + data_len;
     size_t outer_len = ctx->b + ctx->l;
@@ -111,12 +118,12 @@ void hmac_update(hmac_ctx *ctx, void *data, const size_t data_len)
     memcpy(ctx->out, ctx->hash(outer, outer_len, outer, ctx->l), ctx->l);
 }
 
-void hmac_final(hmac_ctx *ctx, void *mac)
+void hmac_final(hmac_ctx_t *ctx, void *mac)
 {
     memcpy(mac, ctx->out, ctx->l);
 }
 
-void hmac_free(hmac_ctx *ctx)
+void hmac_free(hmac_ctx_t *ctx)
 {
     free(ctx->key);
     free(ctx->i_key_pad);
@@ -124,16 +131,13 @@ void hmac_free(hmac_ctx *ctx)
     free(ctx->out);
 }
 
-void *hmac(const void *key, const size_t keysize, const void *data, const size_t data_len,
+void *hmac(const void *key, size_t keysize, const void *data, size_t data_len,
            void *mac, SECURITY_LEVEL sec_level, HASH_FUNCTION hash_function)
 {
-    hmac_ctx ctx;
+    hmac_ctx_t ctx;
     hmac_init(&ctx, key, keysize, sec_level, hash_function);
     hmac_update(&ctx, data, data_len);
-    printf("Update\n");
     hmac_final(&ctx, mac);
-    printf("Final\n");
     hmac_free(&ctx);
-    printf("Free\n");
     return mac;
 }

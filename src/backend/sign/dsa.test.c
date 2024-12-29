@@ -22,13 +22,13 @@ void test_sign_verify(const priv_key_t sk, const pub_key_t pk, const public_para
     mpz_t r, s, m;
     mpz_inits(r, s, m, NULL);
 
-    const unsigned char *message = "Hello, DSA!";
+    const unsigned char message[12] = "Hello, DSA!";
 
-    sign(r, s, message, strlen(message), sk, pp);
+    sign(r, s, message, 12, sk, pp);
     gmp_printf("Signature (r): %Zd\n", r);
     gmp_printf("Signature (s): %Zd\n", s);
 
-    char valid = verify(r, s, message, strlen(message), pk, pp);
+    char valid = verify(r, s, message, 12, pk, pp);
     if (valid)
     {
         printf("Signature is valid!\n");

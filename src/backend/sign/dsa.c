@@ -2,8 +2,8 @@
 #include "prime_gen.h"
 #include "conversion.h"
 #include "rng.h"
-#include "sha_2.h"
-#include "sha_3.h"
+#include "sha2.h"
+#include "sha3.h"
 
 void setup(public_params_t *pp, SECURITY_LEVEL level, HASH_FUNCTION hash)
 {
@@ -41,7 +41,7 @@ void setup(public_params_t *pp, SECURITY_LEVEL level, HASH_FUNCTION hash)
     }
 }
 
-void keygen(priv_key_t *sk, pub_key_t *pk, const public_params_t pp)
+void keygen(priv_key_t *sk, pub_key_t *pk, public_params_t pp)
 {
     mpz_inits(sk->x, pk->y, NULL);
 
@@ -52,7 +52,7 @@ void keygen(priv_key_t *sk, pub_key_t *pk, const public_params_t pp)
     mpz_powm(pk->y, pp.g, sk->x, pp.p);
 }
 
-void sign(mpz_t r, mpz_t s, const unsigned char *m, const int len, const priv_key_t sk, const public_params_t pp)
+void sign(mpz_t r, mpz_t s, const unsigned char *m, int len, priv_key_t sk, public_params_t pp)
 {
 
     mpz_t hm, k, tmp;
@@ -83,7 +83,7 @@ void sign(mpz_t r, mpz_t s, const unsigned char *m, const int len, const priv_ke
     mpz_clears(hm, k, tmp, NULL);
 }
 
-char verify(const mpz_t r, const mpz_t s, const unsigned char *m, const int len, const pub_key_t pk, const public_params_t pp)
+char verify(const mpz_t r, const mpz_t s, const unsigned char *m, int len, pub_key_t pk, public_params_t pp)
 {
     if (mpz_cmp_ui(r, 0) == 0 || mpz_cmp(r, pp.q) >= 0 || mpz_cmp_ui(s, 0) == 0 || mpz_cmp(s, pp.q) >= 0)
         return 0;

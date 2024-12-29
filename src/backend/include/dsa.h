@@ -22,8 +22,8 @@ typedef struct public_params
     mpz_t p;
     mpz_t q;
     mpz_t g;
-    int md_len;
-    void *(*hash)(const void *, size_t, void *, int);
+    size_t md_len;
+    void *(*hash)(const void *, size_t, void *, size_t);
 } public_params_t;
 
 typedef struct pub_key
@@ -37,8 +37,8 @@ typedef struct priv_key
 } priv_key_t;
 
 void setup(public_params_t *pp, SECURITY_LEVEL level, HASH_FUNCTION hash);
-void keygen(priv_key_t *sk, pub_key_t *pk, const public_params_t pp);
-void sign(mpz_t r, mpz_t s, const unsigned char *m, const int len, const priv_key_t sk, const public_params_t pp);
-char verify(const mpz_t r, const mpz_t s, const unsigned char *m, const int len, const pub_key_t pk, const public_params_t pp);
+void keygen(priv_key_t *sk, pub_key_t *pk, public_params_t pp);
+void sign(mpz_t r, mpz_t s, const unsigned char *m, int len, priv_key_t sk, public_params_t pp);
+char verify(const mpz_t r, const mpz_t s, const unsigned char *m, int len, pub_key_t pk, public_params_t pp);
 
 #endif
