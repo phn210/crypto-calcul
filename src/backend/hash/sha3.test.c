@@ -1,4 +1,4 @@
-#include "sha_3.h"
+#include "sha3.h"
 
 // based on test code from: https://github.com/mjosaarinen/tiny_sha3/blob/master/main.c
 

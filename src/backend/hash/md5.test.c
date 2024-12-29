@@ -1,7 +1,4 @@
 #include "md5.h"
-#include <stdio.h>
-#include <string.h>
-#include <memory.h>
 
 int md5_test() {
     BYTE text1[] = {""};

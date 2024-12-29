@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <memory.h>
 #include <string.h>
-#include "SHA01_BIS.h"
+#include "sha1.h"
 
 /*********************** FUNCTION DEFINITIONS ***********************/
 int sha1_test(){

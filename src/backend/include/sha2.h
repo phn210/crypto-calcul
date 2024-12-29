@@ -1,6 +1,8 @@
 #ifndef SHA2_H
 #define SHA2_H
 
+#include "common.h"
+
 #define SHA224_DIGEST_SIZE ( 224 / 8)
 #define SHA256_DIGEST_SIZE ( 256 / 8)
 #define SHA384_DIGEST_SIZE ( 384 / 8)
@@ -16,10 +18,6 @@
 typedef unsigned char uint8;
 typedef unsigned int  uint32;
 typedef unsigned long long uint64;
-#endif
-
-#ifdef __cplusplus
-extern "C" {
 #endif
 
 typedef struct {
@@ -59,8 +57,5 @@ void sha512_update(sha512_ctx *ctx, const uint8 *message, uint64 len);
 void sha512_final(sha512_ctx *ctx, uint8 *digest);
 void sha512(const uint8 *message, uint64 len, uint8 *digest);
 
-#ifdef __cplusplus
-}
-#endif
 
-#endif /* !SHA2_H */
+#endif

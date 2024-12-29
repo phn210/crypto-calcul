@@ -1,7 +1,7 @@
 #ifndef CURVES_H
 #define CURVES_H
 
-#include <sha_2.h>
+#include <sha2.h>
 
 // Weierstrass curves
 

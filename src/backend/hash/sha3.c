@@ -1,4 +1,4 @@
-#include "sha_3.h"
+#include "sha3.h"
 
 #ifndef ROTL64
 #define ROTL64(x, y) (((x) << (y)) | ((x) >> (64 - (y))))

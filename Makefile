@@ -77,8 +77,17 @@ test_conversion: $(BIN_DIR)/misc/conversion.test
 test_elgamal: $(BIN_DIR)/pke/elgamal.test
 	$(BIN_DIR)/pke/elgamal.test
 
-test_sha_3: $(BIN_DIR)/hash/sha_3.test
-	$(BIN_DIR)/hash/sha_3.test
+test_md5: $(BIN_DIR)/hash/md5.test
+	$(BIN_DIR)/hash/md5.test
+
+test_sha1: $(BIN_DIR)/hash/sha1.test
+	$(BIN_DIR)/hash/sha1.test
+
+test_sha2: $(BIN_DIR)/hash/sha2.test
+	$(BIN_DIR)/hash/sha2.test
+
+test_sha3: $(BIN_DIR)/hash/sha3.test
+	$(BIN_DIR)/hash/sha3.test
 
 test_dsa: $(BIN_DIR)/sign/dsa.test
 	$(BIN_DIR)/sign/dsa.test

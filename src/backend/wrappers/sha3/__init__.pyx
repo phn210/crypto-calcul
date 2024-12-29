@@ -1,7 +1,7 @@
 from libc.stdlib cimport malloc
 from wrappers.enum cimport SecurityLevel
 
-cdef extern from "sha_3.h":
+cdef extern from "sha3.h":
     ctypedef struct sha3_ctx:
         size_t md_len
         pass

@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <memory.h>
-#include "SHA01_BIS.h"
+#include "sha1.h"
 
 /****************************** MACROS ******************************/
 #define ROTLEFT(a, b) ((a << b) | (a >> (32 - b)))

@@ -17,6 +17,7 @@
 #define SHA1 1
 #define SHA2 2
 #define SHA3 3
+#define POSEIDON 4
 
 #define EC unsigned char
 #define WEIERSTRASS 0
@@ -40,5 +41,10 @@
 #define ED25519 0
 #define ED448 1
 #define E448 2
+
+#define SECRET_SHARING unsigned char
+#define ADDITIVE 0
+#define MULTIPLICATIVE 1
+#define SHAMIR 2
 
 #endif

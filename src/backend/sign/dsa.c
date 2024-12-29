@@ -2,8 +2,8 @@
 #include "prime_gen.h"
 #include "conversion.h"
 #include "rng.h"
-#include "sha_2.h"
-#include "sha_3.h"
+#include "sha2.h"
+#include "sha3.h"
 
 void setup(public_params_t *pp, SECURITY_LEVEL level, HASH_FUNCTION hash)
 {
