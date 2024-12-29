@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include "rng.h"
 
+#define RAND_SOURCE "/dev/urandom"
+
 unsigned int get_random_seed()
 {
-    FILE *fp = fopen("/dev/urandom", "rb");
+    FILE *fp = fopen(RAND_SOURCE, "rb");
     unsigned long int rand_src;
     fread(&rand_src, sizeof(unsigned int), 1, fp);
     fclose(fp);
@@ -32,11 +34,11 @@ void rand_int_m(mpz_t result, gmp_randstate_t state, mpz_t n)
     mpz_urandomm(result, state, n);
 }
 
-void rand_bytes(char *buf, gmp_randstate_t state, unsigned int len)
+void rand_bytes(char *buf, gmp_randstate_t state, unsigned int byte_len)
 {
     mpz_t r;
     mpz_init(r);
-    mpz_urandomb(r, state, len * 8);
+    mpz_urandomb(r, state, byte_len * 8);
     mpz_export(buf, NULL, 1, 1, 0, 0, r);
     mpz_clear(r);
 }

@@ -1,0 +1,4 @@
+obj/ec/ec.test.o
+obj/ec/ec.o
+obj/misc/conversion.o
+obj/hash/sha2.o

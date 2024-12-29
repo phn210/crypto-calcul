@@ -1,0 +1,2 @@
+obj/rng/rng.test.o
+obj/rng/rng.o

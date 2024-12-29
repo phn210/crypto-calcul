@@ -8,6 +8,7 @@
 
 - C compiler
 - `GMP` library
+- Python3
 
 ## Building the Library
 
@@ -18,11 +19,30 @@ To build the library, follow these steps:
 2. Ensure you have a C compiler and `GMP` library installed.
 
 3. Build the library:
+
    ```sh
    make
    ```
 
-This will compile all the source files and create the necessary executables for testing.
+   This will compile all the source files and create the necessary executables for testing.
+
+4. Setup Python virtual environment and install dependencies:
+
+   ```
+   python3 -m venv .venv
+
+   if [ -z "$PYTHONPATH" ]; then echo "export PYTHONPATH=./build" >> .venv/bin/activate; fi
+
+   source .venv/bin/activate
+
+   pip install -r requirements.txt
+   ```
+
+5. Wrap C libraries into Python modules:
+
+   ```
+   make wrap
+   ```
 
 ## Running Tests
 
@@ -31,8 +51,14 @@ To run the tests, follow these steps:
 1. Ensure you have built the library as described above.
 
 2. Run the tests:
+
    ```
    make test
+   ```
+
+3. Test Cython wrapper for UI:
+   ```
+   python3 src/frontend/test.py
    ```
 
 This will execute all the test executables and display the results.

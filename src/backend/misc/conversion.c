@@ -1,5 +1,10 @@
 #include "conversion.h"
 
+void bytes_to_bigint(mpz_t result, const unsigned char *buf, size_t len)
+{
+    mpz_import(result, len, 1, 1, 0, 0, buf);
+}
+
 void hex_to_bigint(mpz_t result, const char *buf)
 {
     mpz_init(result);
