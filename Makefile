@@ -74,6 +74,9 @@ test_prime: $(BIN_DIR)/misc/prime/prime.test
 test_conversion: $(BIN_DIR)/misc/conversion.test
 	$(BIN_DIR)/misc/conversion.test
 
+test_rsa: $(BIN_DIR)/pke/rsa.test
+	$(BIN_DIR)/pke/rsa.test
+
 test_elgamal: $(BIN_DIR)/pke/elgamal.test
 	$(BIN_DIR)/pke/elgamal.test
 
@@ -91,6 +94,9 @@ test_sha3: $(BIN_DIR)/hash/sha3.test
 
 test_dsa: $(BIN_DIR)/sign/dsa.test
 	$(BIN_DIR)/sign/dsa.test
+
+test_rsa_sig: $(BIN_DIR)/sign/rsa_sig.test
+	$(BIN_DIR)/sign/rsa_sig.test
 
 test_hmac: $(BIN_DIR)/mac/hmac.test
 	$(BIN_DIR)/mac/hmac.test
