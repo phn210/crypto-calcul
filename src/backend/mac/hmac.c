@@ -1,8 +1,8 @@
 #include "hmac.h"
 #include "md5.h"
-#include "sha_1.h"
-#include "sha_2.h"
-#include "sha_3.h"
+#include "sha1.h"
+#include "sha2.h"
+#include "sha3.h"
 
 void hmac_init(hmac_ctx_t *ctx, const void *key, size_t key_len, SECURITY_LEVEL sec_level, HASH_FUNCTION hash_function)
 {

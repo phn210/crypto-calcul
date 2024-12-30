@@ -1,5 +1,5 @@
 #include "hmac.h"
-#include "sha_3.h"
+#include "sha3.h"
 
 void test_hmac_function()
 {

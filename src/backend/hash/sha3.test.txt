@@ -1,0 +1,2 @@
+obj/hash/sha3.test.o
+obj/hash/sha3.o
