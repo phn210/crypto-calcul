@@ -7,79 +7,107 @@ void test_setup(public_params_t *pp, SECURITY_LEVEL level)
     // gmp_printf("Public Parameters (e): %Zd\n", pp->e);
 }
 
-void test_keygen(priv_key *sk, pub_key *pk, const public_params_t pp)
+void test_keygen(priv_key_t *sk, pub_key_t *pk, const public_params_t pp)
 {
     keygen(sk, pk, pp);
 
-    // gmp_printf("Private Key (p): %Zd\n", sk->p);
-    // gmp_printf("Private Key (q): %Zd\n", sk->q);
-    // gmp_printf("Private Key (d): %Zd\n", sk->d);
-    // gmp_printf("Public Key (n): %Zd\n", pk->n);
-    // gmp_printf("Public Key (e): %Zd\n", pk->e);
-}
-
-void test_keygen_crt(priv_key_crt *sk, pub_key *pk, const public_params_t pp)
-{
-    keygen_crt(sk, pk, pp);
-
+    // gmp_printf("Private Key (n): %Zd\n", sk->n);
     // gmp_printf("Private Key (p): %Zd\n", sk->p);
     // gmp_printf("Private Key (q): %Zd\n", sk->q);
     // gmp_printf("Private Key (d): %Zd\n", sk->d);
     // gmp_printf("Private Key (dp): %Zd\n", sk->dp);
     // gmp_printf("Private Key (dq): %Zd\n", sk->dq);
-    // gmp_printf("Private Key (qinv): %Zd\n", sk->qinv);
+    // gmp_printf("Private Key (q_inv): %Zd\n", sk->q_inv);
     // gmp_printf("Public Key (n): %Zd\n", pk->n);
     // gmp_printf("Public Key (e): %Zd\n", pk->e);
 }
 
-void test_encrypt_decrypt(priv_key sk, pub_key pk, public_params_t pp)
+void test_encrypt_decrypt(priv_key_t sk, pub_key_t pk, public_params_t pp)
 {
     mpz_t m, c, decrypted_m;
 
     mpz_init_set_str(m, "1234567890", 10);
     mpz_inits(c, decrypted_m, NULL);
 
-    encrypt(c, m, pk);
+    encrypt(c, m, &pk);
     // gmp_printf("Ciphertext: %Zd\n", c);
 
-    decrypt(decrypted_m, c, sk, pk);
+    decrypt(decrypted_m, c, &sk, STANDARD);
     // gmp_printf("Decrypted Message: %Zd\n", decrypted_m);
 
+    printf("[0] Textbook RSA:\t\t");
     if (mpz_cmp(m, decrypted_m) == 0)
-    {
-        printf("Encryption and Decryption successful!\n");
-    }
+        printf("PASSED\n");
     else
-    {
-        printf("Encryption and Decryption failed!\n");
-    }
+        printf("FAILED\n");
 
-    mpz_clears(pp.e, sk.p, sk.q, sk.d, pk.n, pk.e, m, c, decrypted_m, NULL);
+    mpz_clears(pp.e, sk.n, sk.p, sk.q, sk.d, pk.n, pk.e, m, c, decrypted_m, NULL);
 }
 
-void test_encrypt_decrypt_crt(priv_key_crt sk, pub_key pk, public_params_t pp)
+void test_encrypt_decrypt_crt(priv_key_t sk, pub_key_t pk, public_params_t pp)
 {
     mpz_t m, c, decrypted_m;
 
     mpz_init_set_str(m, "1234567890", 10);
     mpz_inits(c, decrypted_m, NULL);
 
-    encrypt_crt(c, m, pk);
+    encrypt(c, m, &pk);
     // gmp_printf("Ciphertext: %Zd\n", c);
 
-    decrypt_crt(decrypted_m, c, sk, pk);
+    decrypt(decrypted_m, c, &sk, CRT);
     // gmp_printf("Decrypted Message: %Zd\n", decrypted_m);
 
+    printf("[1] Textbook RSA mode CRT:");
     if (mpz_cmp(m, decrypted_m) == 0)
-    {
-        printf("CRT Encryption and Decryption successful!\n");
-    }
+        printf("\tPASSED\n");
     else
-    {
-        printf("CRT Encryption and Decryption failed!\n");
-    }
+        printf("\tFAILED\n");
 
-    mpz_clears(pp.e, sk.p, sk.q, sk.d, sk.dp, sk.dq, sk.qinv, pk.n, pk.e, m, c, decrypted_m, NULL);
+    mpz_clears(pp.e, sk.n, sk.p, sk.q, sk.d, sk.dp, sk.dq, sk.q_inv, pk.n, pk.e, m, c, decrypted_m, NULL);
+}
+
+void test_encrypt_decrypt_pkcs1(priv_key_t sk, pub_key_t pk, public_params_t pp)
+{
+    mpz_t m, c, decrypted_m;
+
+    mpz_init_set_str(m, "1234567890", 10);
+    mpz_inits(c, decrypted_m, NULL);
+
+    encrypt_pkcs1(c, m, &pk);
+    // gmp_printf("Ciphertext: %Zd\n", c);
+
+    decrypt_pkcs1(decrypted_m, c, &sk, STANDARD);
+    // gmp_printf("Decrypted Message: %Zd\n", decrypted_m);
+
+    printf("[2] PKCS#1 v1.5:\t\t");
+    if (mpz_cmp(m, decrypted_m) == 0)
+        printf("PASSED\n");
+    else
+        printf("FAILED\n");
+
+    mpz_clears(pp.e, sk.n, sk.p, sk.q, sk.d, pk.n, pk.e, m, c, decrypted_m, NULL);
+}
+
+void test_encrypt_decrypt_pkcs1_crt(priv_key_t sk, pub_key_t pk, public_params_t pp)
+{
+    mpz_t m, c, decrypted_m;
+
+    mpz_init_set_str(m, "1234567890", 10);
+    mpz_inits(c, decrypted_m, NULL);
+
+    encrypt_pkcs1(c, m, &pk);
+    // gmp_printf("Ciphertext: %Zd\n", c);
+
+    decrypt_pkcs1(decrypted_m, c, &sk, CRT);
+    // gmp_printf("Decrypted Message: %Zd\n", decrypted_m);
+
+    printf("[3] PKCS#1 v1.5 mode CRT:");
+    if (mpz_cmp(m, decrypted_m) == 0)
+        printf("\tPASSED\n");
+    else
+        printf("\tFAILED\n");
+
+    mpz_clears(pp.e, sk.n, sk.p, sk.q, sk.d, sk.dp, sk.dq, sk.q_inv, pk.n, pk.e, m, c, decrypted_m, NULL);
 }
 
 int main()
@@ -87,19 +115,29 @@ int main()
     printf("\n===================== RSA TEST =====================\n\n");
 
     public_params_t pp;
-    priv_key sk;
-    pub_key pk;
-    priv_key_crt sk_crt;
+    priv_key_t sk;
+    pub_key_t pk;
+    priv_key_t sk_crt;
 
     // Test standard RSA
     test_setup(&pp, L0);
     test_keygen(&sk, &pk, pp);
     test_encrypt_decrypt(sk, pk, pp);
 
-    // Test RSA with CRT optimization
+    // Test RSA in CRT mode
     test_setup(&pp, L0);
-    test_keygen_crt(&sk_crt, &pk, pp);
+    test_keygen(&sk_crt, &pk, pp);
     test_encrypt_decrypt_crt(sk_crt, pk, pp);
+
+    // Test PKCS#1 v1.5
+    test_setup(&pp, L0);
+    test_keygen(&sk, &pk, pp);
+    test_encrypt_decrypt_pkcs1(sk, pk, pp);
+
+    // Test PKCS#1 v1.5 in CRT mode
+    test_setup(&pp, L0);
+    test_keygen(&sk_crt, &pk, pp);
+    test_encrypt_decrypt_pkcs1_crt(sk_crt, pk, pp);
 
     return 0;
 }

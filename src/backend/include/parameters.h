@@ -7,6 +7,20 @@
 #define L2 192
 #define L3 256
 
+#ifdef BYTE_ORDER
+
+#undef BYTE_ORDER
+#undef NATIVE
+#undef BIG_ENDIAN
+#undef LITTLE_ENDIAN
+
+#define BYTE_ORDER char
+#define NATIVE 0
+#define BIG_ENDIAN 1
+#define LITTLE_ENDIAN -1
+
+#endif
+
 #define PRIMALITY_TEST unsigned char
 #define GMP_TEST 0
 #define FERMAT_TEST 1
@@ -18,6 +32,10 @@
 #define SHA2 2
 #define SHA3 3
 #define POSEIDON 4
+
+#define RSA_ALGORITHM unsigned char
+#define STANDARD 0
+#define CRT 1
 
 #define EC unsigned char
 #define WEIERSTRASS 0

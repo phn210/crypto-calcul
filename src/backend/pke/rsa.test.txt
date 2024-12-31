@@ -3,3 +3,4 @@ obj/pke/rsa.o
 obj/rng/rng.o
 obj/misc/prime/prime_gen.o
 obj/misc/prime/prime_test.o
+obj/misc/conversion.o

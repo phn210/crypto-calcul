@@ -69,7 +69,7 @@ void sign(mpz_t r, mpz_t s, const unsigned char *m, int len, priv_key_t sk, publ
     }
     pp.hash(m, len, md, pp.md_len);
     // printf("%d\n", pp.md_len);
-    bytes_to_bigint(hm, md, pp.md_len);
+    bytes_to_bigint(hm, md, pp.md_len, BIG_ENDIAN);
 
     mpz_powm(r, pp.g, k, pp.p);
     mpz_mod(r, r, pp.q);
@@ -98,7 +98,7 @@ char verify(const mpz_t r, const mpz_t s, const unsigned char *m, int len, pub_k
         exit(1);
     }
     pp.hash(m, len, md, pp.md_len);
-    bytes_to_bigint(hm, md, pp.md_len);
+    bytes_to_bigint(hm, md, pp.md_len, BIG_ENDIAN);
 
     mpz_invert(w, s, pp.q);
     mpz_mul(u1, hm, w);
