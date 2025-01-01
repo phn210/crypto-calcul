@@ -59,6 +59,42 @@ void test_sign_verify_crt(priv_key_t sk, pub_key_t pk, public_params_t pp)
     mpz_clears(pp.e, sk.n, sk.p, sk.q, sk.d, sk.dp, sk.dq, sk.q_inv, pk.n, pk.e, m, s, NULL);
 }
 
+void test_sign_verify_pkcs1(priv_key_t sk, pub_key_t pk, public_params_t pp, SECURITY_LEVEL sec_level)
+{
+    mpz_t m, s;
+
+    mpz_init_set_str(m, "1234567890", 10);
+    mpz_init(s);
+
+    sign_pkcs1(s, m, &sk, STANDARD, sec_level);
+
+    printf("[2] PKCS#1 v1.5:\t\t");
+    if (verify_pkcs1(m, s, &pk, sec_level))
+        printf("PASSED\n");
+    else
+        printf("FAILED\n");
+
+    mpz_clears(pp.e, sk.n, sk.p, sk.q, sk.d, pk.n, pk.e, m, s, NULL);
+}
+
+void test_sign_verify_pkcs1_crt(priv_key_t sk, pub_key_t pk, public_params_t pp, SECURITY_LEVEL sec_level)
+{
+    mpz_t m, s;
+
+    mpz_init_set_str(m, "1234567890", 10);
+    mpz_init(s);
+
+    sign_pkcs1(s, m, &sk, CRT, sec_level);
+
+    printf("[3] PKCS#1 v1.5 mode CRT:");
+    if (verify_pkcs1(m, s, &pk, sec_level))
+        printf("\tPASSED\n");
+    else
+        printf("\tFAILED\n");
+
+    mpz_clears(pp.e, sk.n, sk.p, sk.q, sk.d, sk.dp, sk.dq, sk.q_inv, pk.n, pk.e, m, s, NULL);
+}
+
 int main()
 {
     printf("\n===================== RSA SIGNATURE TEST =====================\n\n");
@@ -66,16 +102,27 @@ int main()
     public_params_t pp;
     priv_key_t sk;
     pub_key_t pk;
+    SECURITY_LEVEL sec_level = L0;
 
     // Test standard RSA signature
-    test_setup(&pp, L0);
+    test_setup(&pp, sec_level);
     test_keygen(&sk, &pk, pp);
     test_sign_verify(sk, pk, pp);
 
     // Test RSA signature with CRT optimization
-    test_setup(&pp, L0);
+    test_setup(&pp, sec_level);
     test_keygen(&sk, &pk, pp);
     test_sign_verify_crt(sk, pk, pp);
+
+    // Test PKCS#1 v1.5 signature
+    test_setup(&pp, sec_level);
+    test_keygen(&sk, &pk, pp);
+    test_sign_verify_pkcs1(sk, pk, pp, sec_level);
+
+    // Test PKCS#1 v1.5 signature with CRT optimization
+    test_setup(&pp, sec_level);
+    test_keygen(&sk, &pk, pp);
+    test_sign_verify_pkcs1_crt(sk, pk, pp, sec_level);
 
     return 0;
 }
