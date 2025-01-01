@@ -110,6 +110,44 @@ void test_encrypt_decrypt_pkcs1_crt(priv_key_t sk, pub_key_t pk, public_params_t
     mpz_clears(pp.e, sk.n, sk.p, sk.q, sk.d, sk.dp, sk.dq, sk.q_inv, pk.n, pk.e, m, c, decrypted_m, NULL);
 }
 
+void test_encrypt_decrypt_oaep(priv_key_t sk, pub_key_t pk, public_params_t pp, SECURITY_LEVEL sec_level)
+{
+    mpz_t m, c, decrypted_m;
+
+    mpz_init_set_str(m, "1234567890", 10);
+    mpz_inits(c, decrypted_m, NULL);
+
+    encrypt_oaep(c, m, &pk, sec_level);
+    decrypt_oaep(decrypted_m, c, &sk, STANDARD, sec_level);
+
+    printf("[4] OAEP:\t\t\t");
+    if (mpz_cmp(m, decrypted_m) == 0)
+        printf("PASSED\n");
+    else
+        printf("FAILED\n");
+
+    mpz_clears(pp.e, sk.n, sk.p, sk.q, sk.d, pk.n, pk.e, m, c, decrypted_m, NULL);
+}
+
+void test_encrypt_decrypt_oaep_crt(priv_key_t sk, pub_key_t pk, public_params_t pp, SECURITY_LEVEL sec_level)
+{
+    mpz_t m, c, decrypted_m;
+
+    mpz_init_set_str(m, "1234567890", 10);
+    mpz_inits(c, decrypted_m, NULL);
+
+    encrypt_oaep(c, m, &pk, sec_level);
+    decrypt_oaep(decrypted_m, c, &sk, CRT, sec_level);
+
+    printf("[5] OAEP mode CRT:\t\t");
+    if (mpz_cmp(m, decrypted_m) == 0)
+        printf("PASSED\n");
+    else
+        printf("FAILED\n");
+
+    mpz_clears(pp.e, sk.n, sk.p, sk.q, sk.d, sk.dp, sk.dq, sk.q_inv, pk.n, pk.e, m, c, decrypted_m, NULL);
+}
+
 int main()
 {
     printf("\n===================== RSA TEST =====================\n\n");
@@ -118,26 +156,37 @@ int main()
     priv_key_t sk;
     pub_key_t pk;
     priv_key_t sk_crt;
+    SECURITY_LEVEL sec_level = L0;
 
     // Test standard RSA
-    test_setup(&pp, L0);
+    test_setup(&pp, sec_level);
     test_keygen(&sk, &pk, pp);
     test_encrypt_decrypt(sk, pk, pp);
 
     // Test RSA in CRT mode
-    test_setup(&pp, L0);
+    test_setup(&pp, sec_level);
     test_keygen(&sk_crt, &pk, pp);
     test_encrypt_decrypt_crt(sk_crt, pk, pp);
 
     // Test PKCS#1 v1.5
-    test_setup(&pp, L0);
+    test_setup(&pp, sec_level);
     test_keygen(&sk, &pk, pp);
     test_encrypt_decrypt_pkcs1(sk, pk, pp);
 
     // Test PKCS#1 v1.5 in CRT mode
-    test_setup(&pp, L0);
+    test_setup(&pp, sec_level);
     test_keygen(&sk_crt, &pk, pp);
     test_encrypt_decrypt_pkcs1_crt(sk_crt, pk, pp);
+
+    // Test OAEP
+    test_setup(&pp, sec_level);
+    test_keygen(&sk, &pk, pp);
+    test_encrypt_decrypt_oaep(sk, pk, pp, sec_level);
+
+    // Test OAEP in CRT mode
+    test_setup(&pp, sec_level);
+    test_keygen(&sk_crt, &pk, pp);
+    test_encrypt_decrypt_oaep_crt(sk_crt, pk, pp, sec_level);
 
     return 0;
 }

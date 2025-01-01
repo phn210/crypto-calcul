@@ -67,6 +67,61 @@ void rsasp1(mpz_t s, const mpz_t m, const priv_key_t *sk, RSA_ALGORITHM algorith
     }
 }
 
+void rsavp1(mpz_t m, const mpz_t s, const pub_key_t *pk)
+{
+    // m = s^e mod n
+    mpz_powm(m, s, pk->e, pk->n);
+}
+
+void emsa_pkcs1(unsigned char *em, size_t em_len, const unsigned char *m, size_t m_len, SECURITY_LEVEL sec_level)
+{
+    unsigned char *md;
+    size_t md_len;
+
+    switch (sec_level)
+    {
+    case L0:
+        md_len = SHA224_DIGEST_SIZE;
+        md = (unsigned char *)malloc(HASH_ID_SIZE + md_len);
+        memcpy(md, pkcs1_sha224, HASH_ID_SIZE);
+        break;
+    case L1:
+        md_len = SHA256_DIGEST_SIZE;
+        md = (unsigned char *)malloc(HASH_ID_SIZE + md_len);
+        memcpy(md, pkcs1_sha256, HASH_ID_SIZE);
+        break;
+    case L2:
+        md_len = SHA384_DIGEST_SIZE;
+        md = (unsigned char *)malloc(HASH_ID_SIZE + md_len);
+        memcpy(md, pkcs1_sha384, HASH_ID_SIZE);
+        break;
+    case L3:
+        md_len = SHA512_DIGEST_SIZE;
+        md = (unsigned char *)malloc(HASH_ID_SIZE + md_len);
+        memcpy(md, pkcs1_sha512, HASH_ID_SIZE);
+        break;
+    default:
+        fprintf(stderr, "Invalid security level\n");
+        exit(EXIT_FAILURE);
+    }
+
+    sha2(m, m_len, md + HASH_ID_SIZE, md_len);
+
+    if (em_len < md_len + HASH_ID_SIZE + 11)
+    {
+        fprintf(stderr, "Intended encoded message length too short\n");
+        exit(EXIT_FAILURE);
+    }
+
+    em[0] = 0x00;
+    em[1] = 0x01;
+    memset(em + 2, 0xff, em_len - md_len - HASH_ID_SIZE - 3);
+    em[em_len - md_len - HASH_ID_SIZE - 1] = 0x00;
+    memcpy(em + em_len - md_len - HASH_ID_SIZE, md, md_len + HASH_ID_SIZE);
+
+    free(md);
+}
+
 void sign(mpz_t s, const mpz_t m, const priv_key_t *sk, RSA_ALGORITHM algorithm)
 {
     rsasp1(s, m, sk, algorithm);
@@ -78,7 +133,7 @@ int verify(const mpz_t m, const mpz_t s, const pub_key_t *pk)
     mpz_init(m_check);
 
     // Verify: m ?= s^e mod n
-    mpz_powm(m_check, s, pk->e, pk->n);
+    rsavp1(m_check, s, pk);
 
     int result = mpz_cmp(m, m_check) == 0;
     return result;
@@ -90,50 +145,9 @@ void sign_pkcs1(mpz_t s, const mpz_t m, const priv_key_t *sk, RSA_ALGORITHM algo
     size_t buf_len;
     bigint_to_bytes(buf, &buf_len, m, BIG_ENDIAN);
 
-    unsigned char *md;
-    size_t md_len;
     size_t k = count_bytes(sk->n);
-
-    switch (sec_level)
-    {
-    case L0:
-        md_len = SHA224_DIGEST_SIZE;
-        md = (unsigned char *)malloc(HASH_ID_SIZE + md_len);
-        memcpy(md, pkcs1_sha224, HASH_ID_SIZE);
-        break;
-    case L1:
-        md_len = SHA256_DIGEST_SIZE;
-        md = (unsigned char *)malloc(HASH_ID_SIZE + md_len);
-        memcpy(md, pkcs1_sha256, HASH_ID_SIZE);
-        break;
-    case L2:
-        md_len = SHA384_DIGEST_SIZE;
-        md = (unsigned char *)malloc(HASH_ID_SIZE + md_len);
-        memcpy(md, pkcs1_sha384, HASH_ID_SIZE);
-        break;
-    case L3:
-        md_len = SHA512_DIGEST_SIZE;
-        md = (unsigned char *)malloc(HASH_ID_SIZE + md_len);
-        memcpy(md, pkcs1_sha512, HASH_ID_SIZE);
-        break;
-    default:
-        fprintf(stderr, "Invalid security level\n");
-        exit(EXIT_FAILURE);
-    }
-    sha2(buf, buf_len, md + HASH_ID_SIZE, md_len);
-
-    if (k < md_len + HASH_ID_SIZE + 11)
-    {
-        fprintf(stderr, "Intended encoded message length too short\n");
-        exit(EXIT_FAILURE);
-    }
-
     unsigned char *em = (unsigned char *)malloc(k);
-    em[0] = 0x00;
-    em[1] = 0x01;
-    memset(em + 2, 0xff, k - md_len - HASH_ID_SIZE - 3);
-    em[k - md_len - HASH_ID_SIZE - 1] = 0x00;
-    memcpy(em + k - md_len - HASH_ID_SIZE, md, md_len + HASH_ID_SIZE);
+    emsa_pkcs1(em, k, buf, buf_len, sec_level);
 
     // Convert to MPZ
     mpz_t padded_m;
@@ -145,7 +159,6 @@ void sign_pkcs1(mpz_t s, const mpz_t m, const priv_key_t *sk, RSA_ALGORITHM algo
 
     mpz_clear(padded_m);
     free(em);
-    free(md);
     free(buf);
 }
 
@@ -155,62 +168,21 @@ int verify_pkcs1(const mpz_t m, const mpz_t s, const pub_key_t *pk, SECURITY_LEV
     size_t buf_len;
     bigint_to_bytes(buf, &buf_len, m, BIG_ENDIAN);
 
-    unsigned char *md;
-    size_t md_len;
     size_t k = count_bytes(pk->n);
-
-    switch (sec_level)
-    {
-    case L0:
-        md_len = SHA224_DIGEST_SIZE;
-        md = (unsigned char *)malloc(HASH_ID_SIZE + md_len);
-        memcpy(md, pkcs1_sha224, HASH_ID_SIZE);
-        break;
-    case L1:
-        md_len = SHA256_DIGEST_SIZE;
-        md = (unsigned char *)malloc(HASH_ID_SIZE + md_len);
-        memcpy(md, pkcs1_sha256, HASH_ID_SIZE);
-        break;
-    case L2:
-        md_len = SHA384_DIGEST_SIZE;
-        md = (unsigned char *)malloc(HASH_ID_SIZE + md_len);
-        memcpy(md, pkcs1_sha384, HASH_ID_SIZE);
-        break;
-    case L3:
-        md_len = SHA512_DIGEST_SIZE;
-        md = (unsigned char *)malloc(HASH_ID_SIZE + md_len);
-        memcpy(md, pkcs1_sha512, HASH_ID_SIZE);
-        break;
-    default:
-        fprintf(stderr, "Invalid security level\n");
-        exit(EXIT_FAILURE);
-    }
-    sha2(buf, buf_len, md + HASH_ID_SIZE, md_len);
-
-    if (k < md_len + HASH_ID_SIZE + 11)
-    {
-        fprintf(stderr, "Intended encoded message length too short\n");
-        exit(EXIT_FAILURE);
-    }
-
     unsigned char *em = (unsigned char *)malloc(k);
-    em[0] = 0x00;
-    em[1] = 0x01;
-    memset(em + 2, 0xff, k - md_len - HASH_ID_SIZE - 3);
-    em[k - md_len - HASH_ID_SIZE - 1] = 0x00;
-    memcpy(em + k - md_len - HASH_ID_SIZE, md, md_len + HASH_ID_SIZE);
+    emsa_pkcs1(em, k, buf, buf_len, sec_level);
 
     // Convert to MPZ
-    mpz_t padded_m;
-    mpz_init(padded_m);
+    mpz_t padded_m, signed_em;
+    mpz_inits(padded_m, signed_em, NULL);
     bytes_to_bigint(padded_m, em, k, BIG_ENDIAN);
+    rsavp1(signed_em, s, pk);
 
     // Verify
-    int result = verify(padded_m, s, pk);
+    int result = mpz_cmp(padded_m, signed_em) == 0;
 
-    mpz_clear(padded_m);
+    mpz_clears(padded_m, signed_em, NULL);
     free(em);
-    free(md);
     free(buf);
 
     return result;

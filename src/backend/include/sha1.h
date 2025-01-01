@@ -3,9 +3,11 @@
 
 #include "common.h"
 
-#define SHA1_BLOCK_SIZE 20              // SHA1 outputs a 20 byte digest
+#define SHA1_BLOCK_SIZE 20 // SHA1 outputs a 20 byte digest
+#define SHA1_DIGEST_SIZE 20
 
-typedef struct {
+typedef struct
+{
 	BYTE data[64];
 	WORD datalen;
 	unsigned long long bitlen;
