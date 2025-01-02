@@ -9,6 +9,8 @@ int main()
 
     size_t len = strlen(message);
 
+    printf("Plaintext: %s\n", message);
+
     // Pad input if necessary
     if (len % 8 != 0)
     {
@@ -32,11 +34,16 @@ int main()
         }
     }
 
-    printf("Plaintext (with padding): %s\n", message);
+    printf("Plaintext (hex): ");
+    for (size_t i = 0; i < len_blocks; i++)
+    {
+        printf("%016lx ", input_blocks[i]);
+    }
 
-    des(message, encrypted, key, len_blocks, 'e');
+    // Encrypt message
+    des(input_blocks, encrypted, key, len_blocks, 'e');
 
-    printf("Ciphertext (hex): ");
+    printf("\nCiphertext (hex): ");
     for (size_t i = 0; i < len_blocks; i++)
     {
         printf("%016lx ", encrypted[i]);
@@ -44,17 +51,41 @@ int main()
 
     printf("\n---\n");
 
+    // Decrypt message
     des(encrypted, decrypted, key, len_blocks, 'd');
+
     printf("Decrypted (hex): ");
     for (size_t i = 0; i < len_blocks; i++)
     {
         printf("%016lx ", decrypted[i]);
     }
-    printf("\nDecrypted: %s\n", decrypted);
+
+    // Remove padding if necessary
+    size_t padding_len = decrypted[len - 1];
+    if (padding_len > 0 && padding_len <= 8)
+    {
+        len -= padding_len;
+        decrypted[len] = '\0';
+    }
+
+    // Convert decrypted blocks back to text
+    char *decrypted_message = malloc(len + 1);
+    for (size_t i = 0; i < len_blocks; i++)
+    {
+        for (size_t j = 0; j < 8; j++)
+        {
+            decrypted_message[i * 8 + j] = (decrypted[i] >> (64 - 8 * (j + 1))) & 0xFF;
+        }
+    }
+    decrypted_message[len] = '\0';
+
+    printf("\nDecrypted message: %s\n", decrypted_message);
+
 
     free(encrypted);
     free(decrypted);
     free(input_blocks);
+    free(decrypted_message);
 
     printf("\n===================================================\n\n");
 
