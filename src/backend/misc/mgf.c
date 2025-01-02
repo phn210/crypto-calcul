@@ -9,7 +9,7 @@ void mgf1(unsigned char *mask, size_t mask_len, const unsigned char *seed, size_
     unsigned char *buf = (unsigned char *)malloc(seed_len + 4);
     memcpy(buf, seed, seed_len);
     size_t hash_len;
-    void (*hash)(const void *m, size_t len, void *md, size_t md_len);
+    void (*hash)(const void *, size_t, void *, size_t);
 
     switch (hash_function)
     {

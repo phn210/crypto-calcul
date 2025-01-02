@@ -56,7 +56,7 @@ int verify_pkcs1(const mpz_t m, const mpz_t s, const pub_key_t *pk, SECURITY_LEV
 
 void encrypt_oaep(mpz_t c, const mpz_t m, const pub_key_t *pk, SECURITY_LEVEL sec_level);
 void decrypt_oaep(mpz_t m, const mpz_t c, const priv_key_t *sk, RSA_ALGORITHM algorithm, SECURITY_LEVEL sec_level);
-void sign_pss(mpz_t s, const mpz_t m, const priv_key_t *sk);
-int verify_pss(const mpz_t m, const mpz_t s, const pub_key_t *pk);
+void sign_pss(mpz_t s, const mpz_t m, const priv_key_t *sk, RSA_ALGORITHM algorithm, SECURITY_LEVEL sec_level);
+int verify_pss(const mpz_t m, const mpz_t s, const pub_key_t *pk, SECURITY_LEVEL sec_level);
 
 #endif

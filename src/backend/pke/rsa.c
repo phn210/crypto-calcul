@@ -175,7 +175,7 @@ void decrypt(mpz_t m, const mpz_t c, const priv_key_t *sk, RSA_ALGORITHM algorit
     rsadp(m, c, sk, algorithm);
 }
 
-void eme_pkcs1(unsigned char *em, size_t em_len, const unsigned char *m, size_t m_len)
+void eme_pkcs1_encode(unsigned char *em, size_t em_len, const unsigned char *m, size_t m_len)
 {
     // Generate padding
     gmp_randstate_t state;
@@ -215,7 +215,7 @@ void encrypt_pkcs1(mpz_t c, const mpz_t m, const pub_key_t *pk)
     unsigned char *buf = (unsigned char *)malloc(m_len);
     size_t buf_len;
     bigint_to_bytes(buf, &buf_len, m, BIG_ENDIAN);
-    eme_pkcs1(em, k, buf, buf_len);
+    eme_pkcs1_encode(em, k, buf, buf_len);
 
     // Convert to MPZ
     mpz_t padded_m;
@@ -268,7 +268,7 @@ void decrypt_pkcs1(mpz_t m, const mpz_t c, const priv_key_t *sk, RSA_ALGORITHM a
     free(buf);
 }
 
-void eme_oaep(unsigned char *em, size_t em_len, unsigned char *m, size_t m_len, SECURITY_LEVEL sec_level)
+void eme_oaep_encode(unsigned char *em, size_t em_len, unsigned char *m, size_t m_len, SECURITY_LEVEL sec_level)
 {
     // Generate padding
     size_t hash_len;
@@ -359,7 +359,7 @@ void encrypt_oaep(mpz_t c, const mpz_t m, const pub_key_t *pk, SECURITY_LEVEL se
     unsigned char *buf = (unsigned char *)malloc(m_len);
     size_t buf_len;
     bigint_to_bytes(buf, &buf_len, m, BIG_ENDIAN);
-    eme_oaep(em, k, buf, buf_len, sec_level);
+    eme_oaep_encode(em, k, buf, buf_len, sec_level);
 
     // Convert to MPZ
     mpz_t padded_m;
