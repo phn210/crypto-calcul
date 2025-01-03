@@ -58,6 +58,54 @@ void test_bigint_and_bytes()
     free(bytes);
 }
 
+void test_pkcs7_padding()
+{
+    unsigned char input[] = "Hello, world!";
+    size_t len = strlen(input);
+    size_t block_size = 8;
+
+    unsigned char *output = pkcs7_padding(input, len, block_size);
+
+    printf("PKCS#7 Padding: %s -> %s | ", input, output);
+
+    for (size_t i = 0; i < len; i++)
+    {
+        printf("%02x", input[i]);
+    }
+    printf(" -> ");
+    for (size_t i = 0; i < len + block_size - len % block_size; i++)
+    {
+        printf("%02x", output[i]);
+    }
+    printf("\n");
+
+    free(output);
+}
+
+void test_pkcs7_unpadding()
+{
+    unsigned char input[] = "Hello, world!\x03\x03\x03";
+    size_t len = strlen(input);
+    size_t block_size = 8;
+
+    unsigned char *output = pkcs7_unpadding(input, len, block_size);
+
+    printf("PKCS#7 Unpadding: %s -> %s | ", input, output);
+
+    for (size_t i = 0; i < len; i++)
+    {
+        printf("%02x", input[i]);
+    }
+    printf(" -> ");
+    for (size_t i = 0; i < len - (input[len - 1]); i++)
+    {
+        printf("%02x", output[i]);
+    }
+    printf("\n");
+
+    free(output);
+}
+
 int main()
 {
     printf("\n===================== CONVERSION TEST =====================\n\n");
@@ -65,8 +113,13 @@ int main()
     test_bigint_and_hex();
     test_bigint_and_bytes();
 
+    test_pkcs7_padding();
+    test_pkcs7_unpadding();
+
     // Uncomment the following line to test invalid hex string handling
     // test_invalid_hex_to_bigint();
+
+
 
     return 0;
 }

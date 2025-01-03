@@ -20,6 +20,7 @@ typedef enum
     AES_ROUNDS_256 = 14
 } AES_ROUNDS;
 
+// AES key expansion functions
 void aes_rot_word(unsigned char *word);
 void aes_sub_word(unsigned char *word);
 void aes_rcon(unsigned char *word, unsigned char round);
@@ -27,6 +28,7 @@ void aes_xor_words(unsigned char *word1, unsigned char *word2);
 
 void aes_key_expansion(unsigned char *key, unsigned char *w, AES_KEY_SIZE key_size, AES_ROUNDS rounds);
 
+// AES encryption/decryption functions
 void aes_sub_bytes(unsigned char state[4][4]);
 void aes_shift_rows(unsigned char state[4][4]);
 void aes_mix_columns(unsigned char state[4][4]);
@@ -46,6 +48,16 @@ void aes_decrypt_ecb(unsigned char *input, unsigned char *output, unsigned char 
 void aes_encrypt_cbc(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size);
 void aes_decrypt_cbc(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size);
 
+void aes_encrypt_cfb(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size);
+void aes_decrypt_cfb(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size);
+
+void aes_encrypt_ofb(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size);
+void aes_decrypt_ofb(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size);
+
+void aes_encrypt_ctr(unsigned char *input, unsigned char *output, unsigned char *nonce, unsigned char *key, size_t len, AES_KEY_SIZE key_size);
+void aes_decrypt_ctr(unsigned char *input, unsigned char *output, unsigned char *nonce, unsigned char *key, size_t len, AES_KEY_SIZE key_size);
+
+// AES constants
 static const unsigned SBOX[16][16] = {
     {0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76},
     {0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0},

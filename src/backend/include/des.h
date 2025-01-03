@@ -35,9 +35,6 @@ void des_key_schedule(const uint64_t key, des_ctx_t *ctx);
 // DES encryption/decryption function (mode: 'e' for encryption, 'd' for decryption)
 void des(uint64_t *input, uint64_t *output, const uint64_t key, int len, const char mode);
 
-// DES padding functions, pads input to multiple of 8 bytes with PKCS#7 padding
-void des_padding(char *input, char *output, size_t len);
-
 // DES constants
 static const unsigned IP[DES_IP_SIZE] = {
     58, 50, 42, 34, 26, 18, 10, 2,

@@ -338,12 +338,137 @@ void aes_decrypt_cbc(unsigned char *input, unsigned char *output, unsigned char 
     memcpy(last_block, iv, AES_BLOCK_SIZE);
 
     for (size_t i = 0; i < len; i += AES_BLOCK_SIZE) {
+        unsigned char temp_block[AES_BLOCK_SIZE];
+        memcpy(temp_block, input + i, AES_BLOCK_SIZE);
+
         aes_block_decrypt(input + i, w, rounds);
 
         for (int j = 0; j < AES_BLOCK_SIZE; j++) {
             output[i + j] = input[i + j] ^ last_block[j];
         }
 
+        memcpy(last_block, temp_block, AES_BLOCK_SIZE);
+    }
+}
+
+void aes_encrypt_cfb(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size) 
+{
+    AES_ROUNDS rounds = get_rounds(key_size);
+
+    unsigned char *w = malloc(AES_BLOCK_SIZE * (rounds + 1));
+    aes_key_expansion(key, w, key_size, rounds);
+
+    unsigned char last_block[AES_BLOCK_SIZE];
+    memcpy(last_block, iv, AES_BLOCK_SIZE);
+
+    for (size_t i = 0; i < len; i += AES_BLOCK_SIZE) {
+        aes_block_encrypt(last_block, w, rounds);
+
+        for (int j = 0; j < AES_BLOCK_SIZE; j++) {
+            output[i + j] = input[i + j] ^ last_block[j];
+        }
+
+        memcpy(last_block, output + i, AES_BLOCK_SIZE);
+    }
+}
+
+void aes_decrypt_cfb(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size) 
+{
+    AES_ROUNDS rounds = get_rounds(key_size);
+
+    unsigned char *w = malloc(AES_BLOCK_SIZE * (rounds + 1));
+    aes_key_expansion(key, w, key_size, rounds);
+
+    unsigned char last_block[AES_BLOCK_SIZE];
+    memcpy(last_block, iv, AES_BLOCK_SIZE);
+
+    for (size_t i = 0; i < len; i += AES_BLOCK_SIZE) {
+        aes_block_encrypt(last_block, w, rounds);
+
+        for (int j = 0; j < AES_BLOCK_SIZE; j++) {
+            output[i + j] = input[i + j] ^ last_block[j];
+        }
+
         memcpy(last_block, input + i, AES_BLOCK_SIZE);
+    }
+}
+
+void aes_encrypt_ofb(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size) 
+{
+    AES_ROUNDS rounds = get_rounds(key_size);
+
+    unsigned char *w = malloc(AES_BLOCK_SIZE * (rounds + 1));
+    aes_key_expansion(key, w, key_size, rounds);
+
+    unsigned char last_block[AES_BLOCK_SIZE];
+    memcpy(last_block, iv, AES_BLOCK_SIZE);
+
+    for (size_t i = 0; i < len; i += AES_BLOCK_SIZE) {
+        aes_block_encrypt(last_block, w, rounds);
+
+        for (int j = 0; j < AES_BLOCK_SIZE; j++) {
+            output[i + j] = input[i + j] ^ last_block[j];
+        }
+    }
+}
+
+void aes_decrypt_ofb(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size) 
+{
+    AES_ROUNDS rounds = get_rounds(key_size);
+
+    unsigned char *w = malloc(AES_BLOCK_SIZE * (rounds + 1));
+    aes_key_expansion(key, w, key_size, rounds);
+
+    unsigned char last_block[AES_BLOCK_SIZE];
+    memcpy(last_block, iv, AES_BLOCK_SIZE);
+
+    for (size_t i = 0; i < len; i += AES_BLOCK_SIZE) {
+        aes_block_encrypt(last_block, w, rounds);
+
+        for (int j = 0; j < AES_BLOCK_SIZE; j++) {
+            output[i + j] = input[i + j] ^ last_block[j];
+        }
+    }
+}
+
+void aes_encrypt_ctr(unsigned char *input, unsigned char *output, unsigned char *nonce, unsigned char *key, size_t len, AES_KEY_SIZE key_size)
+{
+    AES_ROUNDS rounds = get_rounds(key_size);
+
+    unsigned char *w = malloc(AES_BLOCK_SIZE * (rounds + 1));
+    aes_key_expansion(key, w, key_size, rounds);
+
+    unsigned char last_block[AES_BLOCK_SIZE];
+    memcpy(last_block, nonce, AES_BLOCK_SIZE);
+
+    for (size_t i = 0; i < len; i += AES_BLOCK_SIZE) {
+        aes_block_encrypt(last_block, w, rounds);
+
+        for (int j = 0; j < AES_BLOCK_SIZE; j++) {
+            output[i + j] = input[i + j] ^ last_block[j];
+        }
+
+        last_block[15]++;
+    }
+}
+
+void aes_decrypt_ctr(unsigned char *input, unsigned char *output, unsigned char *nonce, unsigned char *key, size_t len, AES_KEY_SIZE key_size)
+{
+    AES_ROUNDS rounds = get_rounds(key_size);
+
+    unsigned char *w = malloc(AES_BLOCK_SIZE * (rounds + 1));
+    aes_key_expansion(key, w, key_size, rounds);
+
+    unsigned char last_block[AES_BLOCK_SIZE];
+    memcpy(last_block, nonce, AES_BLOCK_SIZE);
+
+    for (size_t i = 0; i < len; i += AES_BLOCK_SIZE) {
+        aes_block_encrypt(last_block, w, rounds);
+
+        for (int j = 0; j < AES_BLOCK_SIZE; j++) {
+            output[i + j] = input[i + j] ^ last_block[j];
+        }
+
+        last_block[15]++;
     }
 }

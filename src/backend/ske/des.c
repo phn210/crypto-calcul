@@ -147,20 +147,3 @@ void des(uint64_t *input, uint64_t *output, const uint64_t key, int len, const c
         output[i] = block;
     }
 }
-
-/*
-    * DES padding function (PKCS#7)
-    * input: input string
-    * output: output string
-    * len: length of input string
-*/
-void des_padding(char *input, char *output, size_t len)
-{
-    size_t padded_len = len + (8 - len % 8);
-    size_t padding_value = 8 - (len % 8);
-    memcpy(output, input, len);
-    for (size_t i = len; i < padded_len; i++)
-    {
-        output[i] = padding_value;
-    }
-}

@@ -1,24 +1,22 @@
 #include "des.h"
+#include "conversion.h"
 
 int main()
 {
     printf("\n===================== DES TEST =====================\n\n");
 
     uint64_t key = 0x133457799BBCDFF1;
-    char message[] = "Hello world!";
+    unsigned char message[] = "Hello world!";
 
     size_t len = strlen(message);
 
     printf("Plaintext: %s\n", message);
 
     // Pad input if necessary
-    if (len % DES_BLOCK_SIZE != 0)
-    {
-        des_padding(message, message, len);
-        len += DES_BLOCK_SIZE - len % DES_BLOCK_SIZE;
-    }
+    char *padded_message = pkcs7_padding(message, len, DES_BLOCK_SIZE);
 
-    size_t len_blocks = len / DES_BLOCK_SIZE;
+    size_t padded_len = strlen(padded_message);
+    size_t len_blocks = padded_len / DES_BLOCK_SIZE;
 
     uint64_t *encrypted = malloc(len_blocks * sizeof(uint64_t));
     uint64_t *decrypted = malloc(len_blocks * sizeof(uint64_t));
@@ -30,7 +28,7 @@ int main()
         input_blocks[i] = 0;
         for (size_t j = 0; j < 8; j++)
         {
-            input_blocks[i] |= (uint64_t)message[i * 8 + j] << (64 - 8 * (j + 1));
+            input_blocks[i] |= (uint64_t)padded_message[i * 8 + j] << (64 - 8 * (j + 1));
         }
     }
 
@@ -60,16 +58,8 @@ int main()
         printf("%016lx ", decrypted[i]);
     }
 
-    // Remove padding if necessary
-    size_t padding_len = decrypted[len - 1];
-    if (padding_len > 0 && padding_len <= 8)
-    {
-        len -= padding_len;
-        decrypted[len] = '\0';
-    }
-
-    // Convert decrypted blocks back to text
-    char *decrypted_message = malloc(len + 1);
+    // Convert decrypted blocks to text
+    char *decrypted_message = malloc(padded_len);
     for (size_t i = 0; i < len_blocks; i++)
     {
         for (size_t j = 0; j < 8; j++)
@@ -77,9 +67,11 @@ int main()
             decrypted_message[i * 8 + j] = (decrypted[i] >> (64 - 8 * (j + 1))) & 0xFF;
         }
     }
-    decrypted_message[len] = '\0';
 
-    printf("\nDecrypted message: %s\n", decrypted_message);
+    // Remove padding
+    decrypted_message = pkcs7_unpadding(decrypted_message, padded_len * DES_BLOCK_SIZE, DES_BLOCK_SIZE);
+
+    printf("\nDecrypted: %s\n", decrypted_message);
 
 
     free(encrypted);
