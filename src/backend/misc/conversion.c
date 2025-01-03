@@ -62,6 +62,7 @@ unsigned char *pkcs7_padding(unsigned char *input, size_t len, size_t block_size
     {
         output[i] = padding_value;
     }
+    output[padded_len] = '\0';
     return output;
 }
 

@@ -290,11 +290,11 @@ int main()
 
     aes_file_encrypt(input_file, encrypted_file, key_hex, iv_file, AES_KEY_SIZE_128, AES_MODE_CBC);
 
-    printf("\n File encrypted successfully to %s\n", encrypted_file);
+    printf("\nFile encrypted successfully to %s\n", encrypted_file);
 
     aes_file_decrypt(encrypted_file, decrypted_file, key_hex, iv_file, AES_KEY_SIZE_128, AES_MODE_CBC);
 
-    printf("\n File decrypted successfully to %s\n", decrypted_file);
+    printf("\nFile decrypted successfully to %s\n", decrypted_file);
 
     printf("\n===================================================\n\n");
 
