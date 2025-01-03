@@ -25,7 +25,10 @@ void gen_prime_b(mpz_t n, gmp_randstate_t state, int b, int k, int t, PRIMALITY_
 {
     mpz_t q, tmp;
     mpz_inits(q, tmp, NULL);
-    mpz_urandomb(q, state, b - 1);
+    while (mpz_tstbit(q, 0) == 0)
+    {
+        mpz_urandomb(q, state, b - 1);
+    }
     mpz_ui_pow_ui(tmp, 2, b - 1);
     mpz_add(q, q, tmp);
     if (mpz_divisible_ui_p(q, 2))

@@ -95,6 +95,9 @@ test_sha3: $(BIN_DIR)/hash/sha3.test
 test_dsa: $(BIN_DIR)/sign/dsa.test
 	$(BIN_DIR)/sign/dsa.test
 
+test_ecdsa: $(BIN_DIR)/sign/ecdsa.test
+	$(BIN_DIR)/sign/ecdsa.test
+
 test_rsa_sig: $(BIN_DIR)/sign/rsa_sig.test
 	$(BIN_DIR)/sign/rsa_sig.test
 
@@ -106,6 +109,9 @@ test_ec: $(BIN_DIR)/ec/ec.test
 
 test_des: $(BIN_DIR)/ske/des.test
 	$(BIN_DIR)/ske/des.test
+
+test_aes: $(BIN_DIR)/ske/aes.test
+	$(BIN_DIR)/ske/aes.test
 
 .PHONY: all clean test
 

@@ -21,10 +21,10 @@ typedef struct curve
 {
     unsigned char type;
     unsigned char id;
-    int cof;
+    int cof; // or h: cofactor
     size_t efs;
-    mpz_t p;
-    mpz_t r;
+    mpz_t p; // or q: field size
+    mpz_t r; // or n: group order
     mpz_t a;
     mpz_t b;
     point_affine_t G;
@@ -42,7 +42,7 @@ void init_affine(point_affine_t *p);
 void free_affine(point_affine_t *p);
 void copy_affine(point_affine_t *r, const point_affine_t p);
 
-void init_curve(curve_t *curve, unsigned char curve_type, unsigned char curve_id);
+void init_curve(curve_t *curve, EC curve_type, unsigned char curve_id);
 void free_curve(curve_t *curve);
 
 void rhs(mpz_t r, const mpz_t x, const curve_t curve);
@@ -56,7 +56,8 @@ void add(point_t *r, const point_t p, const point_t q, const curve_t curve);
 void dadd(point_t *r, const point_t p, const point_t q, const point_t w, const curve_t curve);
 void dbl(point_t *r, const point_t p, const curve_t curve);
 void mul(point_t *r, const point_t p, const mpz_t k, const curve_t curve);
-void affine(point_affine_t *r, const point_t p, const curve_t curve);
+void to_affine(point_affine_t *r, const point_t p, const curve_t curve);
+void from_affine(point_t *r, const point_affine_t p, const curve_t curve);
 void point_to_bytes(unsigned char *buf, const point_t p, const curve_t curve);
 void point_from_bytes(point_t *r, const unsigned char *buf, const curve_t curve);
 

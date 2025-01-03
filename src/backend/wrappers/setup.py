@@ -67,8 +67,12 @@ setup(
             ),
             get_extension(
                 "wrappers.mac",
-                c_sources=["mac/hmac.c", "hash/md5.c", "hash/sha1.c", "hash/sha2.c", "hash/sha3.c"],
-            )
+                c_sources=["mac/hmac.c", "hash/md5.c", "hash/sha_1.c", "hash/sha_2.c", "hash/sha_3.c"],
+            ),
+            # get_extension(
+            #     "wrappers.des",
+            #     c_sources=["ske/des.c"],
+            # )
         ],
         compiler_directives=cython_directives
     ),

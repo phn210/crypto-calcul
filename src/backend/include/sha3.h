@@ -8,6 +8,11 @@
 #define B 1600
 #define Nr 24
 
+#define SHA3_224_DIGEST_SIZE 28
+#define SHA3_256_DIGEST_SIZE 32
+#define SHA3_384_DIGEST_SIZE 48
+#define SHA3_512_DIGEST_SIZE 64
+
 typedef struct sha_3_ctx
 {
     union
