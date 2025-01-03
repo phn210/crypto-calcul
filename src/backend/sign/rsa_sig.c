@@ -230,11 +230,6 @@ void emsa_pss_encode(unsigned char *em, size_t em_bits, const unsigned char *m, 
     memset(db, 0, em_len - 2 * hash_len - 2);
     db[em_len - 2 * hash_len - 2] = 0x01;
     memcpy(db + em_len - 2 * hash_len - 1, salt, hash_len);
-    // for (int i = 0; i < em_len - hash_len - 1; i++)
-    // {
-    //     printf("%02x ", db[i]);
-    // }
-    // printf("\n");
 
     // Generate H
     unsigned char *h = (unsigned char *)malloc(hash_len);
@@ -250,10 +245,6 @@ void emsa_pss_encode(unsigned char *em, size_t em_bits, const unsigned char *m, 
 
     size_t mask_bits = em_len * 8 - em_bits;
     db[0] &= 0xFF >> mask_bits;
-    // for (int i = 0; i < hash_len * 2 + 8; i++)
-    // {
-    //     printf("%02x ", m_prime[i]);
-    // }
 
     memcpy(em, db, em_len - hash_len - 1);
     memcpy(em + em_len - hash_len - 1, h, hash_len);
@@ -348,17 +339,11 @@ void sign_pss(mpz_t s, const mpz_t m, const priv_key_t *sk, RSA_ALGORITHM algori
     size_t k = count_bytes(sk->n);
     unsigned char *em = (unsigned char *)malloc(k);
     emsa_pss_encode(em, mpz_sizeinbase(sk->n, 2) - 1, buf, buf_len, sec_level);
-    // for (int i = 0; i < k; i++)
-    // {
-    //     printf("%02x ", em[i]);
-    // }
-    // printf("\n");
 
     // Convert to MPZ
     mpz_t padded_m;
     mpz_init(padded_m);
     bytes_to_bigint(padded_m, em, k, BIG_ENDIAN);
-    // gmp_printf("Padded message: %Zd\n", padded_m);
 
     // Sign
     rsasp1(s, padded_m, sk, algorithm);
@@ -383,12 +368,6 @@ int verify_pss(const mpz_t m, const mpz_t s, const pub_key_t *pk, SECURITY_LEVEL
     mpz_init(signed_em);
     rsavp1(signed_em, s, pk);
     bigint_to_bytes(em, &em_len, signed_em, BIG_ENDIAN);
-    // gmp_printf("Signed message: %Zd\n", signed_em);
-    // for (int i = 0; i < em_len; i++)
-    // {
-    //     printf("%02x ", em[i]);
-    // }
-    // printf("\n");
 
     if (em_len != k)
     {

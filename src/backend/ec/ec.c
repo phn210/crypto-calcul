@@ -361,7 +361,7 @@ char is_on_curve(const point_t p, const curve_t curve)
 
     point_affine_t p_affine;
     init_affine(&p_affine);
-    affine(&p_affine, p, curve);
+    to_affine(&p_affine, p, curve);
 
     mpz_t tmp;
     mpz_init(tmp);
@@ -866,7 +866,7 @@ void mul(point_t *r, const point_t p, const mpz_t k, const curve_t curve)
         copy_point(&R0, p);
         dbl(&R1, p, curve);
 
-        affine(&D_affine, p, curve);
+        to_affine(&D_affine, p, curve);
         mpz_set(D.x, D_affine.x);
         mpz_set_ui(D.z, 1);
 
@@ -891,7 +891,7 @@ void mul(point_t *r, const point_t p, const mpz_t k, const curve_t curve)
     }
 }
 
-void affine(point_affine_t *r, const point_t p, const curve_t curve)
+void to_affine(point_affine_t *r, const point_t p, const curve_t curve)
 {
     if (is_infinity(p, curve))
     {
@@ -917,6 +917,14 @@ void affine(point_affine_t *r, const point_t p, const curve_t curve)
     mpz_clear(z_inv);
 }
 
+void from_affine(point_t *r, const point_affine_t p, const curve_t curve)
+{
+    mpz_set(r->x, p.x);
+    if (curve.type != MONTGOMERY)
+        mpz_set(r->y, p.y);
+    mpz_set_ui(r->z, 1);
+}
+
 void point_to_bytes(unsigned char *buf, const point_t p, const curve_t curve)
 {
     unsigned char temp[curve.efs];
@@ -924,26 +932,29 @@ void point_to_bytes(unsigned char *buf, const point_t p, const curve_t curve)
 
     point_affine_t p_affine;
     init_affine(&p_affine);
-    affine(&p_affine, p, curve);
+    to_affine(&p_affine, p, curve);
 
     // Export x-coordinate
     memset(buf, 0, curve.efs);
     memset(temp, 0, curve.efs);
     mpz_export(temp, &count, 1, 1, 0, 0, p_affine.x);
     memcpy(buf + (curve.efs - count), temp, count);
-    if (count > curve.efs) {
+    if (count > curve.efs)
+    {
         fprintf(stderr, "Error: x-coordinate too large for curve.efs\n");
         free_affine(&p_affine);
         exit(EXIT_FAILURE);
     }
 
-    if (curve.type != MONTGOMERY) {
+    if (curve.type != MONTGOMERY)
+    {
         // Export y-coordinate
         memset(buf + curve.efs, 0, curve.efs);
         memset(temp, 0, curve.efs);
         mpz_export(temp, &count, 1, 1, 0, 0, p_affine.y);
         memcpy(buf + curve.efs + (curve.efs - count), temp, count);
-        if (count > curve.efs) {
+        if (count > curve.efs)
+        {
             fprintf(stderr, "Error: y-coordinate too large for curve.efs\n");
             free_affine(&p_affine);
             exit(EXIT_FAILURE);
@@ -962,7 +973,8 @@ void point_from_bytes(point_t *r, const unsigned char *buf, const curve_t curve)
     memcpy(tmp_buf, buf, curve.efs);
     mpz_import(r->x, curve.efs, 1, 1, 0, 0, tmp_buf);
 
-    if (curve.type != MONTGOMERY) {
+    if (curve.type != MONTGOMERY)
+    {
         // Import y-coordinate
         memset(tmp_buf, 0, curve.efs);
         memcpy(tmp_buf, buf + curve.efs, curve.efs);
