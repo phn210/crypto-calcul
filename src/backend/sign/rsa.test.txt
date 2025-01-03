@@ -1,5 +1,5 @@
-obj/sign/rsa_sig.test.o
-obj/sign/rsa_sig.o
+obj/sign/rsa.test.o
+obj/sign/rsa.o
 obj/pke/rsa.o
 obj/rng/rng.o
 obj/misc/prime/prime_gen.o

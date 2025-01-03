@@ -10,7 +10,7 @@ void test_setup(public_params_t *pp, SECURITY_LEVEL level)
 
 void test_keygen(priv_key_t *sk, pub_key_t *pk, const public_params_t pp)
 {
-    keygen(sk, pk, pp);
+    keygen(sk, pk, &pp);
 
     // gmp_printf("Private Key: %Zd\n", sk->x);
     // gmp_printf("Public Key (y): %Zd\n", pk->y);
@@ -23,11 +23,11 @@ void test_encrypt_decrypt(priv_key_t sk, pub_key_t pk, public_params_t pp)
     mpz_init_set_str(m, "1234567890", 10);
     mpz_inits(c1, c2, decrypted_m, NULL);
 
-    encrypt(c1, c2, m, pk, pp);
+    encrypt(c1, c2, m, &pk, &pp);
     // gmp_printf("Ciphertext (c1): %Zd\n", c1);
     // gmp_printf("Ciphertext (c2): %Zd\n", c2);
 
-    decrypt(decrypted_m, c1, c2, sk, pp);
+    decrypt(decrypted_m, c1, c2, &sk, &pp);
     // gmp_printf("Decrypted Message: %Zd\n", decrypted_m);
 
     printf("[0] Textbook ElGamal:\t");

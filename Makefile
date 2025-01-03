@@ -98,8 +98,11 @@ test_dsa: $(BIN_DIR)/sign/dsa.test
 test_ecdsa: $(BIN_DIR)/sign/ecdsa.test
 	$(BIN_DIR)/sign/ecdsa.test
 
-test_rsa_sig: $(BIN_DIR)/sign/rsa_sig.test
-	$(BIN_DIR)/sign/rsa_sig.test
+test_rsa_sig: $(BIN_DIR)/sign/rsa.test
+	$(BIN_DIR)/sign/rsa.test
+
+test_elgamal_sig: $(BIN_DIR)/sign/elgamal.test
+	$(BIN_DIR)/sign/elgamal.test
 
 test_hmac: $(BIN_DIR)/mac/hmac.test
 	$(BIN_DIR)/mac/hmac.test

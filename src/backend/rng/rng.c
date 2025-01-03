@@ -29,7 +29,7 @@ void rand_int_b(mpz_t result, gmp_randstate_t state, unsigned long bits)
     mpz_urandomb(result, state, bits);
 }
 
-void rand_int_m(mpz_t result, gmp_randstate_t state, mpz_t n)
+void rand_int_m(mpz_t result, gmp_randstate_t state, const mpz_t n)
 {
     mpz_urandomm(result, state, n);
 }
