@@ -12,13 +12,13 @@ int main()
     printf("Plaintext: %s\n", message);
 
     // Pad input if necessary
-    if (len % 8 != 0)
+    if (len % DES_BLOCK_SIZE != 0)
     {
         des_padding(message, message, len);
-        len += 8 - len % 8;
+        len += DES_BLOCK_SIZE - len % DES_BLOCK_SIZE;
     }
 
-    size_t len_blocks = len / 8;
+    size_t len_blocks = len / DES_BLOCK_SIZE;
 
     uint64_t *encrypted = malloc(len_blocks * sizeof(uint64_t));
     uint64_t *decrypted = malloc(len_blocks * sizeof(uint64_t));
