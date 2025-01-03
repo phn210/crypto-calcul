@@ -140,25 +140,25 @@ int main()
     pub_key_t pk;
     SECURITY_LEVEL sec_level = L0;
 
-    // // Test standard RSA signature
-    // test_setup(&pp, sec_level);
-    // test_keygen(&sk, &pk, pp);
-    // test_sign_verify(sk, pk, pp);
+    // Test standard RSA signature
+    test_setup(&pp, sec_level);
+    test_keygen(&sk, &pk, pp);
+    test_sign_verify(sk, pk, pp);
 
-    // // Test RSA signature with CRT optimization
-    // test_setup(&pp, sec_level);
-    // test_keygen(&sk, &pk, pp);
-    // test_sign_verify_crt(sk, pk, pp);
+    // Test RSA signature with CRT optimization
+    test_setup(&pp, sec_level);
+    test_keygen(&sk, &pk, pp);
+    test_sign_verify_crt(sk, pk, pp);
 
-    // // Test PKCS#1 v1.5 signature
-    // test_setup(&pp, sec_level);
-    // test_keygen(&sk, &pk, pp);
-    // test_sign_verify_pkcs1(sk, pk, pp, sec_level);
+    // Test PKCS#1 v1.5 signature
+    test_setup(&pp, sec_level);
+    test_keygen(&sk, &pk, pp);
+    test_sign_verify_pkcs1(sk, pk, pp, sec_level);
 
-    // // Test PKCS#1 v1.5 signature with CRT optimization
-    // test_setup(&pp, sec_level);
-    // test_keygen(&sk, &pk, pp);
-    // test_sign_verify_pkcs1_crt(sk, pk, pp, sec_level);
+    // Test PKCS#1 v1.5 signature with CRT optimization
+    test_setup(&pp, sec_level);
+    test_keygen(&sk, &pk, pp);
+    test_sign_verify_pkcs1_crt(sk, pk, pp, sec_level);
 
     // Test PSS signature
     test_setup(&pp, sec_level);
@@ -166,9 +166,9 @@ int main()
     test_sign_verify_pss(sk, pk, pp, sec_level);
 
     // Test PSS signature with CRT optimization
-    // test_setup(&pp, sec_level);
-    // test_keygen(&sk, &pk, pp);
-    // test_sign_verify_pss_crt(sk, pk, pp, sec_level);
+    test_setup(&pp, sec_level);
+    test_keygen(&sk, &pk, pp);
+    test_sign_verify_pss_crt(sk, pk, pp, sec_level);
 
     return 0;
 }

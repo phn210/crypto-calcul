@@ -250,11 +250,10 @@ void emsa_pss_encode(unsigned char *em, size_t em_bits, const unsigned char *m, 
 
     size_t mask_bits = em_len * 8 - em_bits;
     db[0] &= 0xFF >> mask_bits;
-    for (int i = 0; i < em_len - hash_len - 1; i++)
-    {
-        printf("%02x ", db[i]);
-    }
-    printf("\n");
+    // for (int i = 0; i < hash_len * 2 + 8; i++)
+    // {
+    //     printf("%02x ", m_prime[i]);
+    // }
 
     memcpy(em, db, em_len - hash_len - 1);
     memcpy(em + em_len - hash_len - 1, h, hash_len);
@@ -291,14 +290,9 @@ int emsa_pss_verify(const unsigned char *em, size_t em_bits, const unsigned char
         exit(EXIT_FAILURE);
     }
 
-    // Hash message
-    unsigned char *m_prime = (unsigned char *)malloc(hash_len * 2 + 8);
-    memset(m_prime, 0, 8);
-    sha2(m, m_len, m_prime + 8, hash_len);
-
     // Generate H
     unsigned char *h = (unsigned char *)malloc(hash_len);
-    sha2(m_prime, hash_len * 2 + 8, h, hash_len);
+    memcpy(h, em + em_len - hash_len - 1, hash_len);
 
     // Verify
     size_t mask_bits = em_len * 8 - em_bits;
@@ -309,11 +303,6 @@ int emsa_pss_verify(const unsigned char *em, size_t em_bits, const unsigned char
 
     unsigned char *dbMask = (unsigned char *)malloc(em_len - hash_len - 1);
     mgf1(dbMask, em_len - hash_len - 1, h, hash_len, SHA2, sec_level);
-    for (int i = 0; i < em_len - hash_len - 1; i++)
-    {
-        printf("%02x ", dbMask[i]);
-    }
-    printf("\n");
 
     unsigned char *db = (unsigned char *)malloc(em_len - hash_len - 1);
     for (int i = 0; i < em_len - hash_len - 1; i++)
@@ -321,41 +310,30 @@ int emsa_pss_verify(const unsigned char *em, size_t em_bits, const unsigned char
         db[i] = em[i] ^ dbMask[i];
     }
     db[0] &= 0xFF >> mask_bits;
-    // for (int i = 0; i < em_len - hash_len - 1; i++)
-    // {
-    //     printf("%02x ", db[i]);
-    // }
-    // printf("\n");
 
-    // for (int i = 0; i < em_len - hash_len - 2; i++)
-    // {
-    //     if (db[i] != 0x00)
-    //     {
-    //         printf("i = %d\n", i);
-    //         printf("Invalid encoding 2\n");
-    //         return 0;
-    //     }
-    // }
-    // if (db[em_len - hash_len - 2] != 0x01)
-    // {
-    //     printf("Invalid encoding 3\n");
-    //     return 0;
-    // }
-
-    unsigned char *salt = (unsigned char *)malloc(hash_len);
-    memcpy(salt, db + em_len - hash_len - 1, hash_len);
+    for (int i = 0; i < em_len - 2 * hash_len - 2; i++)
+    {
+        if (db[i] != 0x00)
+        {
+            return 0;
+        }
+    }
+    if (db[em_len - 2 * hash_len - 2] != 0x01)
+    {
+        return 0;
+    }
 
     unsigned char *m_check = (unsigned char *)malloc(hash_len * 2 + 8);
     memset(m_check, 0, 8);
     sha2(m, m_len, m_check + 8, hash_len);
+    memcpy(m_check + hash_len + 8, db + em_len - 2 * hash_len - 1, hash_len);
+    sha2(m_check, hash_len * 2 + 8, m_check, hash_len);
 
-    int result = memcmp(salt, m_check + hash_len, hash_len) == 0;
+    int result = memcmp(h, m_check, hash_len) == 0;
 
-    free(m_prime);
     free(h);
     free(dbMask);
     free(db);
-    free(salt);
     free(m_check);
 
     return result;
