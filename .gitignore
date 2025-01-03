@@ -4,6 +4,7 @@ obj
 **/wrappers/*.c
 **/__init__.c
 **/__init__.html
+**/test/**output**
 
 # Environment files
 .venv

@@ -10,4 +10,7 @@ void hex_to_bigint(mpz_t result, const char *buf);
 void bigint_to_hex(char **buf, const mpz_t num);
 size_t count_bytes(const mpz_t n);
 
+unsigned char* pkcs7_padding(unsigned char *input, size_t len, size_t block_size);
+unsigned char* pkcs7_unpadding(unsigned char *input, size_t len, size_t block_size);
+
 #endif

@@ -110,6 +110,12 @@ test_hmac: $(BIN_DIR)/mac/hmac.test
 test_ec: $(BIN_DIR)/ec/ec.test
 	$(BIN_DIR)/ec/ec.test
 
+test_des: $(BIN_DIR)/ske/des.test
+	$(BIN_DIR)/ske/des.test
+
+test_aes: $(BIN_DIR)/ske/aes.test
+	$(BIN_DIR)/ske/aes.test
+
 .PHONY: all clean test
 
 .PRECIOUS: obj/%.o
