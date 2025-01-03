@@ -256,7 +256,7 @@ int main()
     unsigned char *encrypted_ctr = malloc(padded_len);
     unsigned char *decrypted_ctr = malloc(padded_len);
 
-    aes_encrypt_ctr(input_blocks, encrypted_ctr, nonce_ctr, key_hex, padded_len, AES_KEY_SIZE_128);
+    aes_ctr(input_blocks, encrypted_ctr, nonce_ctr, key_hex, padded_len, AES_KEY_SIZE_128);
 
     printf("\nEncrypted (CTR): ");
     for (size_t i = 0; i < padded_len; i++)
@@ -264,7 +264,7 @@ int main()
         printf("%02x", encrypted_ctr[i]);
     }
 
-    aes_decrypt_ctr(encrypted_ctr, decrypted_ctr, nonce_ctr, key_hex, padded_len, AES_KEY_SIZE_128);
+    aes_ctr(encrypted_ctr, decrypted_ctr, nonce_ctr, key_hex, padded_len, AES_KEY_SIZE_128);
 
     printf("\nDecrypted (CTR) hex: ");
     for (size_t i = 0; i < padded_len; i++)

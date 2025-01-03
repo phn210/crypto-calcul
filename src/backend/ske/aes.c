@@ -483,50 +483,37 @@ void aes_decrypt_ofb(unsigned char *input, unsigned char *output, unsigned char 
     }
 }
 
-void aes_encrypt_ctr(unsigned char *input, unsigned char *output, unsigned char *nonce, unsigned char *key, size_t len, AES_KEY_SIZE key_size)
+void aes_ctr(unsigned char *input, unsigned char *output, unsigned char *nonce, unsigned char *key, size_t len, AES_KEY_SIZE key_size)
 {
     AES_ROUNDS rounds = get_rounds(key_size);
 
     unsigned char *w = malloc(AES_BLOCK_SIZE * (rounds + 1));
     aes_key_expansion(key, w, key_size, rounds);
 
-    unsigned char last_block[AES_BLOCK_SIZE];
-    memcpy(last_block, nonce, AES_BLOCK_SIZE);
+    // Initialize the 16-byte counter block with the nonce
+    unsigned char counter_block[AES_BLOCK_SIZE];
+    memcpy(counter_block, nonce, AES_BLOCK_SIZE);
 
-    for (size_t i = 0; i < len; i += AES_BLOCK_SIZE)
-    {
-        aes_block_encrypt(last_block, w, rounds);
+    unsigned char buf[AES_BLOCK_SIZE];
 
-        for (int j = 0; j < AES_BLOCK_SIZE; j++)
-        {
-            output[i + j] = input[i + j] ^ last_block[j];
+    // Process each 16-byte block
+    for (size_t i = 0; i < len; i += AES_BLOCK_SIZE) {
+        memcpy(buf, counter_block, AES_BLOCK_SIZE);
+        aes_block_encrypt(buf, w, rounds);
+
+        for (size_t j = 0; j < AES_BLOCK_SIZE; j++) {
+            output[i + j] = input[i + j] ^ buf[j];
         }
-
-        last_block[15]++;
-    }
-}
-
-void aes_decrypt_ctr(unsigned char *input, unsigned char *output, unsigned char *nonce, unsigned char *key, size_t len, AES_KEY_SIZE key_size)
-{
-    AES_ROUNDS rounds = get_rounds(key_size);
-
-    unsigned char *w = malloc(AES_BLOCK_SIZE * (rounds + 1));
-    aes_key_expansion(key, w, key_size, rounds);
-
-    unsigned char last_block[AES_BLOCK_SIZE];
-    memcpy(last_block, nonce, AES_BLOCK_SIZE);
-
-    for (size_t i = 0; i < len; i += AES_BLOCK_SIZE)
-    {
-        aes_block_encrypt(last_block, w, rounds);
-
-        for (int j = 0; j < AES_BLOCK_SIZE; j++)
-        {
-            output[i + j] = input[i + j] ^ last_block[j];
+        
+        for (int c = 15; c >= 0; c--) {
+            counter_block[c]++;
+            if (counter_block[c] != 0) {
+                break;
+            }
         }
-
-        last_block[15]++;
     }
+
+    free(w);
 }
 
 void aes_file_encrypt(const char *input_file, const char *output_file, unsigned char *key, unsigned char *iv, AES_KEY_SIZE key_size, AES_MODE mode)
@@ -552,26 +539,22 @@ void aes_file_encrypt(const char *input_file, const char *output_file, unsigned 
 
     unsigned char *output_data = malloc(len);
 
-    switch (mode)
-    {
-    case AES_MODE_ECB:
-        aes_encrypt_ecb(padded_data, output_data, key, len, key_size);
-        break;
-    case AES_MODE_CBC:
-        aes_encrypt_cbc(padded_data, output_data, iv, key, len, key_size);
-        break;
-    case AES_MODE_CFB:
-        aes_encrypt_cfb(padded_data, output_data, iv, key, len, key_size);
-        break;
-    case AES_MODE_OFB:
-        aes_encrypt_ofb(padded_data, output_data, iv, key, len, key_size);
-        break;
-    case AES_MODE_CTR:
-        aes_encrypt_ctr(padded_data, output_data, iv, key, len, key_size);
-        break;
-        // case AES_MODE_GCM:
-        //     aes_encrypt_gcm(input_data, output_data, iv, key, len, key_size);
-        //     break;
+    switch (mode) {
+        case AES_MODE_ECB:
+            aes_encrypt_ecb(padded_data, output_data, key, len, key_size);
+            break;
+        case AES_MODE_CBC:
+            aes_encrypt_cbc(padded_data, output_data, iv, key, len, key_size);
+            break;
+        case AES_MODE_CFB:
+            aes_encrypt_cfb(padded_data, output_data, iv, key, len, key_size);
+            break;
+        case AES_MODE_OFB:
+            aes_encrypt_ofb(padded_data, output_data, iv, key, len, key_size);
+            break;
+        case AES_MODE_CTR:
+            aes_ctr(padded_data, output_data, iv, key, len, key_size);
+            break;
     }
 
     fwrite(output_data, 1, len, output);
@@ -604,26 +587,22 @@ void aes_file_decrypt(const char *input_file, const char *output_file, unsigned 
 
     unsigned char *output_data = malloc(len);
 
-    switch (mode)
-    {
-    case AES_MODE_ECB:
-        aes_decrypt_ecb(input_data, output_data, key, len, key_size);
-        break;
-    case AES_MODE_CBC:
-        aes_decrypt_cbc(input_data, output_data, iv, key, len, key_size);
-        break;
-    case AES_MODE_CFB:
-        aes_decrypt_cfb(input_data, output_data, iv, key, len, key_size);
-        break;
-    case AES_MODE_OFB:
-        aes_decrypt_ofb(input_data, output_data, iv, key, len, key_size);
-        break;
-    case AES_MODE_CTR:
-        aes_decrypt_ctr(input_data, output_data, iv, key, len, key_size);
-        break;
-        // case AES_MODE_GCM:
-        //     aes_decrypt_gcm(input_data, output_data, iv, key, len, key_size);
-        //     break;
+    switch (mode) {
+        case AES_MODE_ECB:
+            aes_decrypt_ecb(input_data, output_data, key, len, key_size);
+            break;
+        case AES_MODE_CBC:
+            aes_decrypt_cbc(input_data, output_data, iv, key, len, key_size);
+            break;
+        case AES_MODE_CFB:
+            aes_decrypt_cfb(input_data, output_data, iv, key, len, key_size);
+            break;
+        case AES_MODE_OFB:
+            aes_decrypt_ofb(input_data, output_data, iv, key, len, key_size);
+            break;
+        case AES_MODE_CTR:
+            aes_ctr(input_data, output_data, iv, key, len, key_size);
+            break;
     }
 
     char *unpadded_data = pkcs7_unpadding(output_data, len, AES_BLOCK_SIZE);
