@@ -15,11 +15,11 @@ void mgf1(unsigned char *mask, size_t mask_len, const unsigned char *seed, size_
     {
     case MD5:
         hash_len = MD5_DIGEST_SIZE;
-        hash = &md5;
+        hash = (void (*)(const void *, size_t, void *, size_t))&md5;
         break;
     case SHA1:
         hash_len = SHA1_DIGEST_SIZE;
-        hash = &sha1;
+        hash = (void (*)(const void *, size_t, void *, size_t))&sha1;
         break;
     case SHA2:
         switch (sec_level)
@@ -40,7 +40,7 @@ void mgf1(unsigned char *mask, size_t mask_len, const unsigned char *seed, size_
             fprintf(stderr, "Invalid security level\n");
             exit(EXIT_FAILURE);
         }
-        hash = &sha2;
+        hash = (void (*)(const void *, size_t, void *, size_t))&sha2;
         break;
     case SHA3:
         switch (sec_level)
@@ -61,7 +61,7 @@ void mgf1(unsigned char *mask, size_t mask_len, const unsigned char *seed, size_
             fprintf(stderr, "Invalid security level\n");
             exit(EXIT_FAILURE);
         }
-        hash = &sha3;
+        hash = (void (*)(const void *, size_t, void *, size_t))&sha3;
         break;
     default:
         fprintf(stderr, "Invalid hash function\n");
