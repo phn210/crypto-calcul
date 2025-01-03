@@ -7,14 +7,14 @@ int main()
 
     char *key = "133457799BBCDFF1133457799BBCDFF1";
     // char message[] = "Hello world!1234";
-    char message[] = "Hello world! Myname is John Doe.";
+    char message[] = "Hello world! My name is John Doe.";
 
     size_t len = strlen(message);
     size_t key_len = strlen(key);
 
     printf("Plaintext: %s\n", message);
     printf("Key: %s\n", key);
-    printf("Plaintext (hex): ");
+    printf("Plaintext hex: ");
     for (size_t i = 0; i < len; i++)
     {
         printf("%02x", message[i]);
