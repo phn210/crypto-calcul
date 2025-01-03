@@ -1,4 +1,5 @@
 #include "aes.h"
+#include "conversion.h"
 
 unsigned char xtime(unsigned char x) 
 {
@@ -471,4 +472,110 @@ void aes_decrypt_ctr(unsigned char *input, unsigned char *output, unsigned char 
 
         last_block[15]++;
     }
+}
+
+void aes_file_encrypt(const char *input_file, const char *output_file, unsigned char *key, unsigned char *iv, AES_KEY_SIZE key_size, AES_MODE mode)
+{
+    FILE *input = fopen(input_file, "rb");
+    FILE *output = fopen(output_file, "wb");
+
+    if (input == NULL || output == NULL) {
+        printf("Error opening files\n");
+        return;
+    }
+
+    fseek(input, 0, SEEK_END);
+    size_t len = ftell(input);
+    fseek(input, 0, SEEK_SET);
+
+    unsigned char *input_data = malloc(len);
+    fread(input_data, 1, len, input);
+
+    char *padded_data = pkcs7_padding(input_data, len, AES_BLOCK_SIZE);
+    len = strlen(padded_data);
+
+    unsigned char *output_data = malloc(len);
+
+    switch (mode) {
+        case AES_MODE_ECB:
+            aes_encrypt_ecb(padded_data, output_data, key, len, key_size);
+            break;
+        case AES_MODE_CBC:
+            aes_encrypt_cbc(padded_data, output_data, iv, key, len, key_size);
+            break;
+        case AES_MODE_CFB:
+            aes_encrypt_cfb(padded_data, output_data, iv, key, len, key_size);
+            break;
+        case AES_MODE_OFB:
+            aes_encrypt_ofb(padded_data, output_data, iv, key, len, key_size);
+            break;
+        case AES_MODE_CTR:
+            aes_encrypt_ctr(padded_data, output_data, iv, key, len, key_size);
+            break;
+        // case AES_MODE_GCM:
+        //     aes_encrypt_gcm(input_data, output_data, iv, key, len, key_size);
+        //     break;
+    }
+
+    fwrite(output_data, 1, len, output);
+
+    fclose(input);
+    fclose(output);
+
+    free(input_data);
+    free(output_data);
+    free(padded_data);
+}
+
+void aes_file_decrypt(const char *input_file, const char *output_file, unsigned char *key, unsigned char *iv, AES_KEY_SIZE key_size, AES_MODE mode)
+{
+    FILE *input = fopen(input_file, "rb");
+    FILE *output = fopen(output_file, "wb");
+
+    if (input == NULL || output == NULL) {
+        printf("Error opening files\n");
+        return;
+    }
+
+    fseek(input, 0, SEEK_END);
+    size_t len = ftell(input);
+    fseek(input, 0, SEEK_SET);
+
+    unsigned char *input_data = malloc(len);
+    fread(input_data, 1, len, input);
+
+    unsigned char *output_data = malloc(len);
+
+    switch (mode) {
+        case AES_MODE_ECB:
+            aes_decrypt_ecb(input_data, output_data, key, len, key_size);
+            break;
+        case AES_MODE_CBC:
+            aes_decrypt_cbc(input_data, output_data, iv, key, len, key_size);
+            break;
+        case AES_MODE_CFB:
+            aes_decrypt_cfb(input_data, output_data, iv, key, len, key_size);
+            break;
+        case AES_MODE_OFB:
+            aes_decrypt_ofb(input_data, output_data, iv, key, len, key_size);
+            break;
+        case AES_MODE_CTR:
+            aes_decrypt_ctr(input_data, output_data, iv, key, len, key_size);
+            break;
+        // case AES_MODE_GCM:
+        //     aes_decrypt_gcm(input_data, output_data, iv, key, len, key_size);
+        //     break;
+    }
+
+    char *unpadded_data = pkcs7_unpadding(output_data, len, AES_BLOCK_SIZE);
+    len = strlen(unpadded_data);
+
+    fwrite(unpadded_data, 1, len, output);
+
+    fclose(input);
+    fclose(output);
+
+    free(input_data);
+    free(output_data);
+    free(unpadded_data);
 }

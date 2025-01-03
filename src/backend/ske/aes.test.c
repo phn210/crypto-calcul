@@ -6,7 +6,6 @@ int main()
     printf("\n===================== AES TEST =====================\n\n");
 
     char *key = "133457799BBCDFF1133457799BBCDFF1";
-    // char message[] = "Hello world!1234";
     char message[] = "Hello world! My name is John Doe.";
 
     size_t len = strlen(message);
@@ -34,8 +33,8 @@ int main()
     }
 
     // Convert key to hex
-    unsigned char key_hex[16];
-    for (size_t i = 0; i < 16; i++) {
+    unsigned char key_hex[AES_KEY_SIZE_128];
+    for (size_t i = 0; i < AES_KEY_SIZE_128; i++) {
         sscanf(key + 2*i, "%2hhx", &key_hex[i]);
     }
 
@@ -112,6 +111,13 @@ int main()
     free(decrypted_cbc);
 
     printf("\n--- AES CBC 256 bits ---\n");
+
+    char *key_256 = "133457799BBCDFF1133457799BBCDFF1133457799BBCDFF1133457799BBCDFF1";
+    unsigned char key_hex_256[AES_KEY_SIZE_256];
+
+    for (size_t i = 0; i < AES_KEY_SIZE_256; i++) {
+        sscanf(key_256 + 2*i, "%2hhx", &key_hex_256[i]);
+    }
 
     for (size_t i = 0; i < padded_len; i++)
     {
@@ -274,6 +280,22 @@ int main()
 
     free(encrypted_ctr);
     free(decrypted_ctr);
+
+    printf("\n--- AES File Encryption ---\n");
+
+    char *input_file = "./src/backend/ske/aes_test_input_file.txt";
+    char *encrypted_file = "./src/backend/ske/aes_test_encrypted_file.txt";
+    char *decrypted_file = "./src/backend/ske/aes_test_decrypted_file.txt";
+
+    unsigned char iv_file[AES_BLOCK_SIZE] = {10};
+
+    aes_file_encrypt(input_file, encrypted_file, key_hex, iv_file, AES_KEY_SIZE_128, AES_MODE_CBC);
+
+    printf("\n File encrypted successfully to %s\n", encrypted_file);
+
+    aes_file_decrypt(encrypted_file, decrypted_file, key_hex, iv_file, AES_KEY_SIZE_128, AES_MODE_CBC);
+
+    printf("\n File decrypted successfully to %s\n", decrypted_file);
 
     printf("\n===================================================\n\n");
 

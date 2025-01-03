@@ -44,7 +44,7 @@ void des_fexpand(uint32_t *subblock, uint64_t *new_subblock)
     *new_subblock = new_block;
 }
 
-void des_feistel(uint64_t *block, des_ctx_t *ctx, char mode)
+void des_feistel(uint64_t *block, des_ctx_t *ctx, des_mode_t mode)
 {
     uint32_t l = *block >> 32;
     uint32_t r = *block & 0xFFFFFFFF;
@@ -53,11 +53,11 @@ void des_feistel(uint64_t *block, des_ctx_t *ctx, char mode)
     {
         uint32_t tmp = r;
 
-        if (mode == 'e')
+        if (mode == DES_ENCRYPT)
         {
             des_ffunc(&r, ctx->keys[i]);
         }
-        else
+        else if (mode == DES_DECRYPT)
         {
             des_ffunc(&r, ctx->keys[DES_ROUNDS - i - 1]);
         }
@@ -129,7 +129,7 @@ void des_key_schedule(const uint64_t key, des_ctx_t *ctx)
     * len: number of blocks
     * mode: 'e' for encryption, 'd' for decryption
 */
-void des(uint64_t *input, uint64_t *output, const uint64_t key, int len, const char mode)
+void des(uint64_t *input, uint64_t *output, const uint64_t key, int len, des_mode_t mode)
 {
     des_ctx_t ctx;
     des_key_schedule(key, &ctx);
@@ -146,4 +146,36 @@ void des(uint64_t *input, uint64_t *output, const uint64_t key, int len, const c
 
         output[i] = block;
     }
+}
+
+void des_file(const char *input_file, const char *output_file, const uint64_t key, des_mode_t mode)
+{
+    FILE *input = fopen(input_file, "rb");
+    FILE *output = fopen(output_file, "wb");
+
+    if (input == NULL || output == NULL)
+    {
+        perror("Error opening file");
+        exit(1);
+    }
+
+    fseek(input, 0, SEEK_END);
+    size_t file_size = ftell(input);
+    fseek(input, 0, SEEK_SET);
+
+    size_t len = file_size / 8;
+    uint64_t *input_blocks = malloc(len * sizeof(uint64_t));
+    uint64_t *output_blocks = malloc(len * sizeof(uint64_t));
+
+    fread(input_blocks, sizeof(uint64_t), len, input);
+
+    des(input_blocks, output_blocks, key, len, mode);
+
+    fwrite(output_blocks, sizeof(uint64_t), len, output);
+
+    fclose(input);
+    fclose(output);
+
+    free(input_blocks);
+    free(output_blocks);
 }

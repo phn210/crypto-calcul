@@ -39,7 +39,7 @@ int main()
     }
 
     // Encrypt message
-    des(input_blocks, encrypted, key, len_blocks, 'e');
+    des(input_blocks, encrypted, key, len_blocks, DES_ENCRYPT);
 
     printf("\nCiphertext (hex): ");
     for (size_t i = 0; i < len_blocks; i++)
@@ -47,18 +47,16 @@ int main()
         printf("%016lx ", encrypted[i]);
     }
 
-    printf("\n---\n");
-
     // Decrypt message
-    des(encrypted, decrypted, key, len_blocks, 'd');
+    des(encrypted, decrypted, key, len_blocks, DES_DECRYPT);
 
-    printf("Decrypted (hex): ");
+    printf("\nDecrypted (hex): ");
     for (size_t i = 0; i < len_blocks; i++)
     {
         printf("%016lx ", decrypted[i]);
     }
 
-    // Convert decrypted blocks to text
+    // Convert decrypted blocks back to text
     char *decrypted_message = malloc(padded_len);
     for (size_t i = 0; i < len_blocks; i++)
     {
@@ -72,6 +70,20 @@ int main()
     decrypted_message = pkcs7_unpadding(decrypted_message, padded_len * DES_BLOCK_SIZE, DES_BLOCK_SIZE);
 
     printf("\nDecrypted: %s\n", decrypted_message);
+
+    printf("\nFile encryption/decryption\n");
+
+    char *input_file = "./src/backend/ske/des_test_input_file.txt";
+    char *encrypted_file = "./src/backend/ske/des_test_encrypted_file.txt";
+    char *decrypted_file = "./src/backend/ske/des_test_decrypted_file.txt";
+
+    des_file(input_file, encrypted_file, key, DES_ENCRYPT);
+
+    printf("File encrypted successfully to %s\n", encrypted_file);
+
+    des_file(encrypted_file, decrypted_file, key, DES_DECRYPT);
+
+    printf("File decrypted successfully to %s\n", decrypted_file);
 
 
     free(encrypted);

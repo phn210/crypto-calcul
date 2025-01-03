@@ -18,6 +18,12 @@ typedef struct des_ctx
     uint64_t keys[16];
 } des_ctx_t;
 
+typedef enum
+{
+    DES_ENCRYPT,
+    DES_DECRYPT
+} des_mode_t;
+
 // DES permutation functions
 void des_ip(uint64_t *block);
 void des_pi(uint64_t *block);
@@ -25,15 +31,17 @@ void des_fp(uint32_t *subblock);
 void des_fexpand(uint32_t *subblock, uint64_t *new_subblock);
 
 // DES Feistel function
-void des_fiestel(uint64_t *block, des_ctx_t *ctx, char mode);
+void des_fiestel(uint64_t *block, des_ctx_t *ctx, des_mode_t mode);
 void des_sbox(uint64_t *subblock, uint32_t *res_subblock);
 void des_ffunc(uint32_t *subblock, const uint64_t subkey);
 
 // DES key schedule function
 void des_key_schedule(const uint64_t key, des_ctx_t *ctx);
 
-// DES encryption/decryption function (mode: 'e' for encryption, 'd' for decryption)
-void des(uint64_t *input, uint64_t *output, const uint64_t key, int len, const char mode);
+// DES encryption/decryption function
+void des(uint64_t *input, uint64_t *output, const uint64_t key, int len, des_mode_t mode);
+// DES file encryption/decryption function
+void des_file(const char *input_file, const char *output_file, const uint64_t key, des_mode_t mode);
 
 // DES constants
 static const unsigned IP[DES_IP_SIZE] = {

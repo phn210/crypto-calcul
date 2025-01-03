@@ -20,6 +20,16 @@ typedef enum
     AES_ROUNDS_256 = 14
 } AES_ROUNDS;
 
+typedef enum
+{
+    AES_MODE_ECB,
+    AES_MODE_CBC,
+    AES_MODE_CFB,
+    AES_MODE_OFB,
+    AES_MODE_CTR,
+    AES_MODE_GCM
+} AES_MODE;
+
 // AES key expansion functions
 void aes_rot_word(unsigned char *word);
 void aes_sub_word(unsigned char *word);
@@ -56,6 +66,9 @@ void aes_decrypt_ofb(unsigned char *input, unsigned char *output, unsigned char 
 
 void aes_encrypt_ctr(unsigned char *input, unsigned char *output, unsigned char *nonce, unsigned char *key, size_t len, AES_KEY_SIZE key_size);
 void aes_decrypt_ctr(unsigned char *input, unsigned char *output, unsigned char *nonce, unsigned char *key, size_t len, AES_KEY_SIZE key_size);
+
+void aes_file_encrypt(const char *input_file, const char *output_file, unsigned char *key, unsigned char *iv, AES_KEY_SIZE key_size, AES_MODE mode);
+void aes_file_decrypt(const char *input_file, const char *output_file, unsigned char *key, unsigned char *iv, AES_KEY_SIZE key_size, AES_MODE mode);
 
 // AES constants
 static const unsigned SBOX[16][16] = {
