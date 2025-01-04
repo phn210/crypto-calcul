@@ -1,8 +1,8 @@
 #include "ecdsa.h"
 
-void test_setup(public_params_t *pp, SECURITY_LEVEL level, EC curve_type, unsigned char curve_id)
+void test_setup(public_params_t *pp, EC curve_type, unsigned char curve_id)
 {
-    setup(pp, level, curve_type, curve_id);
+    setup(pp, curve_type, curve_id);
     // Print parameters for debugging
     // gmp_printf("Curve Parameters (p): %Zd\n", pp->curve.p);
     // gmp_printf("Curve Parameters (a): %Zd\n", pp->curve.a);
@@ -52,12 +52,12 @@ int main()
     pub_key_t pk;
 
     // Test ECDSA with P256K1 curve and SHA256 hash function
-    test_setup(&pp, L1, WEIERSTRASS, P256K1);
+    test_setup(&pp, WEIERSTRASS, P256K1);
     test_keygen(&sk, &pk, &pp);
     test_sign_verify(sk, pk, pp, SHA2);
 
     // Test ECDSA with ED448 curve and SHA3 hash function
-    test_setup(&pp, L2, EDWARDS, ED448);
+    test_setup(&pp, EDWARDS, ED448);
     test_keygen(&sk, &pk, &pp);
     test_sign_verify(sk, pk, pp, SHA3);
 

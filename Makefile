@@ -80,6 +80,9 @@ test_rsa: $(BIN_DIR)/pke/rsa.test
 test_elgamal: $(BIN_DIR)/pke/elgamal.test
 	$(BIN_DIR)/pke/elgamal.test
 
+test_ecelgamal: $(BIN_DIR)/pke/ecelgamal.test
+	$(BIN_DIR)/pke/ecelgamal.test
+
 test_md5: $(BIN_DIR)/hash/md5.test
 	$(BIN_DIR)/hash/md5.test
 

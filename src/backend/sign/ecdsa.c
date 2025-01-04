@@ -4,50 +4,8 @@
 #include "sha2.h"
 #include "sha3.h"
 
-void setup(public_params_t *pp, SECURITY_LEVEL sec_level, EC curve_type, unsigned char curve_id)
+void setup(public_params_t *pp, EC curve_type, unsigned char curve_id)
 {
-    switch (curve_type)
-    {
-    case WEIERSTRASS:
-        if (sec_level == L0 && curve_id != P224)
-        {
-            fprintf(stderr, "Invalid curve for security level L0\n");
-            exit(EXIT_FAILURE);
-        }
-        if (sec_level == L1 && curve_id != P256 && curve_id != P256K1 && curve_id != W25519)
-        {
-            fprintf(stderr, "Invalid curve for security level L1\n");
-            exit(EXIT_FAILURE);
-        }
-        if (sec_level == L2 && curve_id != P384 && curve_id != W448)
-        {
-            fprintf(stderr, "Invalid curve for security level L2\n");
-            exit(EXIT_FAILURE);
-        }
-        if (sec_level == L3 && curve_id != P521)
-        {
-            fprintf(stderr, "Invalid curve for security level L3\n");
-            exit(EXIT_FAILURE);
-        }
-        break;
-    case EDWARDS:
-        if (sec_level == L1 && curve_id != ED25519)
-        {
-            fprintf(stderr, "Invalid curve for security level L1\n");
-            exit(EXIT_FAILURE);
-        }
-        if (sec_level == L2 && curve_id != ED448)
-        {
-            fprintf(stderr, "Invalid curve for security level L2\n");
-            exit(EXIT_FAILURE);
-        }
-        break;
-    default:
-        fprintf(stderr, "Invalid curve type\n");
-        exit(EXIT_FAILURE);
-    }
-
-    pp->sec_level = sec_level;
     init_curve(&pp->curve, curve_type, curve_id);
 }
 

@@ -1,13 +1,12 @@
 #ifndef ECDSA_H
 #define ECDSA_H
 
-#include <common.h>
-#include <ec.h>
+#include "common.h"
+#include "ec.h"
 
 typedef struct public_params
 {
     curve_t curve;
-    SECURITY_LEVEL sec_level;
 } public_params_t;
 
 typedef struct priv_key
@@ -20,7 +19,7 @@ typedef struct pub_key
     point_t Q;
 } pub_key_t;
 
-void setup(public_params_t *pp, SECURITY_LEVEL sec_level, EC curve_type, unsigned char curve_id);
+void setup(public_params_t *pp, EC curve_type, unsigned char curve_id);
 void keygen(priv_key_t *sk, pub_key_t *pk, const public_params_t *pp);
 void sign(mpz_t r, mpz_t s, const unsigned char *m, size_t m_len, const priv_key_t *sk, const public_params_t *pp, HASH_FUNCTION hash_function);
 int verify(const mpz_t r, const mpz_t s, const unsigned char *m, size_t m_len, const pub_key_t *pk, const public_params_t *pp, HASH_FUNCTION hash_function);
