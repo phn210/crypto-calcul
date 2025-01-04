@@ -107,6 +107,9 @@ test_rsa_sig: $(BIN_DIR)/sign/rsa.test
 test_elgamal_sig: $(BIN_DIR)/sign/elgamal.test
 	$(BIN_DIR)/sign/elgamal.test
 
+test_ecelgamal_sig: $(BIN_DIR)/sign/ecelgamal.test
+	$(BIN_DIR)/sign/ecelgamal.test
+
 test_hmac: $(BIN_DIR)/mac/hmac.test
 	$(BIN_DIR)/mac/hmac.test
 

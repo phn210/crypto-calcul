@@ -18,7 +18,7 @@ void keygen(priv_key_t *sk, pub_key_t *pk, const public_params_t *pp)
     gmp_randstate_t state;
     rng_init(state);
 
-    mpz_urandomm(sk->x, state, pp->curve.r);
+    rand_int_m(sk->x, state, pp->curve.r);
     mul(&pk->Y, pk->Y, sk->x, pp->curve);
 
     gmp_randclear(state);
