@@ -122,6 +122,12 @@ test_des: $(BIN_DIR)/ske/des.test
 test_aes: $(BIN_DIR)/ske/aes.test
 	$(BIN_DIR)/ske/aes.test
 
+test_dh: $(BIN_DIR)/ke/dh.test
+	$(BIN_DIR)/ke/dh.test
+
+test_ecdh: $(BIN_DIR)/ke/ecdh.test
+	$(BIN_DIR)/ke/ecdh.test
+
 .PHONY: all clean test
 
 .PRECIOUS: obj/%.o
