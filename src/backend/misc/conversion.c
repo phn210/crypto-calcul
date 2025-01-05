@@ -41,6 +41,32 @@ void bigint_to_hex(char **buf, const mpz_t num)
     }
 }
 
+void string_to_hex(unsigned char *output, const unsigned char *input, size_t input_len)
+{
+    for (size_t i = 0; i < input_len; i++)
+    {
+        snprintf((char *)(output + i * 2), 3, "%02x", input[i]);
+    }
+    output[input_len * 2] = '\0';
+}
+
+void hex_to_string(unsigned char *output, const unsigned char *input, size_t input_len)
+{
+    if (input_len % 2 != 0)
+    {
+        printf("Error: Hex string length must be even.\n");
+        return;
+    }
+
+    for (size_t i = 0; i < input_len; i += 2)
+    {
+        unsigned int byte;
+        sscanf((const char *)&input[i], "%2x", &byte);
+        output[i / 2] = (unsigned char)byte;
+    }
+    output[input_len / 2] = '\0';
+}
+
 size_t count_bytes(const mpz_t n)
 {
     size_t bit_count = mpz_sizeinbase(n, 2);

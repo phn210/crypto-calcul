@@ -110,6 +110,9 @@ test_elgamal_sig: $(BIN_DIR)/sign/elgamal.test
 test_ecelgamal_sig: $(BIN_DIR)/sign/ecelgamal.test
 	$(BIN_DIR)/sign/ecelgamal.test
 
+test_cbc_mac: $(BIN_DIR)/mac/cbc_mac.test
+	$(BIN_DIR)/mac/cbc_mac.test
+
 test_hmac: $(BIN_DIR)/mac/hmac.test
 	$(BIN_DIR)/mac/hmac.test
 
