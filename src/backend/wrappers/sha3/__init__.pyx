@@ -10,7 +10,7 @@ cdef extern from "sha3.h":
     void sha3_init(sha3_ctx_t *, size_t);
     void sha3_update(sha3_ctx_t *, const void *, size_t);
     void sha3_final(void *, sha3_ctx_t *);
-    char *sha3(const void *, size_t, void *, size_t);
+    void *sha3(const void *, size_t, void *, size_t);
     void shake128_init(sha3_ctx_t *);
     void shake256_init(sha3_ctx_t *);
     void shake_update(sha3_ctx_t *, const void *, size_t);
@@ -20,7 +20,7 @@ cdef extern from "sha3.h":
 cdef class SHA3:
     cdef sha3_ctx_t ctx
 
-    def __cinit__(self, SecurityLevel sec_level):
+    def __init__(self, SecurityLevel sec_level):
         md_len = 0
         if sec_level == SecurityLevel.L0:
             md_len = 28
@@ -44,13 +44,13 @@ cdef class SHA3:
     
     def hash(self, bytes m):
         cdef char *md = <char *>malloc(self.ctx.md_len)
-        cdef char *out = sha3(<char *>m, len(m), md, self.ctx.md_len)
+        sha3(<char *>m, len(m), md, self.ctx.md_len)
         return bytes(md)[0:self.ctx.md_len]
 
 cdef class SHAKE:
     cdef sha3_ctx_t ctx
 
-    def __cinit__(self, int sec_level):
+    def __init__(self, int sec_level):
         if sec_level == SecurityLevel.L1:
             shake128_init(&self.ctx)
         elif sec_level == SecurityLevel.L3:
@@ -68,3 +68,27 @@ cdef class SHAKE:
         cdef char *out = <char *>malloc(len)
         shake_out(&self.ctx, <char *>out, len)
         return bytes(out)[0:len]
+
+cdef class SHA3_224(SHA3):
+    def __init__(self):
+        super(SHA3_224, self).__init__(SecurityLevel.L0)
+
+cdef class SHA3_256(SHA3):
+    def __init__(self):
+        super(SHA3_256, self).__init__(SecurityLevel.L1)
+
+cdef class SHA3_384(SHA3):
+    def __init__(self):
+        super(SHA3_384, self).__init__(SecurityLevel.L2)
+
+cdef class SHA3_512(SHA3):
+    def __init__(self):
+        super(SHA3_512, self).__init__(SecurityLevel.L3)
+
+cdef class SHAKE128(SHAKE):
+    def __init__(self):
+        super(SHAKE128, self).__init__(SecurityLevel.L1)
+
+cdef class SHAKE256(SHAKE):
+    def __init__(self):
+        super(SHAKE256, self).__init__(SecurityLevel.L3)

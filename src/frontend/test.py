@@ -2,7 +2,10 @@ from wrappers.enum import PrimalityTest, HashFunction, SecurityLevel # type: ign
 from wrappers.gmp import GMPInteger # type: ignore
 from wrappers.rng import RNG # type: ignore
 from wrappers.prime import Prime # type: ignore
-from wrappers.sha3 import SHA3 # type: ignore
+from wrappers.md5 import MD5 # type: ignore
+from wrappers.sha1 import SHA1 # type: ignore
+from wrappers.sha2 import SHA256 # type: ignore
+from wrappers.sha3 import SHA3_512 # type: ignore
 from wrappers.ec import P521, SECP256K1 # type: ignore
 from wrappers.mac import HMAC # type: ignore
 from wrappers.des import DES # type: ignore
@@ -20,7 +23,15 @@ prime = Prime()
 prime.test(p, rng.state, 10, PrimalityTest.MILLER_RABIN_TEST)
 
 message = "Hello, World!"
-sha3_256 = SHA3(SecurityLevel.L3)
+md5 = MD5()
+sha1 = SHA1()
+sha256 = SHA256()
+sha3_512 = SHA3_512()
+digest = md5.hash(bytes(message, 'utf-8'))
+print(digest.hex())
+digest = sha1.hash(bytes(message, 'utf-8'))
+digest = sha256.hash(bytes(message, 'utf-8'))
+digest = sha3_512.hash(bytes(message, 'utf-8'))
 
 secp256k1 = SECP256K1()
 p521 = P521()

@@ -4,50 +4,55 @@
 #include <memory.h>
 #include "md5.h"
 
-#define ROTLEFT(a, b) ((a << b) | (a >> (32-b))) //rotate left
-#define F(x, y, z) ((x & y) | (~x & z)) //F function 
-#define G(x, y, z) ((x & z) | (y & ~z)) //G function
-#define H(x, y, z) (x ^ y ^ z) //H function
-#define I(x, y, z) (y ^ (x | ~z)) //I function
+#define ROTLEFT(a, b) ((a << b) | (a >> (32 - b))) // rotate left
+#define F(x, y, z) ((x & y) | (~x & z))            // F function
+#define G(x, y, z) ((x & z) | (y & ~z))            // G function
+#define H(x, y, z) (x ^ y ^ z)                     // H function
+#define I(x, y, z) (y ^ (x | ~z))                  // I function
 
-#define FF(a, b, c, d, x, s, ac) { \
-    a += F(b, c, d) + x + ac; \
-    a = ROTLEFT(a, s); \
-    a += b; \
-} //FF function which calls F function and rotates left  and adds a and b
+#define FF(a, b, c, d, x, s, ac)  \
+    {                             \
+        a += F(b, c, d) + x + ac; \
+        a = ROTLEFT(a, s);        \
+        a += b;                   \
+    } // FF function which calls F function and rotates left  and adds a and b
 
-#define GG(a, b, c, d, x, s, ac) { \
-    a += G(b, c, d) + x + ac; \
-    a = ROTLEFT(a, s); \
-    a += b; \
-} //GG function which calls G function and rotates left  and adds a and b
+#define GG(a, b, c, d, x, s, ac)  \
+    {                             \
+        a += G(b, c, d) + x + ac; \
+        a = ROTLEFT(a, s);        \
+        a += b;                   \
+    } // GG function which calls G function and rotates left  and adds a and b
 
-#define HH(a, b, c, d, x, s, ac) { \
-    a += H(b, c, d) + x + ac; \
-    a = ROTLEFT(a, s); \
-    a += b; \
-} //HH function which calls H function and rotates left  and adds a and b
+#define HH(a, b, c, d, x, s, ac)  \
+    {                             \
+        a += H(b, c, d) + x + ac; \
+        a = ROTLEFT(a, s);        \
+        a += b;                   \
+    } // HH function which calls H function and rotates left  and adds a and b
 
-#define II(a, b, c, d, x, s, ac) { \
-    a += I(b, c, d) + x + ac; \
-    a = ROTLEFT(a, s); \
-    a += b; \
-} //II function which calls I function and rotates left  and adds a and b   
+#define II(a, b, c, d, x, s, ac)  \
+    {                             \
+        a += I(b, c, d) + x + ac; \
+        a = ROTLEFT(a, s);        \
+        a += b;                   \
+    } // II function which calls I function and rotates left  and adds a and b
 
-
-void md5_transform(md5_ctx *ctx, const BYTE data[]){
-    WORD a, b, c, d, m[16], i, j, k;
-    for (i = 0, j = 0; i < 16; ++i, j += 4){
+void md5_transform(md5_ctx *ctx, const BYTE data[])
+{
+    WORD a, b, c, d, m[16], i, j;
+    for (i = 0, j = 0; i < 16; ++i, j += 4)
+    {
         m[i] = (data[j]) + (data[j + 1] << 8) + (data[j + 2] << 16) + (data[j + 3] << 24);
     }
     a = ctx->state[0];
     b = ctx->state[1];
     c = ctx->state[2];
     d = ctx->state[3];
-    
+
     FF(a, b, c, d, m[0], 7, 0xd76aa478);
     FF(d, a, b, c, m[1], 12, 0xe8c7b756);
-    FF(c, d, a, b, m[2], 17, 0x242070db);   
+    FF(c, d, a, b, m[2], 17, 0x242070db);
     FF(b, c, d, a, m[3], 22, 0xc1bdceee);
     FF(a, b, c, d, m[4], 7, 0xf57c0faf);
     FF(d, a, b, c, m[5], 12, 0x4787c62a);
@@ -113,14 +118,14 @@ void md5_transform(md5_ctx *ctx, const BYTE data[]){
     II(c, d, a, b, m[2], 15, 0x2ad7d2bb);
     II(b, c, d, a, m[9], 21, 0xeb86d391);
 
-
     ctx->state[0] += a;
     ctx->state[1] += b;
     ctx->state[2] += c;
-    ctx->state[3] += d;   
+    ctx->state[3] += d;
 }
 
-void md5_init(md5_ctx *ctx){
+void md5_init(md5_ctx *ctx)
+{
     ctx->datalen = 0;
     ctx->bitlen = 0;
     ctx->state[0] = 0x67452301;
@@ -129,12 +134,15 @@ void md5_init(md5_ctx *ctx){
     ctx->state[3] = 0x10325476;
 }
 
-void md5_update(md5_ctx *ctx, const BYTE data[], size_t len){
+void md5_update(md5_ctx *ctx, const BYTE data[], size_t len)
+{
     WORD i;
-    for (i = 0; i < len; ++i){
+    for (i = 0; i < len; ++i)
+    {
         ctx->data[ctx->datalen] = data[i];
         ctx->datalen++;
-        if (ctx->datalen == 64){
+        if (ctx->datalen == 64)
+        {
             md5_transform(ctx, ctx->data);
             ctx->bitlen += 512;
             ctx->datalen = 0;
@@ -142,16 +150,22 @@ void md5_update(md5_ctx *ctx, const BYTE data[], size_t len){
     }
 }
 
-void md5_final(md5_ctx *ctx, BYTE hash[]){
+void md5_final(md5_ctx *ctx, BYTE hash[])
+{
     WORD i = ctx->datalen;
-    if (ctx->datalen < 56){
+    if (ctx->datalen < 56)
+    {
         ctx->data[i++] = 0x80;
-        while (i < 56){
+        while (i < 56)
+        {
             ctx->data[i++] = 0x00;
         }
-    } else {
+    }
+    else
+    {
         ctx->data[i++] = 0x80;
-        while (i < 64){
+        while (i < 64)
+        {
             ctx->data[i++] = 0x00;
         }
         md5_transform(ctx, ctx->data);
@@ -167,7 +181,8 @@ void md5_final(md5_ctx *ctx, BYTE hash[]){
     ctx->data[62] = ctx->bitlen >> 48;
     ctx->data[63] = ctx->bitlen >> 56;
     md5_transform(ctx, ctx->data);
-    for (i = 0; i < 4; ++i){
+    for (i = 0; i < 4; ++i)
+    {
         hash[i] = (ctx->state[0] >> (i * 8)) & 0x000000ff;
         hash[i + 4] = (ctx->state[1] >> (i * 8)) & 0x000000ff;
         hash[i + 8] = (ctx->state[2] >> (i * 8)) & 0x000000ff;
@@ -175,10 +190,11 @@ void md5_final(md5_ctx *ctx, BYTE hash[]){
     }
 }
 
-void *md5(const void *m, size_t len, void *md, size_t md_len){
+void *md5(const void *m, size_t len, void *md, size_t md_len)
+{
     md5_ctx ctx;
     md5_init(&ctx);
-    md5_update(&ctx, (BYTE*)m, len);
-    md5_final(&ctx, (BYTE*)md);
+    md5_update(&ctx, (BYTE *)m, len);
+    md5_final(&ctx, (BYTE *)md);
     return md;
 }

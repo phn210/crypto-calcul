@@ -58,6 +58,18 @@ setup(
                 c_sources=["rng/rng.c"],
             ),
             get_extension(
+                "wrappers.md5",
+                c_sources=["hash/md5.c"],
+            ),
+            get_extension(
+                "wrappers.sha1",
+                c_sources=["hash/sha1.c"],
+            ),
+            get_extension(
+                "wrappers.sha2",
+                c_sources=["hash/sha2.c"],
+            ),
+            get_extension(
                 "wrappers.sha3",
                 c_sources=["hash/sha3.c"],
             ),
