@@ -1,5 +1,5 @@
 from wrappers.gmp cimport malloc, free
-from wrappers.enum cimport SecurityLevel, HashFunction
+from wrappers.enums import SecurityLevel, HashFunction
 
 cdef extern from "hmac.h":
     ctypedef struct hmac_ctx:
@@ -9,9 +9,10 @@ cdef extern from "hmac.h":
     void *hmac(const void *, size_t, const void *, size_t, void *, unsigned char, unsigned char)
 
 cdef class HMAC:
-    cdef public int sec_level, hash_function, mac_len
+    cdef public sec_level, hash_function
+    cdef public int mac_len
 
-    def __cinit__(self, SecurityLevel sec_level, HashFunction hash_function):
+    def __cinit__(self, sec_level: SecurityLevel, hash_function: HashFunction):
         self.sec_level = sec_level
         self.hash_function = hash_function
         if hash_function == HashFunction.MD5:
@@ -33,7 +34,7 @@ cdef class HMAC:
         cdef char *data_bytes = <char *>data
         cdef char *mac = <char *>malloc(self.mac_len)
         hmac(<void *>key_bytes, len(key), <void *>data_bytes, len(data),
-            <void *>mac, self.sec_level, self.hash_function)
+            <void *>mac, self.sec_level.value, self.hash_function.value)
         result = bytes(mac[:self.mac_len])
         free(mac)
         return result

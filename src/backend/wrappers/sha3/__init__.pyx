@@ -1,5 +1,5 @@
 from libc.stdlib cimport malloc
-from wrappers.enum cimport SecurityLevel
+from wrappers.enums import SecurityLevel
 
 cdef extern from "sha3.h":
     ctypedef struct sha3_ctx:
@@ -20,7 +20,7 @@ cdef extern from "sha3.h":
 cdef class SHA3:
     cdef sha3_ctx_t ctx
 
-    def __init__(self, SecurityLevel sec_level):
+    def __init__(self, sec_level: SecurityLevel):
         md_len = 0
         if sec_level == SecurityLevel.L0:
             md_len = 28
@@ -50,7 +50,7 @@ cdef class SHA3:
 cdef class SHAKE:
     cdef sha3_ctx_t ctx
 
-    def __init__(self, int sec_level):
+    def __init__(self, sec_level: SecurityLevel):
         if sec_level == SecurityLevel.L1:
             shake128_init(&self.ctx)
         elif sec_level == SecurityLevel.L3:

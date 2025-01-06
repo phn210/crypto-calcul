@@ -5,6 +5,7 @@ obj
 **/__init__.c
 **/__init__.html
 **/test/**output**
+__pycache__
 
 # Environment files
 .venv

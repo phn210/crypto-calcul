@@ -3,7 +3,7 @@
 #include "rng.h"
 #include "sha2.h"
 
-void sign(mpz_t r, mpz_t s, const unsigned char *m, size_t m_len, const priv_key_t *sk, const public_params_t *pp, SECURITY_LEVEL sec_level)
+void sign(mpz_t r, mpz_t s, const unsigned char *m, size_t m_len, const priv_key_t *sk, const public_params_t *pp, sec_level_t sec_level)
 {
     size_t hash_len;
     switch (sec_level)
@@ -54,7 +54,7 @@ void sign(mpz_t r, mpz_t s, const unsigned char *m, size_t m_len, const priv_key
     free(md);
 }
 
-int verify(const mpz_t r, const mpz_t s, const unsigned char *m, size_t m_len, const pub_key_t *pk, const public_params_t *pp, SECURITY_LEVEL sec_level)
+int verify(const mpz_t r, const mpz_t s, const unsigned char *m, size_t m_len, const pub_key_t *pk, const public_params_t *pp, sec_level_t sec_level)
 {
     size_t hash_len;
     switch (sec_level)

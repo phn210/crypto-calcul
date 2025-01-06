@@ -2,12 +2,12 @@
 // #include "conversion.h"
 // #include "rng.h"
 
-// void init_ss(ss_ctx_t *ctx, size_t n, size_t t, size_t p, SECRET_SHARING scheme)
+// void init_ss(ss_ctx_t *ctx, size_t n, size_t t, size_t p, ss_algo_t scheme)
 // {
 //     ctx->scheme = scheme;
 //     ctx->n = n;
 //     ctx->p = p;
-    
+
 //     if (scheme == SHAMIR)
 //     {
 //         if (t > n)
@@ -51,7 +51,7 @@
 //         fprintf(stderr, "Secret sharing context is not ready\n");
 //         exit(EXIT_FAILURE);
 //     }
-    
+
 //     mpz_t s;
 //     mpz_init(s);
 //     bytes_to_bigint(s, secret, ctx->secret_len);
@@ -95,7 +95,7 @@
 //         mpz_clears(r, prod, NULL);
 //         break;
 //     }
-    
+
 //     ctx->is_ready = 1;
 //     mpz_clear(s);
 //     gmp_randclear(state);
@@ -107,14 +107,13 @@
 //         fprintf(stderr, "Secret sharing context is not ready\n");
 //         exit(EXIT_FAILURE);
 //     }
-    
+
 //     mpz_t s;
 //     mpz_init(s);
 //     bytes_to_bigint(s, secret, ctx->secret_len);
 
-
 //     for (int i=0; i<ctx->n; i++) {
-        
+
 //     }
 // }
 

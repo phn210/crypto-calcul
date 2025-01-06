@@ -1,6 +1,6 @@
 #include "dsa.h"
 
-void test_setup(public_params_t *pp, SECURITY_LEVEL level, HASH_FUNCTION hash)
+void test_setup(public_params_t *pp, sec_level_t level, hash_func_t hash)
 {
     setup(pp, level, hash);
 

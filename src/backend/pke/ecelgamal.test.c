@@ -1,6 +1,6 @@
 #include "ecelgamal.h"
 
-void test_setup(public_params_t *pp, EC curve_type, unsigned char curve_id)
+void test_setup(public_params_t *pp, ec_t curve_type, unsigned char curve_id)
 {
     setup(pp, curve_type, curve_id);
     // Print parameters for debugging
@@ -22,7 +22,7 @@ void test_keygen(priv_key_t *sk, pub_key_t *pk, const public_params_t *pp)
     // gmp_printf("Public Key (Yy): %Zd\n", pk->Y.y);
 }
 
-void test_encrypt_decrypt(priv_key_t sk, pub_key_t pk, public_params_t pp, HASH_FUNCTION hash_function)
+void test_encrypt_decrypt(priv_key_t sk, pub_key_t pk, public_params_t pp, hash_func_t hash_function)
 {
     mpz_t m, c1, c2, decrypted_m;
 

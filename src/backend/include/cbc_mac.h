@@ -4,6 +4,6 @@
 #include "common.h"
 #include "aes.h"
 
-void cbc_mac(const void *key, size_t keysize, const void *data, size_t data_len, void *mac, SECURITY_LEVEL sec_level);
+void cbc_mac(const void *key, size_t keysize, const void *data, size_t data_len, void *mac, sec_level_t sec_level);
 
 #endif

@@ -1,4 +1,4 @@
-from wrappers.enum import PrimalityTest, HashFunction, SecurityLevel # type: ignore
+from wrappers.enums import PrimalityTest, HashFunction, SecurityLevel # type: ignore
 from wrappers.gmp import GMPInteger # type: ignore
 from wrappers.rng import RNG # type: ignore
 from wrappers.prime import Prime # type: ignore
@@ -28,7 +28,6 @@ sha1 = SHA1()
 sha256 = SHA256()
 sha3_512 = SHA3_512()
 digest = md5.hash(bytes(message, 'utf-8'))
-print(digest.hex())
 digest = sha1.hash(bytes(message, 'utf-8'))
 digest = sha256.hash(bytes(message, 'utf-8'))
 digest = sha3_512.hash(bytes(message, 'utf-8'))

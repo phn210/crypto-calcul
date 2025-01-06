@@ -1,6 +1,6 @@
 from libc.stdlib cimport malloc, free
 from wrappers.gmp cimport GMPInteger, mpz_t, mpz_init, mpz_clear, mpz_set, mpz_set_ui, mpz_get_ui
-from wrappers.enum cimport EC as ECType, WeierstrassCurve, MontgomeryCurve, EdwardsCurve
+from wrappers.enums import EC as ECType, WeierstrassCurve, MontgomeryCurve, EdwardsCurve
 from dataclasses import dataclass
 
 cdef extern from "ec.h":
@@ -67,12 +67,12 @@ class CurveInfo:
 cdef class EC:
 
     cdef curve_t curve
-    cdef public int curve_type, curve_id
+    cdef public curve_type, curve_id
 
-    def __init__(self, ECType curve_type, curve_id):
+    def __init__(self, curve_type: ECType, curve_id: WeierstrassCurve | MontgomeryCurve | EdwardsCurve):
         self.curve_type = curve_type
         self.curve_id = curve_id
-        init_curve(&self.curve, curve_type, curve_id)
+        init_curve(&self.curve, self.curve_type.value, self.curve_id.value)
 
     def __dealloc__(self):
         free_curve(&self.curve)

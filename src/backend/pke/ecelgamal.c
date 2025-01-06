@@ -4,7 +4,7 @@
 #include "sha2.h"
 #include "sha3.h"
 
-void setup(public_params_t *pp, EC curve_type, unsigned char curve_id)
+void setup(public_params_t *pp, ec_t curve_type, unsigned char curve_id)
 {
     init_curve(&pp->curve, curve_type, curve_id);
 }
@@ -24,7 +24,7 @@ void keygen(priv_key_t *sk, pub_key_t *pk, const public_params_t *pp)
     gmp_randclear(state);
 }
 
-void encrypt(mpz_t c1, mpz_t c2, const mpz_t m, const pub_key_t *pk, const public_params_t *pp, HASH_FUNCTION hash_function)
+void encrypt(mpz_t c1, mpz_t c2, const mpz_t m, const pub_key_t *pk, const public_params_t *pp, hash_func_t hash_function)
 {
     void (*hash)(const void *, size_t, void *, size_t);
     size_t md_len = pp->curve.md_len;
@@ -88,7 +88,7 @@ void encrypt(mpz_t c1, mpz_t c2, const mpz_t m, const pub_key_t *pk, const publi
     free(h);
 }
 
-void decrypt(mpz_t m, const mpz_t c1, const mpz_t c2, const priv_key_t *sk, const public_params_t *pp, HASH_FUNCTION hash_function)
+void decrypt(mpz_t m, const mpz_t c1, const mpz_t c2, const priv_key_t *sk, const public_params_t *pp, hash_func_t hash_function)
 {
     void (*hash)(const void *, size_t, void *, size_t);
     size_t md_len = pp->curve.md_len;

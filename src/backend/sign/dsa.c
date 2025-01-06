@@ -5,7 +5,7 @@
 #include "sha2.h"
 #include "sha3.h"
 
-void setup(public_params_t *pp, SECURITY_LEVEL level, HASH_FUNCTION hash)
+void setup(public_params_t *pp, sec_level_t level, hash_func_t hash)
 {
     mpz_t tmp;
     mpz_inits(tmp, pp->p, pp->q, pp->g, NULL);

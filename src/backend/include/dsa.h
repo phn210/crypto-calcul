@@ -36,7 +36,7 @@ typedef struct priv_key
     mpz_t x;
 } priv_key_t;
 
-void setup(public_params_t *pp, SECURITY_LEVEL level, HASH_FUNCTION hash);
+void setup(public_params_t *pp, sec_level_t level, hash_func_t hash);
 void keygen(priv_key_t *sk, pub_key_t *pk, public_params_t pp);
 void sign(mpz_t r, mpz_t s, const unsigned char *m, int len, priv_key_t sk, public_params_t pp);
 char verify(const mpz_t r, const mpz_t s, const unsigned char *m, int len, pub_key_t pk, public_params_t pp);

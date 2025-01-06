@@ -4,6 +4,37 @@
 #include <common.h>
 #include <ec_param.h>
 
+typedef enum ec
+{
+    WEIERSTRASS,
+    MONTGOMERY,
+    EDWARDS
+} ec_t;
+
+typedef enum weierstrass_curve
+{
+    P224,
+    P256,
+    P384,
+    P521,
+    P256K1,
+    W25519,
+    W448
+} weierstrass_curve_t;
+
+typedef enum montgomery_curve
+{
+    C25519,
+    C448
+} montgomery_curve_t;
+
+typedef enum edwards_curve
+{
+    ED25519,
+    ED448,
+    E448
+} edwards_curve_t;
+
 typedef struct point
 {
     mpz_t x;
@@ -42,7 +73,7 @@ void init_affine(point_affine_t *p);
 void free_affine(point_affine_t *p);
 void copy_affine(point_affine_t *r, const point_affine_t p);
 
-void init_curve(curve_t *curve, EC curve_type, unsigned char curve_id);
+void init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id);
 void free_curve(curve_t *curve);
 
 void rhs(mpz_t r, const mpz_t x, const curve_t curve);

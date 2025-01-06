@@ -1,6 +1,6 @@
 #include "dh.h"
 
-void test_setup(public_params_t *pp, SECURITY_LEVEL level)
+void test_setup(public_params_t *pp, sec_level_t level)
 {
     setup(pp, level);
     // Print parameters for debugging

@@ -1,6 +1,6 @@
 #include "rsa.h"
 
-void test_setup(public_params_t *pp, SECURITY_LEVEL level)
+void test_setup(public_params_t *pp, sec_level_t level)
 {
     setup(pp, level);
     // gmp_printf("Public Parameters (n_bits): %d\n", pp->n_bits);
@@ -28,7 +28,7 @@ void test_sign_verify(priv_key_t sk, pub_key_t pk, public_params_t pp)
     mpz_init_set_str(m, "1234567890", 10);
     mpz_init(s);
 
-    sign(s, m, &sk, STANDARD);
+    sign(s, m, &sk, RSA_STANDARD);
     // gmp_printf("Signature: %Zd\n", s);
 
     printf("[0] Textbook RSA:\t\t");
@@ -47,7 +47,7 @@ void test_sign_verify_crt(priv_key_t sk, pub_key_t pk, public_params_t pp)
     mpz_init_set_str(m, "1234567890", 10);
     mpz_init(s);
 
-    sign(s, m, &sk, CRT);
+    sign(s, m, &sk, RSA_CRT);
     // gmp_printf("Signature: %Zd\n", s);
 
     printf("[1] Textbook RSA mode CRT:");
@@ -59,14 +59,14 @@ void test_sign_verify_crt(priv_key_t sk, pub_key_t pk, public_params_t pp)
     mpz_clears(pp.e, sk.n, sk.p, sk.q, sk.d, sk.dp, sk.dq, sk.q_inv, pk.n, pk.e, m, s, NULL);
 }
 
-void test_sign_verify_pkcs1(priv_key_t sk, pub_key_t pk, public_params_t pp, SECURITY_LEVEL sec_level)
+void test_sign_verify_pkcs1(priv_key_t sk, pub_key_t pk, public_params_t pp, sec_level_t sec_level)
 {
     mpz_t m, s;
 
     mpz_init_set_str(m, "1234567890", 10);
     mpz_init(s);
 
-    sign_pkcs1(s, m, &sk, STANDARD, sec_level);
+    sign_pkcs1(s, m, &sk, RSA_STANDARD, sec_level);
 
     printf("[2] PKCS#1 v1.5:\t\t");
     if (verify_pkcs1(m, s, &pk, sec_level))
@@ -77,14 +77,14 @@ void test_sign_verify_pkcs1(priv_key_t sk, pub_key_t pk, public_params_t pp, SEC
     mpz_clears(pp.e, sk.n, sk.p, sk.q, sk.d, pk.n, pk.e, m, s, NULL);
 }
 
-void test_sign_verify_pkcs1_crt(priv_key_t sk, pub_key_t pk, public_params_t pp, SECURITY_LEVEL sec_level)
+void test_sign_verify_pkcs1_crt(priv_key_t sk, pub_key_t pk, public_params_t pp, sec_level_t sec_level)
 {
     mpz_t m, s;
 
     mpz_init_set_str(m, "1234567890", 10);
     mpz_init(s);
 
-    sign_pkcs1(s, m, &sk, CRT, sec_level);
+    sign_pkcs1(s, m, &sk, RSA_CRT, sec_level);
 
     printf("[3] PKCS#1 v1.5 mode CRT:");
     if (verify_pkcs1(m, s, &pk, sec_level))
@@ -95,14 +95,14 @@ void test_sign_verify_pkcs1_crt(priv_key_t sk, pub_key_t pk, public_params_t pp,
     mpz_clears(pp.e, sk.n, sk.p, sk.q, sk.d, sk.dp, sk.dq, sk.q_inv, pk.n, pk.e, m, s, NULL);
 }
 
-void test_sign_verify_pss(priv_key_t sk, pub_key_t pk, public_params_t pp, SECURITY_LEVEL sec_level)
+void test_sign_verify_pss(priv_key_t sk, pub_key_t pk, public_params_t pp, sec_level_t sec_level)
 {
     mpz_t m, s;
 
     mpz_init_set_str(m, "1234567890", 10);
     mpz_init(s);
 
-    sign_pss(s, m, &sk, STANDARD, sec_level);
+    sign_pss(s, m, &sk, RSA_STANDARD, sec_level);
 
     printf("[4] PSS:\t\t\t");
     if (verify_pss(m, s, &pk, sec_level))
@@ -113,14 +113,14 @@ void test_sign_verify_pss(priv_key_t sk, pub_key_t pk, public_params_t pp, SECUR
     mpz_clears(pp.e, sk.n, sk.p, sk.q, sk.d, pk.n, pk.e, m, s, NULL);
 }
 
-void test_sign_verify_pss_crt(priv_key_t sk, pub_key_t pk, public_params_t pp, SECURITY_LEVEL sec_level)
+void test_sign_verify_pss_crt(priv_key_t sk, pub_key_t pk, public_params_t pp, sec_level_t sec_level)
 {
     mpz_t m, s;
 
     mpz_init_set_str(m, "1234567890", 10);
     mpz_init(s);
 
-    sign_pss(s, m, &sk, CRT, sec_level);
+    sign_pss(s, m, &sk, RSA_CRT, sec_level);
 
     printf("[5] PSS mode CRT:\t\t");
     if (verify_pss(m, s, &pk, sec_level))
@@ -138,7 +138,7 @@ int main()
     public_params_t pp;
     priv_key_t sk;
     pub_key_t pk;
-    SECURITY_LEVEL sec_level = L0;
+    sec_level_t sec_level = L0;
 
     // Test standard RSA signature
     test_setup(&pp, sec_level);

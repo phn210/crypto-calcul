@@ -14,7 +14,7 @@ class CustomBuildExtension(build_ext):
 
 def get_extension(name, c_sources, wrapper_sources=[]):
     module = name.split(".")[-1]
-    sources = [f'{SRC_DIR}/{file}' for file in c_sources] + [f'{WRAPPER_DIR}/{module}/__init__.pyx']
+    sources = [f'{SRC_DIR}/{file}' for file in c_sources] + [f'{WRAPPER_DIR}/{module}/__init__.py' if module == "enums" else f'{WRAPPER_DIR}/{module}/__init__.pyx']
     # + [f'{WRAPPER_DIR}/{file}' for file in wrapper_sources]
 
     include_dirs = [SRC_DIR, f'{SRC_DIR}/include'] + list(
@@ -42,7 +42,7 @@ setup(
     ext_modules=cythonize(
         [
             get_extension(
-                "wrappers.enum",
+                "wrappers.enums",
                 c_sources=[],
             ),
             get_extension(

@@ -1,6 +1,6 @@
 #include "elgamal.h"
 
-void test_setup(public_params_t *pp, SECURITY_LEVEL level)
+void test_setup(public_params_t *pp, sec_level_t level)
 {
     setup(pp, level);
     // gmp_printf("Public Parameters (p): %Zd\n", pp->p);
@@ -15,7 +15,7 @@ void test_keygen(priv_key_t *sk, pub_key_t *pk, const public_params_t *pp)
     // gmp_printf("Public Key (y): %Zd\n", pk->y);
 }
 
-void test_sign_verify(priv_key_t sk, pub_key_t pk, public_params_t pp, SECURITY_LEVEL sec_level)
+void test_sign_verify(priv_key_t sk, pub_key_t pk, public_params_t pp, sec_level_t sec_level)
 {
     const unsigned char *m = (unsigned char *)"1234567890";
     size_t m_len = strlen((const char *)m);
@@ -42,7 +42,7 @@ int main()
     public_params_t pp;
     priv_key_t sk;
     pub_key_t pk;
-    SECURITY_LEVEL sec_level = L0;
+    sec_level_t sec_level = L0;
 
     // Test ElGamal signature
     test_setup(&pp, sec_level);

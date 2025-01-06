@@ -1,5 +1,5 @@
 from libc.stdlib cimport malloc
-from wrappers.enum cimport SecurityLevel
+from wrappers.enums import SecurityLevel
 
 cdef extern from "sha2.h":
     void *sha2(const void *m, size_t len, void *md, size_t md_len)
@@ -7,7 +7,7 @@ cdef extern from "sha2.h":
 cdef class SHA2:
     cdef size_t md_len
     
-    def __init__(self, SecurityLevel sec_level):
+    def __init__(self, sec_level: SecurityLevel):
         if sec_level == SecurityLevel.L0:
             self.md_len = 28
         elif sec_level == SecurityLevel.L1:

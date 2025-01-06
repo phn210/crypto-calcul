@@ -87,7 +87,7 @@ int test_miller_rabin(mpz_t n, gmp_randstate_t state, int t)
     return 1;
 }
 
-int primality_test(mpz_t n, gmp_randstate_t state, int t, PRIMALITY_TEST test)
+int primality_test(mpz_t n, gmp_randstate_t state, int t, prime_test_t test)
 {
     if (mpz_cmp_ui(n, 2) < 0)
         return 0;

@@ -1,7 +1,7 @@
 #include "cbc_mac.h"
 #include "conversion.h"
 
-void cbc_mac(const void *key, size_t keysize, const void *data, size_t data_len, void *mac, SECURITY_LEVEL sec_level)
+void cbc_mac(const void *key, size_t keysize, const void *data, size_t data_len, void *mac, sec_level_t sec_level)
 {
     size_t key_len;
     switch (sec_level)

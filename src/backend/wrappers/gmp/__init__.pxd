@@ -12,7 +12,9 @@ cdef extern from "gmp.h":
 
     # GMP Functions
     void mpz_init(mpz_t)
+    void mpz_inits(mpz_ptr, ...)
     void mpz_clear(mpz_t)
+    void mpz_clears(mpz_ptr, ...)
     void mpz_set(mpz_t, mpz_t)
     void mpz_set_ui(mpz_t, unsigned long int)
     void mpz_set_str(mpz_t, const char *str, int)

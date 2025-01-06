@@ -16,6 +16,12 @@
 #define L3_N_BITS 15360
 #define L3_E "65537"
 
+typedef enum
+{
+    RSA_STANDARD,
+    RSA_CRT
+} rsa_algo_t;
+
 typedef struct public_params
 {
     int n_bits;
@@ -40,23 +46,23 @@ typedef struct priv_key
 } priv_key_t;
 
 // Core RSA functions
-void setup(public_params_t *pp, SECURITY_LEVEL level);
+void setup(public_params_t *pp, sec_level_t level);
 
 void keygen(priv_key_t *sk, pub_key_t *pk, public_params_t pp);
 
 void encrypt(mpz_t c, const mpz_t m, const pub_key_t *pk);
-void decrypt(mpz_t m, const mpz_t c, const priv_key_t *sk, RSA_ALGORITHM algorithm);
-void sign(mpz_t s, const mpz_t m, const priv_key_t *sk, RSA_ALGORITHM algorithm);
+void decrypt(mpz_t m, const mpz_t c, const priv_key_t *sk, rsa_algo_t algorithm);
+void sign(mpz_t s, const mpz_t m, const priv_key_t *sk, rsa_algo_t algorithm);
 int verify(const mpz_t m, const mpz_t s, const pub_key_t *pk);
 
 void encrypt_pkcs1(mpz_t c, const mpz_t m, const pub_key_t *pk);
-void decrypt_pkcs1(mpz_t m, const mpz_t c, const priv_key_t *sk, RSA_ALGORITHM algorithm);
-void sign_pkcs1(mpz_t s, const mpz_t m, const priv_key_t *sk, RSA_ALGORITHM algorithm, SECURITY_LEVEL sec_level);
-int verify_pkcs1(const mpz_t m, const mpz_t s, const pub_key_t *pk, SECURITY_LEVEL sec_level);
+void decrypt_pkcs1(mpz_t m, const mpz_t c, const priv_key_t *sk, rsa_algo_t algorithm);
+void sign_pkcs1(mpz_t s, const mpz_t m, const priv_key_t *sk, rsa_algo_t algorithm, sec_level_t sec_level);
+int verify_pkcs1(const mpz_t m, const mpz_t s, const pub_key_t *pk, sec_level_t sec_level);
 
-void encrypt_oaep(mpz_t c, const mpz_t m, const pub_key_t *pk, SECURITY_LEVEL sec_level);
-void decrypt_oaep(mpz_t m, const mpz_t c, const priv_key_t *sk, RSA_ALGORITHM algorithm, SECURITY_LEVEL sec_level);
-void sign_pss(mpz_t s, const mpz_t m, const priv_key_t *sk, RSA_ALGORITHM algorithm, SECURITY_LEVEL sec_level);
-int verify_pss(const mpz_t m, const mpz_t s, const pub_key_t *pk, SECURITY_LEVEL sec_level);
+void encrypt_oaep(mpz_t c, const mpz_t m, const pub_key_t *pk, sec_level_t sec_level);
+void decrypt_oaep(mpz_t m, const mpz_t c, const priv_key_t *sk, rsa_algo_t algorithm, sec_level_t sec_level);
+void sign_pss(mpz_t s, const mpz_t m, const priv_key_t *sk, rsa_algo_t algorithm, sec_level_t sec_level);
+int verify_pss(const mpz_t m, const mpz_t s, const pub_key_t *pk, sec_level_t sec_level);
 
 #endif

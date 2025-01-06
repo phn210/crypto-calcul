@@ -27,14 +27,14 @@ static const unsigned char pkcs1_sha512[] = {
     0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x03, 0x05,
     0x00, 0x04, 0x40};
 
-void rsasp1(mpz_t s, const mpz_t m, const priv_key_t *sk, RSA_ALGORITHM algorithm)
+void rsasp1(mpz_t s, const mpz_t m, const priv_key_t *sk, rsa_algo_t algorithm)
 {
-    if (algorithm == STANDARD)
+    if (algorithm == RSA_STANDARD)
     {
         // s = m^d mod n
         mpz_powm(s, m, sk->d, sk->n);
     }
-    else if (algorithm == CRT)
+    else if (algorithm == RSA_CRT)
     {
         // Chinese Remainder Theorem (CRT) optimization for signing
         mpz_t s1, s2, h;
@@ -74,7 +74,7 @@ void rsavp1(mpz_t m, const mpz_t s, const pub_key_t *pk)
     mpz_powm(m, s, pk->e, pk->n);
 }
 
-void sign(mpz_t s, const mpz_t m, const priv_key_t *sk, RSA_ALGORITHM algorithm)
+void sign(mpz_t s, const mpz_t m, const priv_key_t *sk, rsa_algo_t algorithm)
 {
     rsasp1(s, m, sk, algorithm);
 }
@@ -91,7 +91,7 @@ int verify(const mpz_t m, const mpz_t s, const pub_key_t *pk)
     return result;
 }
 
-void emsa_pkcs1_encode(unsigned char *em, size_t em_len, const unsigned char *m, size_t m_len, SECURITY_LEVEL sec_level)
+void emsa_pkcs1_encode(unsigned char *em, size_t em_len, const unsigned char *m, size_t m_len, sec_level_t sec_level)
 {
     unsigned char *md;
     size_t md_len;
@@ -140,7 +140,7 @@ void emsa_pkcs1_encode(unsigned char *em, size_t em_len, const unsigned char *m,
     free(md);
 }
 
-void sign_pkcs1(mpz_t s, const mpz_t m, const priv_key_t *sk, RSA_ALGORITHM algorithm, SECURITY_LEVEL sec_level)
+void sign_pkcs1(mpz_t s, const mpz_t m, const priv_key_t *sk, rsa_algo_t algorithm, sec_level_t sec_level)
 {
     unsigned char *buf = (unsigned char *)malloc(count_bytes(m));
     size_t buf_len;
@@ -163,7 +163,7 @@ void sign_pkcs1(mpz_t s, const mpz_t m, const priv_key_t *sk, RSA_ALGORITHM algo
     free(buf);
 }
 
-int verify_pkcs1(const mpz_t m, const mpz_t s, const pub_key_t *pk, SECURITY_LEVEL sec_level)
+int verify_pkcs1(const mpz_t m, const mpz_t s, const pub_key_t *pk, sec_level_t sec_level)
 {
     unsigned char *buf = (unsigned char *)malloc(count_bytes(m));
     size_t buf_len;
@@ -189,7 +189,7 @@ int verify_pkcs1(const mpz_t m, const mpz_t s, const pub_key_t *pk, SECURITY_LEV
     return result;
 }
 
-void emsa_pss_encode(unsigned char *em, size_t em_bits, const unsigned char *m, size_t m_len, SECURITY_LEVEL sec_level)
+void emsa_pss_encode(unsigned char *em, size_t em_bits, const unsigned char *m, size_t m_len, sec_level_t sec_level)
 {
     size_t em_len = (em_bits / 8) * 8 < em_bits ? (em_bits / 8) + 1 : em_bits / 8;
     size_t hash_len;
@@ -257,7 +257,7 @@ void emsa_pss_encode(unsigned char *em, size_t em_bits, const unsigned char *m, 
     free(dbMask);
 }
 
-int emsa_pss_verify(const unsigned char *em, size_t em_bits, const unsigned char *m, size_t m_len, SECURITY_LEVEL sec_level)
+int emsa_pss_verify(const unsigned char *em, size_t em_bits, const unsigned char *m, size_t m_len, sec_level_t sec_level)
 {
     size_t em_len = (em_bits / 8) * 8 < em_bits ? (em_bits / 8) + 1 : em_bits / 8;
     size_t hash_len;
@@ -330,7 +330,7 @@ int emsa_pss_verify(const unsigned char *em, size_t em_bits, const unsigned char
     return result;
 }
 
-void sign_pss(mpz_t s, const mpz_t m, const priv_key_t *sk, RSA_ALGORITHM algorithm, SECURITY_LEVEL sec_level)
+void sign_pss(mpz_t s, const mpz_t m, const priv_key_t *sk, rsa_algo_t algorithm, sec_level_t sec_level)
 {
     unsigned char *buf = (unsigned char *)malloc(count_bytes(m));
     size_t buf_len;
@@ -353,7 +353,7 @@ void sign_pss(mpz_t s, const mpz_t m, const priv_key_t *sk, RSA_ALGORITHM algori
     free(buf);
 }
 
-int verify_pss(const mpz_t m, const mpz_t s, const pub_key_t *pk, SECURITY_LEVEL sec_level)
+int verify_pss(const mpz_t m, const mpz_t s, const pub_key_t *pk, sec_level_t sec_level)
 {
     unsigned char *buf = (unsigned char *)malloc(count_bytes(m));
     size_t buf_len;

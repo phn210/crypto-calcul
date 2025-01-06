@@ -3,6 +3,13 @@
 
 #include "common.h"
 
+typedef enum ss_algo
+{
+    ADDITIVE,
+    MULTIPLICATIVE,
+    SHAMIR
+} ss_algo_t;
+
 typedef struct ss_share
 {
     uint8_t *s; // shares
@@ -11,7 +18,7 @@ typedef struct ss_share
 
 typedef struct ss_ctx
 {
-    SECRET_SHARING scheme; // secret sharing scheme
+    ss_algo_t scheme; // secret sharing scheme
     size_t n; // number of shares
     size_t t; // maximum number of shares without reconstruction
     size_t share_len; // share length in bytes
@@ -22,7 +29,7 @@ typedef struct ss_ctx
     char is_ready; // ready flag
 } ss_ctx_t;
 
-void init_ss(ss_ctx_t *ctx, size_t n, size_t t, size_t p, SECRET_SHARING scheme);
+void init_ss(ss_ctx_t *ctx, size_t n, size_t t, size_t p, ss_algo_t scheme);
 void free_ss(ss_ctx_t *ctx);
 
 void create_shares(ss_ctx_t *ctx, const uint8_t *secret);

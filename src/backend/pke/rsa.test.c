@@ -1,6 +1,6 @@
 #include "rsa.h"
 
-void test_setup(public_params_t *pp, SECURITY_LEVEL level)
+void test_setup(public_params_t *pp, sec_level_t level)
 {
     setup(pp, level);
     // gmp_printf("Public Parameters (n_bits): %d\n", pp->n_bits);
@@ -32,7 +32,7 @@ void test_encrypt_decrypt(priv_key_t sk, pub_key_t pk, public_params_t pp)
     encrypt(c, m, &pk);
     // gmp_printf("Ciphertext: %Zd\n", c);
 
-    decrypt(decrypted_m, c, &sk, STANDARD);
+    decrypt(decrypted_m, c, &sk, RSA_STANDARD);
     // gmp_printf("Decrypted Message: %Zd\n", decrypted_m);
 
     printf("[0] Textbook RSA:\t\t");
@@ -54,7 +54,7 @@ void test_encrypt_decrypt_crt(priv_key_t sk, pub_key_t pk, public_params_t pp)
     encrypt(c, m, &pk);
     // gmp_printf("Ciphertext: %Zd\n", c);
 
-    decrypt(decrypted_m, c, &sk, CRT);
+    decrypt(decrypted_m, c, &sk, RSA_CRT);
     // gmp_printf("Decrypted Message: %Zd\n", decrypted_m);
 
     printf("[1] Textbook RSA mode CRT:");
@@ -76,7 +76,7 @@ void test_encrypt_decrypt_pkcs1(priv_key_t sk, pub_key_t pk, public_params_t pp)
     encrypt_pkcs1(c, m, &pk);
     // gmp_printf("Ciphertext: %Zd\n", c);
 
-    decrypt_pkcs1(decrypted_m, c, &sk, STANDARD);
+    decrypt_pkcs1(decrypted_m, c, &sk, RSA_STANDARD);
     // gmp_printf("Decrypted Message: %Zd\n", decrypted_m);
 
     printf("[2] PKCS#1 v1.5:\t\t");
@@ -98,7 +98,7 @@ void test_encrypt_decrypt_pkcs1_crt(priv_key_t sk, pub_key_t pk, public_params_t
     encrypt_pkcs1(c, m, &pk);
     // gmp_printf("Ciphertext: %Zd\n", c);
 
-    decrypt_pkcs1(decrypted_m, c, &sk, CRT);
+    decrypt_pkcs1(decrypted_m, c, &sk, RSA_CRT);
     // gmp_printf("Decrypted Message: %Zd\n", decrypted_m);
 
     printf("[3] PKCS#1 v1.5 mode CRT:");
@@ -110,7 +110,7 @@ void test_encrypt_decrypt_pkcs1_crt(priv_key_t sk, pub_key_t pk, public_params_t
     mpz_clears(pp.e, sk.n, sk.p, sk.q, sk.d, sk.dp, sk.dq, sk.q_inv, pk.n, pk.e, m, c, decrypted_m, NULL);
 }
 
-void test_encrypt_decrypt_oaep(priv_key_t sk, pub_key_t pk, public_params_t pp, SECURITY_LEVEL sec_level)
+void test_encrypt_decrypt_oaep(priv_key_t sk, pub_key_t pk, public_params_t pp, sec_level_t sec_level)
 {
     mpz_t m, c, decrypted_m;
 
@@ -118,7 +118,7 @@ void test_encrypt_decrypt_oaep(priv_key_t sk, pub_key_t pk, public_params_t pp, 
     mpz_inits(c, decrypted_m, NULL);
 
     encrypt_oaep(c, m, &pk, sec_level);
-    decrypt_oaep(decrypted_m, c, &sk, STANDARD, sec_level);
+    decrypt_oaep(decrypted_m, c, &sk, RSA_STANDARD, sec_level);
 
     printf("[4] OAEP:\t\t\t");
     if (mpz_cmp(m, decrypted_m) == 0)
@@ -129,7 +129,7 @@ void test_encrypt_decrypt_oaep(priv_key_t sk, pub_key_t pk, public_params_t pp, 
     mpz_clears(pp.e, sk.n, sk.p, sk.q, sk.d, pk.n, pk.e, m, c, decrypted_m, NULL);
 }
 
-void test_encrypt_decrypt_oaep_crt(priv_key_t sk, pub_key_t pk, public_params_t pp, SECURITY_LEVEL sec_level)
+void test_encrypt_decrypt_oaep_crt(priv_key_t sk, pub_key_t pk, public_params_t pp, sec_level_t sec_level)
 {
     mpz_t m, c, decrypted_m;
 
@@ -137,7 +137,7 @@ void test_encrypt_decrypt_oaep_crt(priv_key_t sk, pub_key_t pk, public_params_t 
     mpz_inits(c, decrypted_m, NULL);
 
     encrypt_oaep(c, m, &pk, sec_level);
-    decrypt_oaep(decrypted_m, c, &sk, CRT, sec_level);
+    decrypt_oaep(decrypted_m, c, &sk, RSA_CRT, sec_level);
 
     printf("[5] OAEP mode CRT:\t\t");
     if (mpz_cmp(m, decrypted_m) == 0)
@@ -156,7 +156,7 @@ int main()
     priv_key_t sk;
     pub_key_t pk;
     priv_key_t sk_crt;
-    SECURITY_LEVEL sec_level = L0;
+    sec_level_t sec_level = L0;
 
     // Test standard RSA
     test_setup(&pp, sec_level);

@@ -41,14 +41,14 @@ void rsaep(mpz_t c, const mpz_t m, const pub_key_t *pk)
     mpz_powm(c, m, pk->e, pk->n);
 }
 
-void rsadp(mpz_t m, const mpz_t c, const priv_key_t *sk, RSA_ALGORITHM algo)
+void rsadp(mpz_t m, const mpz_t c, const priv_key_t *sk, rsa_algo_t algo)
 {
-    if (algo == STANDARD)
+    if (algo == RSA_STANDARD)
     {
         // m = c^d mod n
         mpz_powm(m, c, sk->d, sk->n);
     }
-    else if (algo == CRT)
+    else if (algo == RSA_CRT)
     {
         // Chinese Remainder Theorem (CRT) optimization for decryption
         mpz_t m1, m2, h;
@@ -82,7 +82,7 @@ void rsadp(mpz_t m, const mpz_t c, const priv_key_t *sk, RSA_ALGORITHM algo)
     }
 }
 
-void setup(public_params_t *pp, SECURITY_LEVEL level)
+void setup(public_params_t *pp, sec_level_t level)
 {
     mpz_init(pp->e);
 
@@ -170,7 +170,7 @@ void encrypt(mpz_t c, const mpz_t m, const pub_key_t *pk)
     rsaep(c, m, pk);
 }
 
-void decrypt(mpz_t m, const mpz_t c, const priv_key_t *sk, RSA_ALGORITHM algorithm)
+void decrypt(mpz_t m, const mpz_t c, const priv_key_t *sk, rsa_algo_t algorithm)
 {
     rsadp(m, c, sk, algorithm);
 }
@@ -230,7 +230,7 @@ void encrypt_pkcs1(mpz_t c, const mpz_t m, const pub_key_t *pk)
     free(buf);
 }
 
-void decrypt_pkcs1(mpz_t m, const mpz_t c, const priv_key_t *sk, RSA_ALGORITHM algorithm)
+void decrypt_pkcs1(mpz_t m, const mpz_t c, const priv_key_t *sk, rsa_algo_t algorithm)
 {
     size_t k = count_bytes(sk->n);
     size_t c_len = count_bytes(c);
@@ -268,7 +268,7 @@ void decrypt_pkcs1(mpz_t m, const mpz_t c, const priv_key_t *sk, RSA_ALGORITHM a
     free(buf);
 }
 
-void eme_oaep_encode(unsigned char *em, size_t em_len, unsigned char *m, size_t m_len, SECURITY_LEVEL sec_level)
+void eme_oaep_encode(unsigned char *em, size_t em_len, unsigned char *m, size_t m_len, sec_level_t sec_level)
 {
     // Generate padding
     size_t hash_len;
@@ -349,7 +349,7 @@ void eme_oaep_encode(unsigned char *em, size_t em_len, unsigned char *m, size_t 
     gmp_randclear(state);
 }
 
-void encrypt_oaep(mpz_t c, const mpz_t m, const pub_key_t *pk, SECURITY_LEVEL sec_level)
+void encrypt_oaep(mpz_t c, const mpz_t m, const pub_key_t *pk, sec_level_t sec_level)
 {
     size_t m_len = count_bytes(m);
     size_t k = count_bytes(pk->n);
@@ -374,7 +374,7 @@ void encrypt_oaep(mpz_t c, const mpz_t m, const pub_key_t *pk, SECURITY_LEVEL se
     free(buf);
 }
 
-void decrypt_oaep(mpz_t m, const mpz_t c, const priv_key_t *sk, RSA_ALGORITHM algorithm, SECURITY_LEVEL sec_level)
+void decrypt_oaep(mpz_t m, const mpz_t c, const priv_key_t *sk, rsa_algo_t algorithm, sec_level_t sec_level)
 {
     size_t k = count_bytes(sk->n);
     size_t c_len = count_bytes(c);
@@ -406,7 +406,7 @@ void decrypt_oaep(mpz_t m, const mpz_t c, const priv_key_t *sk, RSA_ALGORITHM al
     }
 
     // Decrypt
-    rsadp(m, c, sk, STANDARD);
+    rsadp(m, c, sk, algorithm);
 
     // Convert to bytes
     unsigned char *buf = (unsigned char *)malloc(k);

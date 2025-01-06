@@ -21,7 +21,7 @@ int check_w_has_0(mpz_t *w, int k)
     return 0;
 }
 
-void gen_prime_b(mpz_t n, gmp_randstate_t state, int b, int k, int t, PRIMALITY_TEST test)
+void gen_prime_b(mpz_t n, gmp_randstate_t state, int b, int k, int t, prime_test_t test)
 {
     mpz_t q, tmp;
     mpz_inits(q, tmp, NULL);
@@ -58,7 +58,7 @@ void gen_prime_b(mpz_t n, gmp_randstate_t state, int b, int k, int t, PRIMALITY_
     mpz_clear(q);
 }
 
-void gen_prime_m(mpz_t n, gmp_randstate_t state, mpz_t m, int k, int t, PRIMALITY_TEST test)
+void gen_prime_m(mpz_t n, gmp_randstate_t state, mpz_t m, int k, int t, prime_test_t test)
 {
     mpz_t q, tmp;
     mpz_inits(q, tmp, NULL);

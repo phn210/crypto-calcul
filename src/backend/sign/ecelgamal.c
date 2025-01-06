@@ -4,7 +4,7 @@
 #include "sha2.h"
 #include "sha3.h"
 
-void sign(mpz_t s1, mpz_t s2, const unsigned char *m, size_t m_len, const priv_key_t *sk, const public_params_t *pp, HASH_FUNCTION hash_function)
+void sign(mpz_t s1, mpz_t s2, const unsigned char *m, size_t m_len, const priv_key_t *sk, const public_params_t *pp, hash_func_t hash_function)
 {
     void (*hash)(const void *, size_t, void *, size_t);
     size_t md_len = pp->curve.md_len;
@@ -68,7 +68,7 @@ void sign(mpz_t s1, mpz_t s2, const unsigned char *m, size_t m_len, const priv_k
     free(buf);
 }
 
-char verify(const mpz_t s1, const mpz_t s2, const unsigned char *m, size_t m_len, const pub_key_t *pk, const public_params_t *pp, HASH_FUNCTION hash_function)
+char verify(const mpz_t s1, const mpz_t s2, const unsigned char *m, size_t m_len, const pub_key_t *pk, const public_params_t *pp, hash_func_t hash_function)
 {
     void (*hash)(const void *, size_t, void *, size_t);
     size_t md_len = pp->curve.md_len;

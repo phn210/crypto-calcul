@@ -3,7 +3,7 @@
 #include "prime_gen.h"
 #include "rng.h"
 
-void setup(public_params_t *pp, SECURITY_LEVEL level)
+void setup(public_params_t *pp, sec_level_t level)
 {
     mpz_inits(pp->p, pp->g, NULL);
 

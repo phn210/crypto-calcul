@@ -1,11 +1,11 @@
 #include "conversion.h"
 
-void bytes_to_bigint(mpz_t result, const unsigned char *buf, size_t len, BYTE_ORDER order)
+void bytes_to_bigint(mpz_t result, const unsigned char *buf, size_t len, byte_order_t order)
 {
     mpz_import(result, len, order, 1, 0, 0, buf);
 }
 
-void bigint_to_bytes(unsigned char *buf, size_t *len, const mpz_t num, BYTE_ORDER order)
+void bigint_to_bytes(unsigned char *buf, size_t *len, const mpz_t num, byte_order_t order)
 {
     if (buf == NULL)
     {

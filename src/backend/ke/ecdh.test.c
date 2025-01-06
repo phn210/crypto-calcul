@@ -1,6 +1,6 @@
 #include "ecdh.h"
 
-void test_setup(public_params_t *pp, EC curve_type, unsigned char curve_id)
+void test_setup(public_params_t *pp, ec_t curve_type, unsigned char curve_id)
 {
     setup(pp, curve_type, curve_id);
     // Print parameters for debugging
