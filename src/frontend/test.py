@@ -5,6 +5,7 @@ from wrappers.prime import Prime # type: ignore
 from wrappers.sha3 import SHA3 # type: ignore
 from wrappers.ec import P521, SECP256K1 # type: ignore
 from wrappers.mac import HMAC # type: ignore
+from wrappers.des import DES # type: ignore
 
 rng = RNG()
 base = 16
@@ -33,3 +34,11 @@ p = p * 2
 hmac = HMAC(SecurityLevel.L1, HashFunction.SHA3)
 keys = bytes('secret', 'utf-8')
 data = bytes('Hello, HMAC!', 'utf-8')
+mac = hmac.mac(keys, data)
+
+des = DES()
+keys = bytes.fromhex('133457799BBCDFF1')
+data = bytes('Hello world!', 'utf-8')
+encrypted = des.encrypt(data, keys)
+decrypted = des.decrypt(encrypted, keys)
+

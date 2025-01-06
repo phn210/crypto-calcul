@@ -39,7 +39,7 @@ $(OBJ_DIR):
 $(BIN_DIR):
 	mkdir -p $(BIN_DIR)
 
-wrap: clean_wrapper
+wrap:
 	python3 src/backend/wrappers/setup.py build_ext
 
 # Clean up build artifacts
