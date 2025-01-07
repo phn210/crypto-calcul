@@ -40,3 +40,8 @@ cdef extern from "ec.h":
         _ED25519 "ED25519"
         _ED448 "ED448"
         _E448 "E448"
+    
+cdef extern from "des.h":
+    ctypedef enum des_mode_t:
+        _DES_ENCRYPT "DES_ENCRYPT"
+        _DES_DECRYPT "DES_DECRYPT"

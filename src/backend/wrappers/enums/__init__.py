@@ -39,3 +39,7 @@ class EdwardsCurve(Enum):
     ED25519 = _ED25519
     ED448 = _ED448
     E448 = _E448
+
+class DESMode(Enum):
+    DES_ENCRYPT = _DES_ENCRYPT
+    DES_DECRYPT = _DES_DECRYPT

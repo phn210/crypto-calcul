@@ -14,7 +14,10 @@ class CustomBuildExtension(build_ext):
 
 def get_extension(name, c_sources, wrapper_sources=[]):
     module = name.split(".")[-1]
-    sources = [f'{SRC_DIR}/{file}' for file in c_sources] + [f'{WRAPPER_DIR}/{module}/__init__.py' if module == "enums" else f'{WRAPPER_DIR}/{module}/__init__.pyx']
+    sources = [f'{SRC_DIR}/{file}' for file in c_sources] + \
+        [f'{WRAPPER_DIR}/{module}/__init__.py']
+    # print(sources)
+        # [f'{WRAPPER_DIR}/{module}/__init__.py' if module == "enums" else f'{WRAPPER_DIR}/{module}/__init__.pyx']
     # + [f'{WRAPPER_DIR}/{file}' for file in wrapper_sources]
 
     include_dirs = [SRC_DIR, f'{SRC_DIR}/include'] + list(
@@ -50,12 +53,12 @@ setup(
                 c_sources=[],
             ),
             get_extension(
-                "wrappers.prime",
-                c_sources=["misc/prime/prime_test.c", "misc/prime/prime_gen.c", "rng/rng.c"],
-            ),
-            get_extension(
                 "wrappers.rng",
                 c_sources=["rng/rng.c"],
+            ),
+            get_extension(
+                "wrappers.prime",
+                c_sources=["misc/prime/prime_test.c", "misc/prime/prime_gen.c", "rng/rng.c"],
             ),
             get_extension(
                 "wrappers.md5",
@@ -79,11 +82,11 @@ setup(
             ),
             get_extension(
                 "wrappers.mac",
-                c_sources=["mac/hmac.c", "hash/md5.c", "hash/sha1.c", "hash/sha2.c", "hash/sha3.c"],
+                c_sources=["mac/hmac.c", "mac/cbc_mac.c", "hash/md5.c", "hash/sha1.c", "hash/sha2.c", "hash/sha3.c", "ske/aes.c"],
             ),
             get_extension(
                 "wrappers.des",
-                c_sources=["ske/des.c"],
+                c_sources=["ske/des.c", "misc/conversion.c"],
             )
         ],
         compiler_directives=cython_directives

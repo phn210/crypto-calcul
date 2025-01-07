@@ -1,12 +1,8 @@
-from libc.stdlib cimport malloc
+import cython
 from wrappers.enums import SecurityLevel
 
-cdef extern from "sha2.h":
-    void *sha2(const void *m, size_t len, void *md, size_t md_len)
-
-cdef class SHA2:
-    cdef size_t md_len
-    
+@cython.cclass
+class SHA2:
     def __init__(self, sec_level: SecurityLevel):
         if sec_level == SecurityLevel.L0:
             self.md_len = 28
@@ -19,23 +15,27 @@ cdef class SHA2:
         else:
             raise ValueError("Invalid Security Level")
 
-    def hash(self, bytes m):
-        cdef char *md = <char *>malloc(self.md_len)
-        sha2(<char *>m, len(m), md, self.md_len)
-        return bytes(md)[0:self.md_len]
+    @cython.ccall
+    def hash(self, m: bytes) -> bytes:
+        md = cython.cast(cython.p_char, malloc(self.md_len))
+        buf_m = cython.declare(cython.p_char, m)
+        sha2(buf_m, len(m), md, self.md_len)
+        result = cython.cast(bytes, md)[:self.md_len]
+        free(md)
+        return result
 
-cdef class SHA224(SHA2):
+class SHA224(SHA2):
     def __init__(self):
         super(SHA224, self).__init__(SecurityLevel.L0)
 
-cdef class SHA256(SHA2):
+class SHA256(SHA2):
     def __init__(self):
         super(SHA256, self).__init__(SecurityLevel.L1)
 
-cdef class SHA384(SHA2):
+class SHA384(SHA2):
     def __init__(self):
         super(SHA384, self).__init__(SecurityLevel.L2)
 
-cdef class SHA512(SHA2):
+class SHA512(SHA2):
     def __init__(self):
         super(SHA512, self).__init__(SecurityLevel.L3)

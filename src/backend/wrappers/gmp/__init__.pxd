@@ -1,7 +1,6 @@
 from libc.stdlib cimport malloc, free
 
 cdef extern from "gmp.h":
-    # GMP Integer and Random State Structures
     ctypedef struct __mpz_struct:
         pass
     ctypedef __mpz_struct mpz_t
@@ -24,9 +23,8 @@ cdef extern from "gmp.h":
     void gmp_randseed_ui(gmp_randstate_t, unsigned long int)
     void gmp_randclear(gmp_randstate_t)
 
-# Expose the GMPInteger class
 cdef class GMPInteger:
     cdef mpz_t value
 
-    cpdef set_value(self, str value, int base)
-    cpdef get_value(self, int base)
+    cpdef void set_value(self, str value, int base)
+    cpdef str get_value(self, int base)

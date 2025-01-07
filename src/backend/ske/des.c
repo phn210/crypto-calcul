@@ -77,7 +77,7 @@ void des_sbox(uint64_t *subblock, uint32_t *res_subblock)
         uint8_t s_input = ((*subblock >> (48 - 6 * (i + 1))) & 0x3F);
         uint8_t row = ((s_input & 0x20) >> 4) | (s_input & 1);
         uint8_t col = (s_input >> 1) & 0xF;
-        uint8_t s_output = SBOX[i][row][col];
+        uint8_t s_output = DES_SBOX[i][row][col];
         new_subblock |= s_output << (32 - 4 * (i + 1));
     }
     *res_subblock = new_subblock;

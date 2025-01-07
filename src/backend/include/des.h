@@ -18,7 +18,7 @@ typedef struct des_ctx
     uint64_t keys[16];
 } des_ctx_t;
 
-typedef enum
+typedef enum des_mode
 {
     DES_ENCRYPT,
     DES_DECRYPT
@@ -80,7 +80,7 @@ static const unsigned P[DES_P_SIZE] = {
     2, 8, 24, 14, 32, 27, 3, 9,
     19, 13, 30, 6, 22, 11, 4, 25};
 
-static const unsigned SBOX[8][4][16] = {
+static const unsigned DES_SBOX[8][4][16] = {
     {{14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7},
      {0, 15, 7, 4, 14, 2, 13, 1, 10, 6, 12, 11, 9, 5, 3, 8},
      {4, 1, 14, 8, 13, 6, 2, 11, 15, 12, 9, 7, 3, 10, 5, 0},

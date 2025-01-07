@@ -19,7 +19,7 @@ void aes_sub_word(unsigned char *word)
 {
     for (int i = 0; i < 4; i++)
     {
-        word[i] = SBOX[word[i] / 16][word[i] % 16];
+        word[i] = AES_SBOX[word[i] / 16][word[i] % 16];
     }
 }
 
@@ -86,7 +86,7 @@ void aes_sub_bytes(unsigned char state[4][4])
         for (int j = 0; j < 4; j++)
         {
             unsigned char tmp = state[i][j];
-            state[i][j] = SBOX[tmp / 16][tmp % 16];
+            state[i][j] = AES_SBOX[tmp / 16][tmp % 16];
         }
     }
 }
@@ -165,7 +165,7 @@ void aes_inv_sub_bytes(unsigned char state[4][4])
         for (int j = 0; j < 4; j++)
         {
             unsigned char tmp = state[i][j];
-            state[i][j] = INVERSE_SBOX[tmp / 16][tmp % 16];
+            state[i][j] = INVERSE_AES_SBOX[tmp / 16][tmp % 16];
         }
     }
 }
