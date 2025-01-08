@@ -1,6 +1,5 @@
 from libc.stdlib cimport malloc, free
 from libc.stdint cimport uint64_t
-from wrappers.enums import DESMode
 
 cdef extern from "des.h":
     ctypedef enum des_mode_t:

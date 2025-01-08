@@ -87,6 +87,10 @@ setup(
             get_extension(
                 "wrappers.des",
                 c_sources=["ske/des.c", "misc/conversion.c"],
+            ),
+            get_extension(
+                "wrappers.aes",
+                c_sources=["ske/aes.c", "misc/conversion.c"],
             )
         ],
         compiler_directives=cython_directives

@@ -4,8 +4,8 @@ import cython
 class DES:
     @cython.ccall
     def des(self, data: bytes, key: bytes, mode):
-        assert len(data) / 8 == len(data) // 8
-        num_blocks = len(data) // 8
+        assert len(data) / _DES_BLOCK_SIZE == len(data) // _DES_BLOCK_SIZE
+        num_blocks = len(data) // _DES_BLOCK_SIZE
 
         in_blocks = cython.cast(cython.p_ulonglong, malloc(num_blocks))
         out_blocks = cython.cast(cython.p_ulonglong, malloc(num_blocks))

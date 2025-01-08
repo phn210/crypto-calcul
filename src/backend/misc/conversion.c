@@ -77,7 +77,7 @@ unsigned char *pkcs7_padding(unsigned char *input, size_t len, size_t block_size
 {
     size_t padded_len = len + (block_size - len % block_size);
     size_t padding_value = block_size - (len % block_size);
-    unsigned char *output = malloc(padded_len);
+    unsigned char *output = malloc(padded_len + 1);
     if (output == NULL)
     {
         printf("Error: Memory allocation failed.\n");

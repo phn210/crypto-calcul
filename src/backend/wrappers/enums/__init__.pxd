@@ -45,3 +45,12 @@ cdef extern from "des.h":
     ctypedef enum des_mode_t:
         _DES_ENCRYPT "DES_ENCRYPT"
         _DES_DECRYPT "DES_DECRYPT"
+
+cdef extern from "aes.h":
+    ctypedef enum AES_MODE:
+        _AES_MODE_ECB "AES_MODE_ECB"
+        _AES_MODE_CBC "AES_MODE_CBC"
+        _AES_MODE_CFB "AES_MODE_CFB"
+        _AES_MODE_OFB "AES_MODE_OFB"
+        _AES_MODE_CTR "AES_MODE_CTR"
+        _AES_MODE_GCM "AES_MODE_GCM"

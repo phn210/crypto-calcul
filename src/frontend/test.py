@@ -9,6 +9,7 @@ from wrappers.sha3 import SHA3_512, SHAKE256
 from wrappers.ec import P521, SECP256K1
 from wrappers.mac import HMAC, CBCMAC
 from wrappers.des import DES
+from wrappers.aes import AES_128_CBC
 
 rng = RNG()
 base = 10
@@ -58,3 +59,10 @@ data = bytes('Hello world!', 'utf-8')
 encrypted = des.encrypt(data, keys)
 decrypted = des.decrypt(encrypted, keys)
 
+aes_128_cbc = AES_128_CBC()
+keys = bytes.fromhex("133457799BBCDFF1133457799BBCDFF1")
+iv = bytes(bytearray([10]*16))
+data = bytes('Hello world! My name is John Doe.', 'utf-8')
+nonce = bytes('nonce value', 'utf-8')
+encrypted = aes_128_cbc.encrypt(data, keys, iv, b'')
+decrypted = aes_128_cbc.decrypt(encrypted, keys, iv, b'')
