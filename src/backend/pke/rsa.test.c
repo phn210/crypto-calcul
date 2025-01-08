@@ -29,10 +29,10 @@ void test_encrypt_decrypt(priv_key_t sk, pub_key_t pk, public_params_t pp)
     mpz_init_set_str(m, "1234567890", 10);
     mpz_inits(c, decrypted_m, NULL);
 
-    encrypt(c, m, &pk);
+    rsa_encrypt(c, m, &pk);
     // gmp_printf("Ciphertext: %Zd\n", c);
 
-    decrypt(decrypted_m, c, &sk, RSA_STANDARD);
+    rsa_decrypt(decrypted_m, c, &sk, RSA_STANDARD);
     // gmp_printf("Decrypted Message: %Zd\n", decrypted_m);
 
     printf("[0] Textbook RSA:\t\t");
@@ -51,10 +51,10 @@ void test_encrypt_decrypt_crt(priv_key_t sk, pub_key_t pk, public_params_t pp)
     mpz_init_set_str(m, "1234567890", 10);
     mpz_inits(c, decrypted_m, NULL);
 
-    encrypt(c, m, &pk);
+    rsa_encrypt(c, m, &pk);
     // gmp_printf("Ciphertext: %Zd\n", c);
 
-    decrypt(decrypted_m, c, &sk, RSA_CRT);
+    rsa_decrypt(decrypted_m, c, &sk, RSA_CRT);
     // gmp_printf("Decrypted Message: %Zd\n", decrypted_m);
 
     printf("[1] Textbook RSA mode CRT:");
@@ -73,10 +73,10 @@ void test_encrypt_decrypt_pkcs1(priv_key_t sk, pub_key_t pk, public_params_t pp)
     mpz_init_set_str(m, "1234567890", 10);
     mpz_inits(c, decrypted_m, NULL);
 
-    encrypt_pkcs1(c, m, &pk);
+    rsa_encrypt_pkcs1(c, m, &pk);
     // gmp_printf("Ciphertext: %Zd\n", c);
 
-    decrypt_pkcs1(decrypted_m, c, &sk, RSA_STANDARD);
+    rsa_decrypt_pkcs1(decrypted_m, c, &sk, RSA_STANDARD);
     // gmp_printf("Decrypted Message: %Zd\n", decrypted_m);
 
     printf("[2] PKCS#1 v1.5:\t\t");
@@ -95,10 +95,10 @@ void test_encrypt_decrypt_pkcs1_crt(priv_key_t sk, pub_key_t pk, public_params_t
     mpz_init_set_str(m, "1234567890", 10);
     mpz_inits(c, decrypted_m, NULL);
 
-    encrypt_pkcs1(c, m, &pk);
+    rsa_encrypt_pkcs1(c, m, &pk);
     // gmp_printf("Ciphertext: %Zd\n", c);
 
-    decrypt_pkcs1(decrypted_m, c, &sk, RSA_CRT);
+    rsa_decrypt_pkcs1(decrypted_m, c, &sk, RSA_CRT);
     // gmp_printf("Decrypted Message: %Zd\n", decrypted_m);
 
     printf("[3] PKCS#1 v1.5 mode CRT:");
@@ -117,8 +117,8 @@ void test_encrypt_decrypt_oaep(priv_key_t sk, pub_key_t pk, public_params_t pp, 
     mpz_init_set_str(m, "1234567890", 10);
     mpz_inits(c, decrypted_m, NULL);
 
-    encrypt_oaep(c, m, &pk, sec_level);
-    decrypt_oaep(decrypted_m, c, &sk, RSA_STANDARD, sec_level);
+    rsa_encrypt_oaep(c, m, &pk, sec_level);
+    rsa_decrypt_oaep(decrypted_m, c, &sk, RSA_STANDARD, sec_level);
 
     printf("[4] OAEP:\t\t\t");
     if (mpz_cmp(m, decrypted_m) == 0)
@@ -136,8 +136,8 @@ void test_encrypt_decrypt_oaep_crt(priv_key_t sk, pub_key_t pk, public_params_t 
     mpz_init_set_str(m, "1234567890", 10);
     mpz_inits(c, decrypted_m, NULL);
 
-    encrypt_oaep(c, m, &pk, sec_level);
-    decrypt_oaep(decrypted_m, c, &sk, RSA_CRT, sec_level);
+    rsa_encrypt_oaep(c, m, &pk, sec_level);
+    rsa_decrypt_oaep(decrypted_m, c, &sk, RSA_CRT, sec_level);
 
     printf("[5] OAEP mode CRT:\t\t");
     if (mpz_cmp(m, decrypted_m) == 0)

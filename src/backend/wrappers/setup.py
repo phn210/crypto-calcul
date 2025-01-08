@@ -50,7 +50,7 @@ setup(
             ),
             get_extension(
                 "wrappers.gmp",
-                c_sources=[],
+                c_sources=["misc/conversion.c"],
             ),
             get_extension(
                 "wrappers.rng",
@@ -82,7 +82,8 @@ setup(
             ),
             get_extension(
                 "wrappers.mac",
-                c_sources=["mac/hmac.c", "mac/cbc_mac.c", "hash/md5.c", "hash/sha1.c", "hash/sha2.c", "hash/sha3.c", "ske/aes.c"],
+                c_sources=["mac/hmac.c", "mac/cbc_mac.c", "hash/md5.c", "hash/sha1.c", \
+                           "hash/sha2.c", "hash/sha3.c", "ske/aes.c"],
             ),
             get_extension(
                 "wrappers.des",
@@ -91,6 +92,12 @@ setup(
             get_extension(
                 "wrappers.aes",
                 c_sources=["ske/aes.c", "misc/conversion.c"],
+            ),
+            get_extension(
+                "wrappers.rsa",
+                c_sources=["pke/rsa.c", "sign/rsa.c", "rng/rng.c", \
+                           "hash/md5.c", "hash/sha1.c", "hash/sha2.c", "hash/sha3.c", "misc/mgf.c", \
+                           "misc/conversion.c", "misc/prime/prime_test.c", "misc/prime/prime_gen.c"],
             )
         ],
         compiler_directives=cython_directives

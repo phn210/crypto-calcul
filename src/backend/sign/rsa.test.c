@@ -28,11 +28,11 @@ void test_sign_verify(priv_key_t sk, pub_key_t pk, public_params_t pp)
     mpz_init_set_str(m, "1234567890", 10);
     mpz_init(s);
 
-    sign(s, m, &sk, RSA_STANDARD);
+    rsa_sign(s, m, &sk, RSA_STANDARD);
     // gmp_printf("Signature: %Zd\n", s);
 
     printf("[0] Textbook RSA:\t\t");
-    if (verify(m, s, &pk))
+    if (rsa_verify(m, s, &pk))
         printf("PASSED\n");
     else
         printf("FAILED\n");
@@ -47,11 +47,11 @@ void test_sign_verify_crt(priv_key_t sk, pub_key_t pk, public_params_t pp)
     mpz_init_set_str(m, "1234567890", 10);
     mpz_init(s);
 
-    sign(s, m, &sk, RSA_CRT);
+    rsa_sign(s, m, &sk, RSA_CRT);
     // gmp_printf("Signature: %Zd\n", s);
 
     printf("[1] Textbook RSA mode CRT:");
-    if (verify(m, s, &pk))
+    if (rsa_verify(m, s, &pk))
         printf("\tPASSED\n");
     else
         printf("\tFAILED\n");
@@ -66,10 +66,10 @@ void test_sign_verify_pkcs1(priv_key_t sk, pub_key_t pk, public_params_t pp, sec
     mpz_init_set_str(m, "1234567890", 10);
     mpz_init(s);
 
-    sign_pkcs1(s, m, &sk, RSA_STANDARD, sec_level);
+    rsa_sign_pkcs1(s, m, &sk, RSA_STANDARD, sec_level);
 
     printf("[2] PKCS#1 v1.5:\t\t");
-    if (verify_pkcs1(m, s, &pk, sec_level))
+    if (rsa_verify_pkcs1(m, s, &pk, sec_level))
         printf("PASSED\n");
     else
         printf("FAILED\n");
@@ -84,10 +84,10 @@ void test_sign_verify_pkcs1_crt(priv_key_t sk, pub_key_t pk, public_params_t pp,
     mpz_init_set_str(m, "1234567890", 10);
     mpz_init(s);
 
-    sign_pkcs1(s, m, &sk, RSA_CRT, sec_level);
+    rsa_sign_pkcs1(s, m, &sk, RSA_CRT, sec_level);
 
     printf("[3] PKCS#1 v1.5 mode CRT:");
-    if (verify_pkcs1(m, s, &pk, sec_level))
+    if (rsa_verify_pkcs1(m, s, &pk, sec_level))
         printf("\tPASSED\n");
     else
         printf("\tFAILED\n");
@@ -102,10 +102,10 @@ void test_sign_verify_pss(priv_key_t sk, pub_key_t pk, public_params_t pp, sec_l
     mpz_init_set_str(m, "1234567890", 10);
     mpz_init(s);
 
-    sign_pss(s, m, &sk, RSA_STANDARD, sec_level);
+    rsa_sign_pss(s, m, &sk, RSA_STANDARD, sec_level);
 
     printf("[4] PSS:\t\t\t");
-    if (verify_pss(m, s, &pk, sec_level))
+    if (rsa_verify_pss(m, s, &pk, sec_level))
         printf("PASSED\n");
     else
         printf("FAILED\n");
@@ -120,10 +120,10 @@ void test_sign_verify_pss_crt(priv_key_t sk, pub_key_t pk, public_params_t pp, s
     mpz_init_set_str(m, "1234567890", 10);
     mpz_init(s);
 
-    sign_pss(s, m, &sk, RSA_CRT, sec_level);
+    rsa_sign_pss(s, m, &sk, RSA_CRT, sec_level);
 
     printf("[5] PSS mode CRT:\t\t");
-    if (verify_pss(m, s, &pk, sec_level))
+    if (rsa_verify_pss(m, s, &pk, sec_level))
         printf("PASSED\n");
     else
         printf("FAILED\n");

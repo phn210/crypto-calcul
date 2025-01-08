@@ -74,12 +74,12 @@ void rsavp1(mpz_t m, const mpz_t s, const pub_key_t *pk)
     mpz_powm(m, s, pk->e, pk->n);
 }
 
-void sign(mpz_t s, const mpz_t m, const priv_key_t *sk, rsa_algo_t algorithm)
+void rsa_sign(mpz_t s, const mpz_t m, const priv_key_t *sk, rsa_algo_t algorithm)
 {
     rsasp1(s, m, sk, algorithm);
 }
 
-int verify(const mpz_t m, const mpz_t s, const pub_key_t *pk)
+int rsa_verify(const mpz_t m, const mpz_t s, const pub_key_t *pk)
 {
     mpz_t m_check;
     mpz_init(m_check);
@@ -140,7 +140,7 @@ void emsa_pkcs1_encode(unsigned char *em, size_t em_len, const unsigned char *m,
     free(md);
 }
 
-void sign_pkcs1(mpz_t s, const mpz_t m, const priv_key_t *sk, rsa_algo_t algorithm, sec_level_t sec_level)
+void rsa_sign_pkcs1(mpz_t s, const mpz_t m, const priv_key_t *sk, rsa_algo_t algorithm, sec_level_t sec_level)
 {
     unsigned char *buf = (unsigned char *)malloc(count_bytes(m));
     size_t buf_len;
@@ -163,7 +163,7 @@ void sign_pkcs1(mpz_t s, const mpz_t m, const priv_key_t *sk, rsa_algo_t algorit
     free(buf);
 }
 
-int verify_pkcs1(const mpz_t m, const mpz_t s, const pub_key_t *pk, sec_level_t sec_level)
+int rsa_verify_pkcs1(const mpz_t m, const mpz_t s, const pub_key_t *pk, sec_level_t sec_level)
 {
     unsigned char *buf = (unsigned char *)malloc(count_bytes(m));
     size_t buf_len;
@@ -330,7 +330,7 @@ int emsa_pss_verify(const unsigned char *em, size_t em_bits, const unsigned char
     return result;
 }
 
-void sign_pss(mpz_t s, const mpz_t m, const priv_key_t *sk, rsa_algo_t algorithm, sec_level_t sec_level)
+void rsa_sign_pss(mpz_t s, const mpz_t m, const priv_key_t *sk, rsa_algo_t algorithm, sec_level_t sec_level)
 {
     unsigned char *buf = (unsigned char *)malloc(count_bytes(m));
     size_t buf_len;
@@ -353,7 +353,7 @@ void sign_pss(mpz_t s, const mpz_t m, const priv_key_t *sk, rsa_algo_t algorithm
     free(buf);
 }
 
-int verify_pss(const mpz_t m, const mpz_t s, const pub_key_t *pk, sec_level_t sec_level)
+int rsa_verify_pss(const mpz_t m, const mpz_t s, const pub_key_t *pk, sec_level_t sec_level)
 {
     unsigned char *buf = (unsigned char *)malloc(count_bytes(m));
     size_t buf_len;

@@ -1,4 +1,4 @@
-from wrappers.enums import PrimalityTest, HashFunction, SecurityLevel
+from wrappers.enums import PrimalityTest, HashFunction, SecurityLevel, RSAAlgo, RSAVariant
 from wrappers.gmp import GMPInteger
 from wrappers.rng import RNG
 from wrappers.prime import Prime
@@ -10,6 +10,7 @@ from wrappers.ec import P521, SECP256K1
 from wrappers.mac import HMAC, CBCMAC
 from wrappers.des import DES
 from wrappers.aes import AES_128_CBC
+from wrappers.rsa import RSA
 
 rng = RNG()
 base = 10
@@ -72,3 +73,11 @@ decrypted = aes_128_cbc.decrypt(encrypted, keys, iv, b'')
 # File path might need to be changed
 aes_128_cbc.encrypt_file('src/frontend/test/input.txt', 'src/frontend/test/aes_output_enc.txt', keys, iv)
 aes_128_cbc.decrypt_file('src/frontend/test/aes_output_enc.txt', 'src/frontend/test/aes_output_dec.txt', keys, iv)
+
+rsa = RSA(SecurityLevel.L1, RSAVariant.PKCS1)
+rsa.keygen()
+message = bytes('Hello, RSA!', 'utf-8')
+encrypted = rsa.encrypt(message)
+decrypted = rsa.decrypt(encrypted, RSAAlgo.STANDARD)
+signed_message = rsa.sign(message, RSAAlgo.STANDARD)
+verified = rsa.verify(message, signed_message)

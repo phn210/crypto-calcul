@@ -54,3 +54,8 @@ cdef extern from "aes.h":
         _AES_MODE_OFB "AES_MODE_OFB"
         _AES_MODE_CTR "AES_MODE_CTR"
         _AES_MODE_GCM "AES_MODE_GCM"
+
+cdef extern from "rsa.h":
+    ctypedef enum rsa_algo_t:
+        _RSA_STANDARD "RSA_STANDARD",
+        _RSA_CRT "RSA_CRT"

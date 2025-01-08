@@ -35,53 +35,6 @@ static const unsigned char empty_hash_sha512[] = {
     0x63, 0xb9, 0x31, 0xbd, 0x47, 0x41, 0x7a, 0x81,
     0xa5, 0x38, 0x32, 0x7a, 0xf9, 0x27, 0xda, 0x3e};
 
-void rsaep(mpz_t c, const mpz_t m, const pub_key_t *pk)
-{
-    // c = m^e mod n
-    mpz_powm(c, m, pk->e, pk->n);
-}
-
-void rsadp(mpz_t m, const mpz_t c, const priv_key_t *sk, rsa_algo_t algo)
-{
-    if (algo == RSA_STANDARD)
-    {
-        // m = c^d mod n
-        mpz_powm(m, c, sk->d, sk->n);
-    }
-    else if (algo == RSA_CRT)
-    {
-        // Chinese Remainder Theorem (CRT) optimization for decryption
-        mpz_t m1, m2, h;
-        mpz_inits(m1, m2, h, NULL);
-
-        // m1 = c^dp mod p
-        mpz_powm(m1, c, sk->dp, sk->p);
-
-        // m2 = c^dq mod q
-        mpz_powm(m2, c, sk->dq, sk->q);
-
-        // h = q_inv * (m1 - m2) mod p
-        mpz_sub(h, m1, m2);
-        if (mpz_sgn(h) < 0)
-        {
-            mpz_add(h, h, sk->p);
-        }
-        mpz_mul(h, sk->q_inv, h);
-        mpz_mod(h, h, sk->p);
-
-        // m = m2 + h * q
-        mpz_mul(h, h, sk->q);
-        mpz_add(m, m2, h);
-
-        mpz_clears(m1, m2, h, NULL);
-    }
-    else
-    {
-        fprintf(stderr, "Invalid RSA algorithm\n");
-        exit(EXIT_FAILURE);
-    }
-}
-
 void setup(public_params_t *pp, sec_level_t level)
 {
     mpz_init(pp->e);
@@ -165,12 +118,59 @@ void keygen(priv_key_t *sk, pub_key_t *pk, public_params_t pp)
     gmp_randclear(state);
 }
 
-void encrypt(mpz_t c, const mpz_t m, const pub_key_t *pk)
+void rsaep(mpz_t c, const mpz_t m, const pub_key_t *pk)
+{
+    // c = m^e mod n
+    mpz_powm(c, m, pk->e, pk->n);
+}
+
+void rsadp(mpz_t m, const mpz_t c, const priv_key_t *sk, rsa_algo_t algo)
+{
+    if (algo == RSA_STANDARD)
+    {
+        // m = c^d mod n
+        mpz_powm(m, c, sk->d, sk->n);
+    }
+    else if (algo == RSA_CRT)
+    {
+        // Chinese Remainder Theorem (CRT) optimization for decryption
+        mpz_t m1, m2, h;
+        mpz_inits(m1, m2, h, NULL);
+
+        // m1 = c^dp mod p
+        mpz_powm(m1, c, sk->dp, sk->p);
+
+        // m2 = c^dq mod q
+        mpz_powm(m2, c, sk->dq, sk->q);
+
+        // h = q_inv * (m1 - m2) mod p
+        mpz_sub(h, m1, m2);
+        if (mpz_sgn(h) < 0)
+        {
+            mpz_add(h, h, sk->p);
+        }
+        mpz_mul(h, sk->q_inv, h);
+        mpz_mod(h, h, sk->p);
+
+        // m = m2 + h * q
+        mpz_mul(h, h, sk->q);
+        mpz_add(m, m2, h);
+
+        mpz_clears(m1, m2, h, NULL);
+    }
+    else
+    {
+        fprintf(stderr, "Invalid RSA algorithm\n");
+        exit(EXIT_FAILURE);
+    }
+}
+
+void rsa_encrypt(mpz_t c, const mpz_t m, const pub_key_t *pk)
 {
     rsaep(c, m, pk);
 }
 
-void decrypt(mpz_t m, const mpz_t c, const priv_key_t *sk, rsa_algo_t algorithm)
+void rsa_decrypt(mpz_t m, const mpz_t c, const priv_key_t *sk, rsa_algo_t algorithm)
 {
     rsadp(m, c, sk, algorithm);
 }
@@ -199,7 +199,7 @@ void eme_pkcs1_encode(unsigned char *em, size_t em_len, const unsigned char *m, 
     gmp_randclear(state);
 }
 
-void encrypt_pkcs1(mpz_t c, const mpz_t m, const pub_key_t *pk)
+void rsa_encrypt_pkcs1(mpz_t c, const mpz_t m, const pub_key_t *pk)
 {
     size_t m_len = count_bytes(m);
     size_t k = count_bytes(pk->n);
@@ -230,7 +230,7 @@ void encrypt_pkcs1(mpz_t c, const mpz_t m, const pub_key_t *pk)
     free(buf);
 }
 
-void decrypt_pkcs1(mpz_t m, const mpz_t c, const priv_key_t *sk, rsa_algo_t algorithm)
+void rsa_decrypt_pkcs1(mpz_t m, const mpz_t c, const priv_key_t *sk, rsa_algo_t algorithm)
 {
     size_t k = count_bytes(sk->n);
     size_t c_len = count_bytes(c);
@@ -349,7 +349,7 @@ void eme_oaep_encode(unsigned char *em, size_t em_len, unsigned char *m, size_t 
     gmp_randclear(state);
 }
 
-void encrypt_oaep(mpz_t c, const mpz_t m, const pub_key_t *pk, sec_level_t sec_level)
+void rsa_encrypt_oaep(mpz_t c, const mpz_t m, const pub_key_t *pk, sec_level_t sec_level)
 {
     size_t m_len = count_bytes(m);
     size_t k = count_bytes(pk->n);
@@ -374,7 +374,7 @@ void encrypt_oaep(mpz_t c, const mpz_t m, const pub_key_t *pk, sec_level_t sec_l
     free(buf);
 }
 
-void decrypt_oaep(mpz_t m, const mpz_t c, const priv_key_t *sk, rsa_algo_t algorithm, sec_level_t sec_level)
+void rsa_decrypt_oaep(mpz_t m, const mpz_t c, const priv_key_t *sk, rsa_algo_t algorithm, sec_level_t sec_level)
 {
     size_t k = count_bytes(sk->n);
     size_t c_len = count_bytes(c);

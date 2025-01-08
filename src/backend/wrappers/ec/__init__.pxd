@@ -15,7 +15,7 @@ cdef extern from "ec.h":
 
     ctypedef struct curve:
         char *name
-        int cof;
+        int cof
         size_t efs
         mpz_t p
         mpz_t r

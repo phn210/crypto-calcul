@@ -51,3 +51,12 @@ class AESMode(Enum):
     AES_MODE_OFB = _AES_MODE_OFB
     AES_MODE_CTR = _AES_MODE_CTR
     AES_MODE_GCM = _AES_MODE_GCM
+
+class RSAAlgo(Enum):
+    STANDARD = _RSA_STANDARD
+    CRT = _RSA_CRT
+
+class RSAVariant(Enum):
+    TEXTBOOK = 0
+    PKCS1 = 1
+    SECURE = 2
