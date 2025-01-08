@@ -58,6 +58,9 @@ keys = bytes.fromhex('133457799BBCDFF1')
 data = bytes('Hello world!', 'utf-8')
 encrypted = des.encrypt(data, keys)
 decrypted = des.decrypt(encrypted, keys)
+# File path might need to be changed
+des.encrypt_file('src/frontend/test/input.txt', 'src/frontend/test/des_output_enc.txt', keys)
+des.decrypt_file('src/frontend/test/des_output_enc.txt', 'src/frontend/test/des_output_dec.txt', keys)
 
 aes_128_cbc = AES_128_CBC()
 keys = bytes.fromhex("133457799BBCDFF1133457799BBCDFF1")
@@ -66,3 +69,6 @@ data = bytes('Hello world! My name is John Doe.', 'utf-8')
 nonce = bytes('nonce value', 'utf-8')
 encrypted = aes_128_cbc.encrypt(data, keys, iv, b'')
 decrypted = aes_128_cbc.decrypt(encrypted, keys, iv, b'')
+# File path might need to be changed
+aes_128_cbc.encrypt_file('src/frontend/test/input.txt', 'src/frontend/test/aes_output_enc.txt', keys, iv)
+aes_128_cbc.decrypt_file('src/frontend/test/aes_output_enc.txt', 'src/frontend/test/aes_output_dec.txt', keys, iv)

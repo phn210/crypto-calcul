@@ -34,9 +34,9 @@ class AES:
         in_ptr = cython.cast(cython.p_uchar, data)
         out_ptr = cython.cast(cython.p_uchar, malloc(data_len))
 
-        key = key[:_AES_BLOCK_SIZE].ljust(data_len, b'\0')
-        iv = iv[:_AES_BLOCK_SIZE].ljust(data_len, b'\0')
-        nonce = nonce[:_AES_BLOCK_SIZE].ljust(data_len, b'\0')
+        key = key[:_AES_BLOCK_SIZE].ljust(_AES_BLOCK_SIZE, b'\0')
+        iv = iv[:_AES_BLOCK_SIZE].ljust(_AES_BLOCK_SIZE, b'\0')
+        nonce = nonce[:_AES_BLOCK_SIZE].ljust(_AES_BLOCK_SIZE, b'\0')
         
         key_ptr = cython.cast(cython.p_uchar, key)
         iv_ptr = cython.cast(cython.p_uchar, iv)
@@ -83,7 +83,38 @@ class AES:
         decrypted = self.aes(data, key, iv, nonce, 1)
         result = self.unpad(decrypted, len(decrypted))
         return result
+    
+    @cython.ccall
+    def encrypt_file(self, file_path: str, output_path: str, key: bytes, iv: bytes) -> cython.void:
+        infile = file_path.encode('utf-8')
+        outfile = output_path.encode('utf-8')
+        in_ptr = cython.cast(cython.p_char, infile)
+        out_ptr = cython.cast(cython.p_char, outfile)
 
+        key = key[:_AES_BLOCK_SIZE].ljust(_AES_BLOCK_SIZE, b'\0')
+        iv = iv[:_AES_BLOCK_SIZE].ljust(_AES_BLOCK_SIZE, b'\0')
+        
+        key_ptr = cython.cast(cython.p_uchar, key)
+        iv_ptr = cython.cast(cython.p_uchar, iv)
+
+        aes_file_encrypt(in_ptr, out_ptr, key_ptr, iv_ptr, self.key_size, self.mode)
+
+    @cython.ccall
+    def decrypt_file(self, file_path: str, output_path: str, key: bytes, iv: bytes) -> cython.void:
+        infile = file_path.encode('utf-8')
+        outfile = output_path.encode('utf-8')
+        in_ptr = cython.cast(cython.p_char, infile)
+        out_ptr = cython.cast(cython.p_char, outfile)
+
+        key = key[:_AES_BLOCK_SIZE].ljust(_AES_BLOCK_SIZE, b'\0')
+        iv = iv[:_AES_BLOCK_SIZE].ljust(_AES_BLOCK_SIZE, b'\0')
+        
+        key_ptr = cython.cast(cython.p_uchar, key)
+        iv_ptr = cython.cast(cython.p_uchar, iv)
+
+        aes_file_decrypt(in_ptr, out_ptr, key_ptr, iv_ptr, self.key_size, self.mode)
+
+    
     @cython.ccall
     def pad(self, data: bytes, length: cython.size_t) -> bytes:
         in_bytes = cython.cast(cython.p_uchar, data)

@@ -21,6 +21,25 @@ class DES:
         return result
 
     @cython.ccall
+    def des_file(self, in_path: str, out_path: str, key: bytes, mode):
+        infile = in_path.encode('utf-8')
+        outfile = out_path.encode('utf-8')
+
+        in_ptr = cython.cast(cython.p_char, infile)
+        out_ptr = cython.cast(cython.p_char, outfile)
+        key_block = cython.cast(cython.ulonglong, int.from_bytes(key, byteorder='little'))
+
+        des_file(in_ptr, out_ptr, key_block, mode)
+
+    @cython.ccall
+    def encrypt_file(self, file_path: str, output_path: str, key: bytes) -> cython.void:
+        self.des_file(file_path, output_path, key, DES_ENCRYPT)
+
+    @cython.ccall
+    def decrypt_file(self, file_path: str, output_path: str, key: bytes) -> cython.void:
+        self.des_file(file_path, output_path, key, DES_DECRYPT)
+
+    @cython.ccall
     def encrypt(self, data: bytes, key: bytes) -> bytes:
         padded_data = self.pad(data, len(data))
         return self.des(padded_data, key, DES_ENCRYPT)

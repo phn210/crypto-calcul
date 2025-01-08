@@ -45,5 +45,7 @@ cdef class AES:
     cpdef bytes aes(self, bytes data, bytes key, bytes iv, bytes nonce, char f)
     cpdef bytes encrypt(self, bytes data, bytes key, bytes iv, bytes nonce)
     cpdef bytes decrypt(self, bytes data, bytes key, bytes iv, bytes nonce)
+    cpdef void encrypt_file(self, str file_path, str output_path, bytes key, bytes iv)
+    cpdef void decrypt_file(self, str file_path, str output_path, bytes key, bytes iv)
     cpdef bytes pad(self, bytes data, size_t length)
     cpdef bytes unpad(self, bytes padded_data, size_t length)
