@@ -61,7 +61,7 @@ class AES:
             elif self.mode == AES_MODE_OFB:
                 aes_encrypt_ofb(in_ptr, out_ptr, iv_ptr, key_ptr, data_len, self.key_size)
             elif self.mode == AES_MODE_CTR:
-                aes_encrypt_ctr(in_ptr, out_ptr, nonce_ptr, key_ptr, data_len, self.key_size)
+                aes_ctr(in_ptr, out_ptr, nonce_ptr, key_ptr, data_len, self.key_size)
             elif self.mode == AES_MODE_GCM:
                 raise NotImplementedError("AES GCM mode is not implemented")
         elif f == 1:
@@ -74,7 +74,7 @@ class AES:
             elif self.mode == AES_MODE_OFB:
                 aes_decrypt_ofb(in_ptr, out_ptr, iv_ptr, key_ptr, data_len, self.key_size)
             elif self.mode == AES_MODE_CTR:
-                aes_decrypt_ctr(in_ptr, out_ptr, nonce_ptr, key_ptr, data_len, self.key_size)
+                aes_ctr(in_ptr, out_ptr, nonce_ptr, key_ptr, data_len, self.key_size)
             elif self.mode == AES_MODE_GCM:
                 raise NotImplementedError("AES GCM mode is not implemented")
 

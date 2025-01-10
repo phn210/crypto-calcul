@@ -28,8 +28,7 @@ cdef extern from "aes.h":
     void aes_encrypt_ofb(unsigned char *, unsigned char *, unsigned char *, unsigned char *, size_t, AES_KEY_SIZE);
     void aes_decrypt_ofb(unsigned char *, unsigned char *, unsigned char *, unsigned char *, size_t, AES_KEY_SIZE);
 
-    void aes_encrypt_ctr(unsigned char *, unsigned char *, unsigned char *, unsigned char *, size_t, AES_KEY_SIZE);
-    void aes_decrypt_ctr(unsigned char *, unsigned char *, unsigned char *, unsigned char *, size_t, AES_KEY_SIZE);
+    void aes_ctr(unsigned char *input, unsigned char *output, unsigned char *nonce, unsigned char *key, size_t len, AES_KEY_SIZE key_size);
 
     void aes_file_encrypt(const char *, const char *, unsigned char *, unsigned char *, AES_KEY_SIZE, AES_MODE);
     void aes_file_decrypt(const char *, const char *, unsigned char *, unsigned char *, AES_KEY_SIZE, AES_MODE);
