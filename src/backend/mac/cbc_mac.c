@@ -20,12 +20,12 @@ void cbc_mac(const void *key, size_t keysize, const void *data, size_t data_len,
         exit(EXIT_FAILURE);
     }
 
-    unsigned char *padded_message = pkcs7_padding(data, data_len, AES_BLOCK_SIZE);
-    size_t padded_len = strlen(padded_message);
-    unsigned char *key_hex = malloc(key_len);
+    unsigned char *padded_message = pkcs7_padding((unsigned char *)data, data_len, AES_BLOCK_SIZE);
+    size_t padded_len = strlen((const char *)padded_message);
 
-    memset(key_hex, 0, key_len);
-    string_to_hex(key_hex, key, keysize);
+    unsigned char key_block[AES_BLOCK_SIZE];
+    memset(key_block, 0, AES_BLOCK_SIZE);
+    memcpy(key_block, key, key_len < AES_BLOCK_SIZE ? key_len : AES_BLOCK_SIZE);
 
     unsigned char iv[AES_BLOCK_SIZE];
     memset(iv, 0, AES_BLOCK_SIZE);
@@ -38,7 +38,7 @@ void cbc_mac(const void *key, size_t keysize, const void *data, size_t data_len,
 
     unsigned char *encrypted_ecb = malloc(padded_len);
 
-    aes_encrypt_cbc(input_blocks, encrypted_ecb, iv, key_hex, padded_len, key_len);
+    aes_encrypt_cbc(input_blocks, encrypted_ecb, iv, key_block, padded_len, key_len);
 
     memcpy(mac, encrypted_ecb + padded_len - AES_BLOCK_SIZE, AES_BLOCK_SIZE);
 }

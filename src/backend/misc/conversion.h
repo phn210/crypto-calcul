@@ -15,8 +15,8 @@ void bytes_to_bigint(mpz_t result, const unsigned char *buf, size_t len, byte_or
 void bigint_to_bytes(unsigned char *buf, size_t *len, const mpz_t num, byte_order_t order);
 void hex_to_bigint(mpz_t result, const char *buf);
 void bigint_to_hex(char **buf, const mpz_t num);
-void string_to_hex(unsigned char *output, const unsigned char *input, size_t input_len);
-void hex_to_string(unsigned char *output, const unsigned char *input, size_t input_len);
+void string_to_hex(unsigned char *output, const char *input, size_t input_len);
+void hex_to_string(char *output, const unsigned char *input, size_t input_len);
 size_t count_bytes(const mpz_t n);
 
 unsigned char *pkcs7_padding(unsigned char *input, size_t len, size_t block_size);

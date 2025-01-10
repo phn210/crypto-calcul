@@ -60,10 +60,10 @@ void test_bigint_and_bytes()
 
 void test_string_and_hex()
 {
-    unsigned char *input = "Hello, world!\0";
+    char *input = "Hello, world!\0";
     size_t len = strlen(input);
     unsigned char *hex = malloc(len * 2);
-    unsigned char *output = malloc(len);
+    char *output = malloc(len);
 
     string_to_hex(hex, input, len);
     // printf("String to Hex: %s -> %s\n", input, hex);
@@ -82,50 +82,17 @@ void test_string_and_hex()
 
 void test_pkcs7_padding()
 {
-    unsigned char input[] = "Hello, world!";
+    char *input = "Hello, world!\0";
     size_t len = strlen(input);
     size_t block_size = 8;
 
-    unsigned char *output = pkcs7_padding(input, len, block_size);
+    unsigned char *padded = pkcs7_padding((unsigned char *)input, len, block_size);
+    unsigned char *unpadded = pkcs7_unpadding(padded, strlen((const char *)padded), block_size);
 
-    printf("PKCS#7 Padding: %s -> %s | ", input, output);
+    printf("PKCS#7 Padding:\t\t%s\n", strcmp(input, (const char *)unpadded) == 0 ? "PASSED" : "FAILED");
 
-    for (size_t i = 0; i < len; i++)
-    {
-        printf("%02x", input[i]);
-    }
-    printf(" -> ");
-    for (size_t i = 0; i < len + block_size - len % block_size; i++)
-    {
-        printf("%02x", output[i]);
-    }
-    printf("\n");
-
-    free(output);
-}
-
-void test_pkcs7_unpadding()
-{
-    unsigned char input[] = "Hello, world!\x03\x03\x03";
-    size_t len = strlen(input);
-    size_t block_size = 8;
-
-    unsigned char *output = pkcs7_unpadding(input, len, block_size);
-
-    printf("PKCS#7 Unpadding: %s -> %s | ", input, output);
-
-    for (size_t i = 0; i < len; i++)
-    {
-        printf("%02x", input[i]);
-    }
-    printf(" -> ");
-    for (size_t i = 0; i < len - (input[len - 1]); i++)
-    {
-        printf("%02x", output[i]);
-    }
-    printf("\n");
-
-    free(output);
+    free(padded);
+    free(unpadded);
 }
 
 int main()
@@ -135,12 +102,7 @@ int main()
     test_bigint_and_hex();
     test_bigint_and_bytes();
     test_string_and_hex();
-
     test_pkcs7_padding();
-    test_pkcs7_unpadding();
-
-    // Uncomment the following line to test invalid hex string handling
-    // test_invalid_hex_to_bigint();
 
     return 0;
 }

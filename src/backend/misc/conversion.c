@@ -41,7 +41,7 @@ void bigint_to_hex(char **buf, const mpz_t num)
     }
 }
 
-void string_to_hex(unsigned char *output, const unsigned char *input, size_t input_len)
+void string_to_hex(unsigned char *output, const char *input, size_t input_len)
 {
     for (size_t i = 0; i < input_len; i++)
     {
@@ -50,7 +50,7 @@ void string_to_hex(unsigned char *output, const unsigned char *input, size_t inp
     output[input_len * 2] = '\0';
 }
 
-void hex_to_string(unsigned char *output, const unsigned char *input, size_t input_len)
+void hex_to_string(char *output, const unsigned char *input, size_t input_len)
 {
     if (input_len % 2 != 0)
     {
@@ -62,7 +62,7 @@ void hex_to_string(unsigned char *output, const unsigned char *input, size_t inp
     {
         unsigned int byte;
         sscanf((const char *)&input[i], "%2x", &byte);
-        output[i / 2] = (unsigned char)byte;
+        output[i / 2] = (char)byte;
     }
     output[input_len / 2] = '\0';
 }

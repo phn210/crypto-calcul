@@ -22,7 +22,7 @@ void test_hmac_function()
 
 void test_hmac_file_function()
 {
-    const unsigned char *key = "secret";
+    const char *key = "secret";
     const char *filename = "mac_input_file.txt";
     unsigned char mac[64]; // Maximum length for SHA3-512
 

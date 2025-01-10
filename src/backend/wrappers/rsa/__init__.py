@@ -75,6 +75,7 @@ class RSA:
     def keygen(self) -> cython.void:
         keygen(cython.address(self.sk), cython.address(self.pk), self.pp)
 
+    @cython.ccall
     def encrypt(self, m: bytes) -> bytes:
         tmp = GMPInteger()
 
@@ -100,6 +101,7 @@ class RSA:
         free(c)
         return result
     
+    @cython.ccall
     def decrypt(self, c: bytes, algo: RSAAlgo) -> bytes:
         tmp = GMPInteger()
 
@@ -125,6 +127,7 @@ class RSA:
         free(m)
         return result
     
+    @cython.ccall
     def sign(self, m: bytes, algo: RSAAlgo) -> bytes:
         tmp = GMPInteger()
 
@@ -150,6 +153,7 @@ class RSA:
         free(s)
         return result
     
+    @cython.ccall
     def verify(self, m: bytes, s: bytes):
         tmp_m = GMPInteger()
         tmp_s = GMPInteger()

@@ -497,17 +497,21 @@ void aes_ctr(unsigned char *input, unsigned char *output, unsigned char *nonce, 
     unsigned char buf[AES_BLOCK_SIZE];
 
     // Process each 16-byte block
-    for (size_t i = 0; i < len; i += AES_BLOCK_SIZE) {
+    for (size_t i = 0; i < len; i += AES_BLOCK_SIZE)
+    {
         memcpy(buf, counter_block, AES_BLOCK_SIZE);
         aes_block_encrypt(buf, w, rounds);
 
-        for (size_t j = 0; j < AES_BLOCK_SIZE; j++) {
+        for (size_t j = 0; j < AES_BLOCK_SIZE; j++)
+        {
             output[i + j] = input[i + j] ^ buf[j];
         }
-        
-        for (int c = 15; c >= 0; c--) {
+
+        for (int c = 15; c >= 0; c--)
+        {
             counter_block[c]++;
-            if (counter_block[c] != 0) {
+            if (counter_block[c] != 0)
+            {
                 break;
             }
         }
@@ -534,27 +538,34 @@ void aes_file_encrypt(const char *input_file, const char *output_file, unsigned 
     unsigned char *input_data = malloc(len);
     fread(input_data, 1, len, input);
 
-    char *padded_data = pkcs7_padding(input_data, len, AES_BLOCK_SIZE);
-    len = strlen(padded_data);
+    unsigned char *padded_data = pkcs7_padding(input_data, len, AES_BLOCK_SIZE);
+    len = strlen((const char *)padded_data);
 
     unsigned char *output_data = malloc(len);
 
-    switch (mode) {
-        case AES_MODE_ECB:
-            aes_encrypt_ecb(padded_data, output_data, key, len, key_size);
-            break;
-        case AES_MODE_CBC:
-            aes_encrypt_cbc(padded_data, output_data, iv, key, len, key_size);
-            break;
-        case AES_MODE_CFB:
-            aes_encrypt_cfb(padded_data, output_data, iv, key, len, key_size);
-            break;
-        case AES_MODE_OFB:
-            aes_encrypt_ofb(padded_data, output_data, iv, key, len, key_size);
-            break;
-        case AES_MODE_CTR:
-            aes_ctr(padded_data, output_data, iv, key, len, key_size);
-            break;
+    switch (mode)
+    {
+    case AES_MODE_ECB:
+        aes_encrypt_ecb(padded_data, output_data, key, len, key_size);
+        break;
+    case AES_MODE_CBC:
+        aes_encrypt_cbc(padded_data, output_data, iv, key, len, key_size);
+        break;
+    case AES_MODE_CFB:
+        aes_encrypt_cfb(padded_data, output_data, iv, key, len, key_size);
+        break;
+    case AES_MODE_OFB:
+        aes_encrypt_ofb(padded_data, output_data, iv, key, len, key_size);
+        break;
+    case AES_MODE_CTR:
+        aes_ctr(padded_data, output_data, iv, key, len, key_size);
+        break;
+    case AES_MODE_GCM:
+        printf("AES-GCM not implemented\n");
+        exit(EXIT_FAILURE);
+    default:
+        printf("Invalid AES mode\n");
+        exit(EXIT_FAILURE);
     }
 
     fwrite(output_data, 1, len, output);
@@ -587,26 +598,33 @@ void aes_file_decrypt(const char *input_file, const char *output_file, unsigned 
 
     unsigned char *output_data = malloc(len);
 
-    switch (mode) {
-        case AES_MODE_ECB:
-            aes_decrypt_ecb(input_data, output_data, key, len, key_size);
-            break;
-        case AES_MODE_CBC:
-            aes_decrypt_cbc(input_data, output_data, iv, key, len, key_size);
-            break;
-        case AES_MODE_CFB:
-            aes_decrypt_cfb(input_data, output_data, iv, key, len, key_size);
-            break;
-        case AES_MODE_OFB:
-            aes_decrypt_ofb(input_data, output_data, iv, key, len, key_size);
-            break;
-        case AES_MODE_CTR:
-            aes_ctr(input_data, output_data, iv, key, len, key_size);
-            break;
+    switch (mode)
+    {
+    case AES_MODE_ECB:
+        aes_decrypt_ecb(input_data, output_data, key, len, key_size);
+        break;
+    case AES_MODE_CBC:
+        aes_decrypt_cbc(input_data, output_data, iv, key, len, key_size);
+        break;
+    case AES_MODE_CFB:
+        aes_decrypt_cfb(input_data, output_data, iv, key, len, key_size);
+        break;
+    case AES_MODE_OFB:
+        aes_decrypt_ofb(input_data, output_data, iv, key, len, key_size);
+        break;
+    case AES_MODE_CTR:
+        aes_ctr(input_data, output_data, iv, key, len, key_size);
+        break;
+    case AES_MODE_GCM:
+        printf("AES-GCM not implemented\n");
+        exit(EXIT_FAILURE);
+    default:
+        printf("Invalid AES mode\n");
+        exit(EXIT_FAILURE);
     }
 
-    char *unpadded_data = pkcs7_unpadding(output_data, len, AES_BLOCK_SIZE);
-    len = strlen(unpadded_data);
+    unsigned char *unpadded_data = pkcs7_unpadding(output_data, len, AES_BLOCK_SIZE);
+    len = strlen((const char *)unpadded_data);
 
     fwrite(unpadded_data, 1, len, output);
 

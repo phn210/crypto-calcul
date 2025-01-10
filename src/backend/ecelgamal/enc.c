@@ -70,8 +70,8 @@ void crypto_encrypt(mpz_t c1, mpz_t c2, const mpz_t m, const pub_key_t *pk, cons
     mul(&tmp, pk->Y, k, pp->curve);
     point_to_bytes(buf_point, tmp, pp->curve);
 
-    unsigned char *h = (unsigned char *)malloc(pp->curve.md_len);
-    hash(buf_point, buf_len, h, pp->curve.md_len);
+    unsigned char *h = (unsigned char *)malloc(md_len);
+    hash(buf_point, buf_len, h, md_len);
 
     for (size_t i = 0; i < m_len; i++)
     {
@@ -116,8 +116,8 @@ void crypto_decrypt(mpz_t m, const mpz_t c1, const mpz_t c2, const priv_key_t *s
     mul(&tmp, tmp, sk->x, pp->curve);
     point_to_bytes(buf_point, tmp, pp->curve);
 
-    unsigned char *h = (unsigned char *)malloc(pp->curve.md_len);
-    hash(buf_point, buf_len, h, pp->curve.md_len);
+    unsigned char *h = (unsigned char *)malloc(md_len);
+    hash(buf_point, buf_len, h, md_len);
 
     size_t m_len = count_bytes(c2);
     unsigned char *buf_m = (unsigned char *)malloc(m_len);

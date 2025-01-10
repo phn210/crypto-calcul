@@ -1,4 +1,5 @@
 #include "des.h"
+#include "conversion.h"
 
 void des_ip(uint64_t *block)
 {
@@ -163,15 +164,44 @@ void des_file(const char *input_file, const char *output_file, const uint64_t ke
     size_t file_size = ftell(input);
     fseek(input, 0, SEEK_SET);
 
-    size_t len = file_size / 8;
-    uint64_t *input_blocks = malloc(len * sizeof(uint64_t));
-    uint64_t *output_blocks = malloc(len * sizeof(uint64_t));
+    uint64_t *input_blocks, *output_blocks;
+    size_t len = 0;
 
-    fread(input_blocks, sizeof(uint64_t), len, input);
+    if (mode == DES_ENCRYPT)
+    {
+        unsigned char *input_data = malloc(file_size);
+        fread(input_data, 1, file_size, input);
+        unsigned char *padded_data = pkcs7_padding(input_data, file_size, DES_BLOCK_SIZE);
+        len = strlen((const char *)padded_data) / 8;
+        input_blocks = malloc(len * sizeof(uint64_t));
+        memcpy(input_blocks, padded_data, len * 8);
+    }
+    else
+    {
+        if (file_size % 8 != 0)
+        {
+            perror("Invalid file size");
+            exit(1);
+        }
+        len = file_size / 8;
+        input_blocks = malloc(len * sizeof(uint64_t));
+        fread(input_blocks, sizeof(uint64_t), len, input);
+    }
+    output_blocks = malloc(len * sizeof(uint64_t));
 
     des(input_blocks, output_blocks, key, len, mode);
 
-    fwrite(output_blocks, sizeof(uint64_t), len, output);
+    if (mode == DES_ENCRYPT)
+    {
+        fwrite(output_blocks, sizeof(uint64_t), len, output);
+    }
+    else
+    {
+        unsigned char *output_data = malloc(len * 8);
+        memcpy(output_data, output_blocks, len * 8);
+        unsigned char *unpadded_data = pkcs7_unpadding(output_data, len * 8, DES_BLOCK_SIZE);
+        fwrite(unpadded_data, 1, strlen((const char *)unpadded_data), output);
+    }
 
     fclose(input);
     fclose(output);

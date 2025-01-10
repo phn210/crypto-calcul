@@ -1,7 +1,12 @@
+# Update number of cores to match your system
+NUM_CORES = 10
 SRC_DIR = src/backend
 
 all test prepare:
-	@cd src/backend && make $@
+	@cd src/backend && time make $@
+
+build_fast:
+	@cd src/backend && time make all -j $(NUM_CORES)
 
 test_%: prepare
 	@cd $(SRC_DIR)/$* && make test
@@ -17,6 +22,9 @@ clean_wrapper:
 	find . -type f -path "*/wrappers/*.c*" -exec rm {} \;
 
 wrap:
-	python3 src/backend/wrappers/setup.py build_ext
+	time python3 src/backend/wrappers/setup.py build_ext
 
-.PHONY : all test test_% clean prepare clean_make wrap clean_wrapper
+wrap_fast:
+	time python3 src/backend/wrappers/setup.py build_ext -j $(NUM_CORES)
+
+.PHONY : all test test_% clean build_fast prepare clean_make wrap wrap_fast clean_wrapper

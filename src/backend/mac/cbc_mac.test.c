@@ -2,18 +2,18 @@
 
 void test_cbc_mac_function()
 {
-    const unsigned char *key = "secret";
-    const unsigned char *data = "Hello, CBC-MAC!";
+    const char *key = "secret";
+    const char *data = "Hello, CBC-MAC!";
     unsigned char *mac = malloc(AES_BLOCK_SIZE);
 
     cbc_mac((void *)key, strlen(key), (void *)data, strlen(data), mac, L1);
 
-    // printf("CBC-MAC: ");
-    // for (int i = 0; i < 16; i++) // AES block size
-    // {
-    //     printf("%02x", mac[i]);
-    // }
-    // printf("\n");
+    printf("CBC-MAC: ");
+    for (int i = 0; i < 16; i++) // AES block size
+    {
+        printf("%02x", mac[i]);
+    }
+    printf("\n");
 
     int result = cbc_mac_verify((void *)key, strlen(key), (void *)data, strlen(data), mac, L1);
     printf("CBC-MAC:\t%s\n", result == 0 ? "PASSED" : "FAILED");
@@ -21,7 +21,7 @@ void test_cbc_mac_function()
 
 void test_cbc_mac_file_function()
 {
-    const unsigned char *key = "secret";
+    const char *key = "secret";
     const char *filename = "mac_input_file.txt";
     unsigned char mac[AES_BLOCK_SIZE];
 

@@ -11,7 +11,6 @@ MAKE_FILES := $(INCLUDE_DIRS:%=%/Makefile)
 	fi \
 
 %/Makefile: %/Makefile.env template
-	@echo "Generating $*/Makefile..."
 	@cd $* && \
 	cp Makefile.env Makefile; \
 	cat ../template >> Makefile && \
