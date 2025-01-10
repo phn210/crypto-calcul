@@ -3,6 +3,9 @@ SRC_DIR = src/backend
 all test prepare:
 	@cd src/backend && make $@
 
+test_%: prepare
+	@cd $(SRC_DIR)/$* && make test
+
 clean: clean_wrapper
 	@cd src/backend && make $@
 
@@ -16,7 +19,4 @@ clean_wrapper:
 wrap:
 	python3 src/backend/wrappers/setup.py build_ext
 
-test_%: prepare
-	@cd $(SRC_DIR)/$* && make test
-
-.PHONY : all test test_% clean prepare wrap clean_wrapper
+.PHONY : all test test_% clean prepare clean_make wrap clean_wrapper

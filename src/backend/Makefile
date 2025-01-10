@@ -19,9 +19,6 @@ MAKE_FILES := $(INCLUDE_DIRS:%=%/Makefile)
 
 prepare: $(MAKE_FILES)
 
-debug:
-	@echo $(MAKE_FILES)
-
 all test: prepare
 	@for dir in $(SUBDIRS); do \
 		if [ -f $$dir/Makefile ]; then \
