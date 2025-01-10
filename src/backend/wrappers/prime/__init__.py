@@ -1,7 +1,12 @@
 import cython
-from wrappers.enums import PrimalityTest
+from enum import Enum
 from wrappers.gmp import GMPInteger
 from wrappers.rng import GMPState
+
+class PrimalityTest(Enum):
+    GMP = _GMP_TEST
+    FERMAT = _FERMAT_TEST
+    MILLER_RABIN = _MILLER_RABIN_TEST
 
 @cython.cclass
 class Prime:

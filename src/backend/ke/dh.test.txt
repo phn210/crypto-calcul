@@ -1,5 +1,0 @@
-obj/ke/dh.test.o
-obj/ke/dh.o
-obj/pke/elgamal.o
-obj/rng/rng.o
-obj/misc/conversion.o

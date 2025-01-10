@@ -1,6 +1,5 @@
 from wrappers.enums cimport sec_level_t
-from wrappers.gmp cimport malloc, mpz_t, mpz_set, GMPInteger
-from wrappers.enums import SecurityLevel, RSAAlgo, RSAVariant
+from wrappers.gmp cimport malloc, free, mpz_t, mpz_set, GMPInteger
 
 cdef extern from "conversion.h":
     ctypedef enum byte_order_t:
@@ -38,20 +37,20 @@ cdef extern from "rsa.h":
 
     void keygen(priv_key_t *, pub_key_t *, public_params_t)
 
-    void rsa_encrypt(mpz_t, const mpz_t, const pub_key_t *)
-    void rsa_decrypt(mpz_t, const mpz_t, const priv_key_t *, rsa_algo_t)
-    void rsa_sign(mpz_t, const mpz_t, const priv_key_t *, rsa_algo_t)
-    int rsa_verify(const mpz_t, const mpz_t, const pub_key_t *)
+    void crypto_encrypt(mpz_t, const mpz_t, const pub_key_t *)
+    void crypto_decrypt(mpz_t, const mpz_t, const priv_key_t *, rsa_algo_t)
+    void crypto_sign(mpz_t, const mpz_t, const priv_key_t *, rsa_algo_t)
+    int crypto_verify(const mpz_t, const mpz_t, const pub_key_t *)
 
-    void rsa_encrypt_pkcs1(mpz_t, const mpz_t, const pub_key_t *)
-    void rsa_decrypt_pkcs1(mpz_t, const mpz_t, const priv_key_t *, rsa_algo_t)
-    void rsa_sign_pkcs1(mpz_t, const mpz_t, const priv_key_t *, rsa_algo_t, sec_level_t sec_level)
-    int rsa_verify_pkcs1(const mpz_t, const mpz_t, const pub_key_t *, sec_level_t sec_level)
+    void crypto_encrypt_pkcs1(mpz_t, const mpz_t, const pub_key_t *)
+    void crypto_decrypt_pkcs1(mpz_t, const mpz_t, const priv_key_t *, rsa_algo_t)
+    void crypto_sign_pkcs1(mpz_t, const mpz_t, const priv_key_t *, rsa_algo_t, sec_level_t sec_level)
+    int crypto_verify_pkcs1(const mpz_t, const mpz_t, const pub_key_t *, sec_level_t sec_level)
 
-    void rsa_encrypt_oaep(mpz_t, const mpz_t, const pub_key_t *, sec_level_t sec_level)
-    void rsa_decrypt_oaep(mpz_t, const mpz_t, const priv_key_t *, rsa_algo_t, sec_level_t sec_level)
-    void rsa_sign_pss(mpz_t, const mpz_t, const priv_key_t *, rsa_algo_t, sec_level_t sec_level)
-    int rsa_verify_pss(const mpz_t, const mpz_t, const pub_key_t *, sec_level_t sec_level)
+    void crypto_encrypt_oaep(mpz_t, const mpz_t, const pub_key_t *, sec_level_t sec_level)
+    void crypto_decrypt_oaep(mpz_t, const mpz_t, const priv_key_t *, rsa_algo_t, sec_level_t sec_level)
+    void crypto_sign_pss(mpz_t, const mpz_t, const priv_key_t *, rsa_algo_t, sec_level_t sec_level)
+    int crypto_verify_pss(const mpz_t, const mpz_t, const pub_key_t *, sec_level_t sec_level)
 
 cdef class RSA:
     cdef public_params_t pp
@@ -61,6 +60,6 @@ cdef class RSA:
 
     cpdef void keygen(self)
     cpdef bytes encrypt(self, bytes m)
-    cpdef bytes decrypt(self, bytes c, algo: RSAAlgo)
-    cpdef bytes sign(self, bytes m, algo: RSAAlgo)
+    cpdef bytes decrypt(self, bytes c, algo)
+    cpdef bytes sign(self, bytes m, algo)
     cpdef verify(self, bytes m, bytes s)

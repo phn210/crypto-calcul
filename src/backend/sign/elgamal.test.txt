@@ -1,6 +1,0 @@
-obj/sign/elgamal.test.o
-obj/sign/elgamal.o
-obj/pke/elgamal.o
-obj/rng/rng.o
-obj/misc/conversion.o
-obj/hash/sha2.o

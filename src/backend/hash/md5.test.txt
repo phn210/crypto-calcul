@@ -1,2 +1,0 @@
-obj/hash/md5.test.o
-obj/hash/md5.o

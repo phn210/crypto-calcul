@@ -1,8 +1,0 @@
-obj/ke/ecdh.test.o
-obj/ke/ecdh.o
-obj/pke/ecelgamal.o
-obj/ec/ec.o
-obj/rng/rng.o
-obj/misc/conversion.o
-obj/hash/sha2.o
-obj/hash/sha3.o

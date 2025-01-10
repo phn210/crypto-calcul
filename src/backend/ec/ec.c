@@ -1,6 +1,5 @@
 #include "ec.h"
 #include "conversion.h"
-// #include "sha2.h"
 
 void init_point(point_t *p)
 {

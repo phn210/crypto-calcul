@@ -1,5 +1,14 @@
 import cython
-from wrappers.enums import SecurityLevel, AESMode
+from enum import Enum
+from wrappers.enums import SecurityLevel
+
+class AESMode(Enum):
+    ECB = AES_MODE_ECB
+    CBC = AES_MODE_CBC
+    CFB = AES_MODE_CFB
+    OFB = AES_MODE_OFB
+    CTR = AES_MODE_CTR
+    GCM = AES_MODE_GCM
 
 @cython.cclass
 class AES:
@@ -13,15 +22,15 @@ class AES:
         else:
             raise ValueError("Invalid security level")
         
-        if mode == AESMode.AES_MODE_ECB:
+        if mode == AESMode.ECB:
             self.mode = AES_MODE_ECB
-        elif mode == AESMode.AES_MODE_CBC:
+        elif mode == AESMode.CBC:
             self.mode = AES_MODE_CBC
-        elif mode == AESMode.AES_MODE_CFB:
+        elif mode == AESMode.CFB:
             self.mode = AES_MODE_CFB
-        elif mode == AESMode.AES_MODE_OFB:
+        elif mode == AESMode.OFB:
             self.mode = AES_MODE_OFB
-        elif mode == AESMode.AES_MODE_CTR:
+        elif mode == AESMode.CTR:
             self.mode = AES_MODE_CTR
         else:
             raise ValueError("Invalid AES mode")
@@ -141,60 +150,60 @@ class AES_256(AES):
 
 class AES_128_ECB(AES_128):
     def __init__(self):
-        super().__init__(AESMode.AES_MODE_ECB)
+        super().__init__(AESMode.ECB)
 
 class AES_128_CBC(AES_128):
     def __init__(self):
-        super().__init__(AESMode.AES_MODE_CBC)
+        super().__init__(AESMode.CBC)
 
 class AES_128_CFB(AES_128):
     def __init__(self):
-        super().__init__(AESMode.AES_MODE_CFB)
+        super().__init__(AESMode.CFB)
 
 class AES_128_OFB(AES_128):
     def __init__(self):
-        super().__init__(AESMode.AES_MODE_OFB)
+        super().__init__(AESMode.OFB)
 
 class AES_128_CTR(AES_128):
     def __init__(self):
-        super().__init__(AESMode.AES_MODE_CTR)
+        super().__init__(AESMode.CTR)
 
 class AES_192_ECB(AES_192):
     def __init__(self):
-        super().__init__(AESMode.AES_MODE_ECB)
+        super().__init__(AESMode.ECB)
 
 class AES_192_CBC(AES_192):
     def __init__(self):
-        super().__init__(AESMode.AES_MODE_CBC)
+        super().__init__(AESMode.CBC)
 
 class AES_192_CFB(AES_192):
     def __init__(self):
-        super().__init__(AESMode.AES_MODE_CFB)
+        super().__init__(AESMode.CFB)
 
 class AES_192_OFB(AES_192):
     def __init__(self):
-        super().__init__(AESMode.AES_MODE_OFB)
+        super().__init__(AESMode.OFB)
 
 class AES_192_CTR(AES_192):
     def __init__(self):
-        super().__init__(AESMode.AES_MODE_CTR)
+        super().__init__(AESMode.CTR)
 
 class AES_256_ECB(AES_256):
     def __init__(self):
-        super().__init__(AESMode.AES_MODE_ECB)
+        super().__init__(AESMode.ECB)
 
 class AES_256_CBC(AES_256):
     def __init__(self):
-        super().__init__(AESMode.AES_MODE_CBC)
+        super().__init__(AESMode.CBC)
 
 class AES_256_CFB(AES_256):
     def __init__(self):
-        super().__init__(AESMode.AES_MODE_CFB)
+        super().__init__(AESMode.CFB)
 
 class AES_256_OFB(AES_256):
     def __init__(self):
-        super().__init__(AESMode.AES_MODE_OFB)
+        super().__init__(AESMode.OFB)
 
 class AES_256_CTR(AES_256):
     def __init__(self):
-        super().__init__(AESMode.AES_MODE_CTR)
+        super().__init__(AESMode.CTR)

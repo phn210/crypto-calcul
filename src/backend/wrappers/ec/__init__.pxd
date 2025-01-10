@@ -1,7 +1,29 @@
-from libc.stdlib cimport malloc, free
-from wrappers.gmp cimport GMPInteger, mpz_t, mpz_set
+from wrappers.gmp cimport malloc, free, GMPInteger, mpz_t, mpz_set
 
 cdef extern from "ec.h":
+    ctypedef enum ec_t:
+        _WEIERSTRASS "WEIERSTRASS",
+        _MONTGOMERY "MONTGOMERY",
+        _EDWARDS "EDWARDS"
+
+    ctypedef enum weierstrass_curve_t:
+        _P224 "P224",
+        _P256 "P256",
+        _P384 "P384",
+        _P521 "P521",
+        _P256K1 "P256K1",
+        _W25519 "W25519",
+        _W448 "W448"
+        
+    ctypedef enum montgomery_curve_t:
+        _C25519 "C25519",
+        _C448 "C448"
+
+    ctypedef enum edwards_curve_t:
+        _ED25519 "ED25519",
+        _ED448 "ED448",
+        _E448 "E448"
+
     ctypedef struct point:
         mpz_t x
         mpz_t y

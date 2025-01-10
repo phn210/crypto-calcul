@@ -11,13 +11,13 @@ void hmac_init(hmac_ctx_t *ctx, const void *key, size_t key_len, sec_level_t sec
     case MD5:
         ctx->b = 64;
         ctx->l = 16;
-        // ctx->hash = ;
+        ctx->hash = md5;
         break;
 
     case SHA1:
         ctx->b = 64;
         ctx->l = 20;
-        // ctx->hash = ;
+        ctx->hash = sha1;
         break;
 
     case SHA2:
@@ -42,7 +42,7 @@ void hmac_init(hmac_ctx_t *ctx, const void *key, size_t key_len, sec_level_t sec
         default:
             break;
         }
-        // ctx->hash = ;
+        ctx->hash = sha2;
         break;
 
     case SHA3:

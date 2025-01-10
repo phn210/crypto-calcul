@@ -1,7 +1,0 @@
-obj/pke/ecelgamal.test.o
-obj/pke/ecelgamal.o
-obj/hash/sha2.o
-obj/hash/sha3.o
-obj/rng/rng.o
-obj/misc/conversion.o
-obj/ec/ec.o

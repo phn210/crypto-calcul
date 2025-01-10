@@ -1,3 +1,0 @@
-obj/mac/hmac.test.o
-obj/mac/hmac.o
-obj/hash/sha3.o

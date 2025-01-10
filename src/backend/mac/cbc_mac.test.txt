@@ -1,4 +1,0 @@
-obj/mac/cbc_mac.test.o
-obj/mac/cbc_mac.o
-obj/ske/aes.o
-obj/misc/conversion.o

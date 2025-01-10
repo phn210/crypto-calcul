@@ -1,2 +1,0 @@
-obj/hash/sha2.test.o
-obj/hash/sha2.o

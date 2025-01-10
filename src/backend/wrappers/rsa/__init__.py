@@ -1,6 +1,16 @@
 import cython
-from wrappers.enums import SecurityLevel, RSAAlgo, RSAVariant
+from enum import Enum
+from wrappers.enums import SecurityLevel
 from wrappers.gmp import GMPInteger
+
+class RSAAlgo(Enum):
+    STANDARD = RSA_STANDARD
+    CRT = RSA_CRT
+
+class RSAVariant(Enum):
+    TEXTBOOK = 0
+    PKCS1 = 1
+    SECURE = 2
 
 class RSAPublicParams:
     def __init__(self, n_bits: int, e: GMPInteger):
@@ -73,11 +83,11 @@ class RSA:
         bytes_to_bigint(tmp.value, buf, buf_len, BIG)
 
         if self.variant == RSAVariant.TEXTBOOK.value:
-            rsa_encrypt(tmp.value, tmp.value, cython.address(self.pk))
+            crypto_encrypt(tmp.value, tmp.value, cython.address(self.pk))
         elif self.variant == RSAVariant.PKCS1.value:
-            rsa_encrypt_pkcs1(tmp.value, tmp.value, cython.address(self.pk))
+            crypto_encrypt_pkcs1(tmp.value, tmp.value, cython.address(self.pk))
         elif self.variant == RSAVariant.SECURE.value:
-            rsa_encrypt_oaep(tmp.value, tmp.value, cython.address(self.pk), self.sec_level)
+            crypto_encrypt_oaep(tmp.value, tmp.value, cython.address(self.pk), self.sec_level)
         else:
             raise ValueError("Invalid RSA variant")
 
@@ -87,6 +97,7 @@ class RSA:
 
         result = cython.cast(bytes, c[:c_len])
         del tmp
+        free(c)
         return result
     
     def decrypt(self, c: bytes, algo: RSAAlgo) -> bytes:
@@ -97,11 +108,11 @@ class RSA:
         bytes_to_bigint(tmp.value, buf, buf_len, BIG)
 
         if self.variant == RSAVariant.TEXTBOOK.value:
-            rsa_decrypt(tmp.value, tmp.value, cython.address(self.sk), algo.value)
+            crypto_decrypt(tmp.value, tmp.value, cython.address(self.sk), algo.value)
         elif self.variant == RSAVariant.PKCS1.value:
-            rsa_decrypt_pkcs1(tmp.value, tmp.value, cython.address(self.sk), algo.value)
+            crypto_decrypt_pkcs1(tmp.value, tmp.value, cython.address(self.sk), algo.value)
         elif self.variant == RSAVariant.SECURE.value:
-            rsa_decrypt_oaep(tmp.value, tmp.value, cython.address(self.sk), algo.value, self.sec_level)
+            crypto_decrypt_oaep(tmp.value, tmp.value, cython.address(self.sk), algo.value, self.sec_level)
         else:
             raise ValueError("Invalid RSA variant")
 
@@ -111,6 +122,7 @@ class RSA:
 
         result = cython.cast(bytes, m[:m_len])
         del tmp
+        free(m)
         return result
     
     def sign(self, m: bytes, algo: RSAAlgo) -> bytes:
@@ -121,11 +133,11 @@ class RSA:
         bytes_to_bigint(tmp.value, buf, buf_len, BIG)
 
         if self.variant == RSAVariant.TEXTBOOK.value:
-            rsa_sign(tmp.value, tmp.value, cython.address(self.sk), algo.value)
+            crypto_sign(tmp.value, tmp.value, cython.address(self.sk), algo.value)
         elif self.variant == RSAVariant.PKCS1.value:
-            rsa_sign_pkcs1(tmp.value, tmp.value, cython.address(self.sk), algo.value, self.sec_level)
+            crypto_sign_pkcs1(tmp.value, tmp.value, cython.address(self.sk), algo.value, self.sec_level)
         elif self.variant == RSAVariant.SECURE.value:
-            rsa_sign_pss(tmp.value, tmp.value, cython.address(self.sk), algo.value, self.sec_level)
+            crypto_sign_pss(tmp.value, tmp.value, cython.address(self.sk), algo.value, self.sec_level)
         else:
             raise ValueError("Invalid RSA variant")
 
@@ -135,6 +147,7 @@ class RSA:
 
         result = cython.cast(bytes, s[:s_len])
         del tmp
+        free(s)
         return result
     
     def verify(self, m: bytes, s: bytes):
@@ -151,11 +164,11 @@ class RSA:
         
         result = 0
         if self.variant == RSAVariant.TEXTBOOK.value:
-            result = rsa_verify(tmp_m.value, tmp_s.value, cython.address(self.pk))
+            result = crypto_verify(tmp_m.value, tmp_s.value, cython.address(self.pk))
         elif self.variant == RSAVariant.PKCS1.value:
-            result = rsa_verify_pkcs1(tmp_m.value, tmp_s.value, cython.address(self.pk), self.sec_level)
+            result = crypto_verify_pkcs1(tmp_m.value, tmp_s.value, cython.address(self.pk), self.sec_level)
         elif self.variant == RSAVariant.SECURE.value:
-            result = rsa_verify_pss(tmp_m.value, tmp_s.value, cython.address(self.pk), self.sec_level)
+            result = crypto_verify_pss(tmp_m.value, tmp_s.value, cython.address(self.pk), self.sec_level)
         else:
             raise ValueError("Invalid RSA variant")
         

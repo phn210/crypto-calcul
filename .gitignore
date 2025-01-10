@@ -1,10 +1,12 @@
 # Build files
 build
 obj
-**/wrappers/*.c
-**/__init__.c
+
+# Generated files
+src/backend/*/**/Makefile
+**/__init__.c*
 **/__init__.html
-**/test/**output**
+**/**output**.txt
 __pycache__
 
 # Environment files
