@@ -1,0 +1,61 @@
+
+# Directories
+BASE_NAME = $(shell basename $(shell pwd))
+BIN_DIR = ../../../build
+INC_DIR = ../include
+OBJ_PARENT_DIR = ../../../obj
+OBJ_DIR = $(OBJ_PARENT_DIR)/$(BASE_NAME)
+SRC_DIR = .
+
+# Compiler and flags
+CC = gcc
+CFLAGS = -I$(INC_DIR) $(if $(strip $(TEST_DEPS)), \
+	$(shell echo $(TEST_DEPS) | awk '{for(i=1;i<=NF;i++){split($$i, a, "/"); printf "../"a[1]" "}}' | xargs -n1 | sort -u | sed 's/^/-I/' | xargs), \
+)
+LDFLAGS = -lgmp
+
+# Source files
+SRCS = $(shell find . -name "*.c")
+TEST_SRCS = $(filter %.test.c, $(SRCS))
+OBJS = $(SRCS:$(SRC_DIR)/%.c=%.o)
+TESTS = $(TEST_SRCS:$(SRC_DIR)/%.c=%)
+DEP_PATHS = $(TEST_DEPS:%.o=$(OBJ_PARENT_DIR)/%.o)
+OBJ_PATHS = $(OBJS:%=$(OBJ_DIR)/%)
+TEST_PATHS = $(TESTS:%=$(BIN_DIR)/%)
+NON_TEST_OBJ_PATHS = $(filter-out %.test.o, $(OBJ_PATHS))
+
+all: $(TEST_PATHS)
+
+# Create executables for test files
+$(BIN_DIR)/%: $(OBJ_PATHS) $(DEP_PATHS) | $(BIN_DIR)
+	$(CC) -o $@  $(OBJ_DIR)/$(notdir $@).o $(NON_TEST_OBJ_PATHS) $(DEP_PATHS) $(LDFLAGS)
+
+# Compile dependencies
+$(DEP_PATHS):
+	@cd ../$(shell basename $(dir $@)) && make $@
+
+# Compile source files to object files
+$(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
+	mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Create directories if they don't exist
+$(OBJ_DIR):
+	@mkdir -p $(OBJ_DIR)
+
+$(BIN_DIR):
+	@mkdir -p $(BIN_DIR)
+
+test: $(TEST_PATHS)
+	@for test in $(TESTS); do \
+		if [ -x $(BIN_DIR)/$$test ]; then \
+			$(BIN_DIR)/$$test || exit 1; \
+		fi \
+	done
+
+clean:
+	@rm -rf $(OBJ_DIR)
+	@rm -f $(TEST_PATHS)
+
+.PHONY : all clean test
+.PRECIOUS: $(OBJ_DIR)/%.o

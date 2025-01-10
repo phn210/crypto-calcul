@@ -1,4 +1,0 @@
-obj/misc/prime/prime.test.o
-obj/misc/prime/prime_gen.o
-obj/misc/prime/prime_test.o
-obj/rng/rng.o

@@ -9,6 +9,7 @@
 - C compiler
 - `GMP` library
 - Python3
+- Cython
 
 ## Building the Library
 
@@ -53,15 +54,17 @@ To run the tests, follow these steps:
 2. Run the tests:
 
    ```
+   # Run all tests
    make test
+
+   # Run tests of a module
+   make test_<module_name>
    ```
 
 3. Test Cython wrapper for UI:
    ```
    python3 src/frontend/test.py
    ```
-
-This will execute all the test executables and display the results.
 
 ## Cleaning Up
 

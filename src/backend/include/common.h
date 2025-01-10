@@ -7,9 +7,9 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include "parameters.h"
+#include "enum.h"
 
-typedef unsigned char BYTE;     // 8-bit byte
-typedef unsigned int WORD;       // 32-bit word, change to "long" for 16-bit machines
+typedef unsigned char BYTE; // 8-bit byte
+typedef unsigned int WORD;  // 32-bit word, change to "long" for 16-bit machines
 
 #endif

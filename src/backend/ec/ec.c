@@ -1,6 +1,5 @@
 #include "ec.h"
 #include "conversion.h"
-// #include "sha2.h"
 
 void init_point(point_t *p)
 {
@@ -45,7 +44,7 @@ void copy_affine(point_affine_t *r, const point_affine_t p)
     mpz_set(r->y, p.y);
 }
 
-void init_curve(curve_t *curve, unsigned char curve_type, unsigned char curve_id)
+void init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id)
 {
     init_affine(&curve->G);
     mpz_inits(curve->p, curve->r, curve->a, curve->b, NULL);

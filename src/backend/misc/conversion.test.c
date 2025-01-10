@@ -58,6 +58,28 @@ void test_bigint_and_bytes()
     free(bytes);
 }
 
+void test_string_and_hex()
+{
+    unsigned char *input = "Hello, world!\0";
+    size_t len = strlen(input);
+    unsigned char *hex = malloc(len * 2);
+    unsigned char *output = malloc(len);
+
+    string_to_hex(hex, input, len);
+    // printf("String to Hex: %s -> %s\n", input, hex);
+    hex_to_string(output, hex, len * 2);
+    // printf("Hex to String: %s -> %s\n", hex, output);
+
+    printf("String <-> Hex:\t\t");
+    if (strcmp(input, output) == 0)
+        printf("PASSED\n");
+    else
+        printf("FAILED\n");
+
+    free(hex);
+    free(output);
+}
+
 void test_pkcs7_padding()
 {
     unsigned char input[] = "Hello, world!";
@@ -112,14 +134,13 @@ int main()
 
     test_bigint_and_hex();
     test_bigint_and_bytes();
+    test_string_and_hex();
 
     test_pkcs7_padding();
     test_pkcs7_unpadding();
 
     // Uncomment the following line to test invalid hex string handling
     // test_invalid_hex_to_bigint();
-
-
 
     return 0;
 }

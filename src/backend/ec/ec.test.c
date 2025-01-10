@@ -1,6 +1,6 @@
 #include "ec.h"
 
-void test_weierstrass_curve(WEIERSTRASS_CURVE curve_id)
+void test_weierstrass_curve(weierstrass_curve_t curve_id)
 {
     int check = 1, eq = 0, on_curve = 0, inf = 0;
 
@@ -84,7 +84,7 @@ void test_weierstrass_curve(WEIERSTRASS_CURVE curve_id)
     free_curve(&curve);
 }
 
-void test_edwards_curve(EDWARDS_CURVE curve_id)
+void test_edwards_curve(edwards_curve_t curve_id)
 {
     int check = 1, eq = 0, on_curve = 0, inf = 0;
 
@@ -168,7 +168,7 @@ void test_edwards_curve(EDWARDS_CURVE curve_id)
     free_curve(&curve);
 }
 
-void test_montgomery_curve(MONTGOMERY_CURVE curve_id)
+void test_montgomery_curve(montgomery_curve_t curve_id)
 {
     int check = 1, eq = 0, on_curve = 0, inf = 0;
 
