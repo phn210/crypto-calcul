@@ -141,3 +141,69 @@ void *hmac(const void *key, size_t keysize, const void *data, size_t data_len,
     hmac_free(&ctx);
     return mac;
 }
+
+int hmac_verify(const void *key, size_t keysize, const void *data, size_t data_len,
+                const void *mac, sec_level_t sec_level, hash_func_t hash_function)
+{
+    hmac_ctx_t ctx;
+    hmac_init(&ctx, key, keysize, sec_level, hash_function);
+    unsigned char *mac_check = malloc(ctx.l);
+    if (mac_check == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(1);
+    }
+    hmac(key, keysize, data, data_len, mac_check, sec_level, hash_function);
+    int result = memcmp(mac, mac_check, ctx.l);
+    free(mac_check);
+    hmac_free(&ctx);
+    return result;
+}
+
+void *hmac_file(const char *filename, const void *key, size_t keysize,
+                void *mac, sec_level_t sec_level, hash_func_t hash_function)
+{
+    FILE *file = fopen(filename, "r");
+    if (file == NULL)
+    {
+        printf("Error opening file\n");
+        exit(EXIT_FAILURE);
+    }
+
+    fseek(file, 0, SEEK_END);
+    size_t file_size = ftell(file);
+    fseek(file, 0, SEEK_SET);
+
+    unsigned char *file_contents = malloc(file_size);
+    fread(file_contents, 1, file_size, file);
+
+    hmac(key, keysize, file_contents, file_size, mac, sec_level, hash_function);
+
+    fclose(file);
+    free(file_contents);
+    return mac;
+}
+
+int hmac_file_verify(const char *filename, const void *key, size_t keysize,
+                     const void *mac, sec_level_t sec_level, hash_func_t hash_function)
+{
+    FILE *file = fopen(filename, "r");
+    if (file == NULL)
+    {
+        printf("Error opening file\n");
+        exit(EXIT_FAILURE);
+    }
+
+    fseek(file, 0, SEEK_END);
+    size_t file_size = ftell(file);
+    fseek(file, 0, SEEK_SET);
+
+    unsigned char *file_contents = malloc(file_size);
+    fread(file_contents, 1, file_size, file);
+
+    int result = hmac_verify(key, keysize, file_contents, file_size, mac, sec_level, hash_function);
+
+    fclose(file);
+    free(file_contents);
+    return result;
+}

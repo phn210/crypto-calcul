@@ -6,6 +6,18 @@ class MAC:
     @cython.ccall
     def mac(self, key: bytes, data: bytes) -> bytes:
         pass
+    
+    @cython.ccall
+    def mac_file(self, file_path: str, key: bytes) -> bytes:
+        pass
+    
+    @cython.ccall
+    def verify(self, key: bytes, data: bytes, mac: bytes):
+        pass
+    
+    @cython.ccall
+    def verify_file(self, file_path: str, key: bytes, mac: bytes):
+        pass
 
 @cython.cclass
 class HMAC(MAC):
@@ -38,6 +50,27 @@ class HMAC(MAC):
         result = cython.cast(bytes, mac)[:self.mac_len]
         free(mac)
         return result
+    
+    @cython.ccall
+    def mac_file(self, file_path: str, key: bytes) -> bytes:
+        in_file = file_path.encode('utf-8')
+        mac = cython.cast(cython.p_char, malloc(self.mac_len))
+        hmac_file(cython.cast(cython.p_char, in_file), cython.cast(cython.p_void, key), len(key),
+            cython.cast(cython.p_void, mac), self.sec_level.value, self.hash_function.value)
+        result = cython.cast(bytes, mac)[:self.mac_len]
+        free(mac)
+        return result
+    
+    @cython.ccall
+    def verify(self, key: bytes, data: bytes, mac: bytes):
+        return bool(hmac_verify(cython.cast(cython.p_void, key), len(key), cython.cast(cython.p_void, data), len(data),
+            cython.cast(cython.p_void, mac), self.sec_level.value, self.hash_function.value))
+        
+    @cython.ccall
+    def verify_file(self, file_path: str, key: bytes, mac: bytes):
+        in_file = file_path.encode('utf-8')
+        return bool(hmac_file_verify(cython.cast(cython.p_char, in_file), cython.cast(cython.p_void, key), len(key),
+            cython.cast(cython.p_void, mac), self.sec_level.value, self.hash_function.value))
 
 @cython.cclass
 class CBCMAC(MAC):
@@ -54,3 +87,24 @@ class CBCMAC(MAC):
         result = cython.cast(bytes, mac)[:_AES_BLOCK_SIZE]
         free(mac)
         return result
+    
+    @cython.ccall
+    def mac_file(self, file_path: str, key: bytes) -> bytes:
+        in_file = file_path.encode('utf-8')
+        mac = cython.cast(cython.p_char, malloc(_AES_BLOCK_SIZE))
+        cbc_mac_file(cython.cast(cython.p_char, in_file), cython.cast(cython.p_void, key), len(key),
+            cython.cast(cython.p_void, mac), self.sec_level.value)
+        result = cython.cast(bytes, mac)[:_AES_BLOCK_SIZE]
+        free(mac)
+        return result
+    
+    @cython.ccall
+    def verify(self, key: bytes, data: bytes, mac: bytes):
+        return bool(cbc_mac_verify(cython.cast(cython.p_void, key), len(key), cython.cast(cython.p_void, data), len(data),
+            cython.cast(cython.p_void, mac), self.sec_level.value))
+        
+    @cython.ccall
+    def verify_file(self, file_path: str, key: bytes, mac: bytes):
+        in_file = file_path.encode('utf-8')
+        return bool(cbc_mac_file_verify(cython.cast(cython.p_char, in_file), cython.cast(cython.p_void, key), len(key),
+            cython.cast(cython.p_void, mac), self.sec_level.value))

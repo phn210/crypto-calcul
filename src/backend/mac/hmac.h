@@ -22,4 +22,13 @@ void hmac_free(hmac_ctx_t *ctx);
 void *hmac(const void *key, size_t keysize, const void *data, size_t data_len,
            void *mac, sec_level_t sec_level, hash_func_t hash_function);
 
+int hmac_verify(const void *key, size_t keysize, const void *data, size_t data_len,
+                const void *mac, sec_level_t sec_level, hash_func_t hash_function);
+
+void *hmac_file(const char *filename, const void *key, size_t keysize,
+                void *mac, sec_level_t sec_level, hash_func_t hash_function);
+
+int hmac_file_verify(const char *filename, const void *key, size_t keysize,
+                     const void *mac, sec_level_t sec_level, hash_func_t hash_function);
+
 #endif
