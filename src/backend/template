@@ -55,7 +55,7 @@ test: $(TEST_PATHS)
 
 clean:
 	@rm -rf $(OBJ_DIR)
-	@rm -f $(TEST_PATHS)
+	@rm -rf $(BIN_DIR)
 
 .PHONY : all clean test
 .PRECIOUS: $(OBJ_DIR)/%.o
