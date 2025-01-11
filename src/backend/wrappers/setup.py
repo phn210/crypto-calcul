@@ -2,34 +2,52 @@ from Cython.Build import cythonize
 from Cython.Distutils import build_ext
 from multiprocessing import Process, freeze_support, set_start_method
 from setuptools import setup, Extension
+import os, re
 
-def wrap_all():
+def wrap_c_lib():
     SRC_DIR = "src/backend"
-    BUILD_DIR = "build/"
-    WRAPPER_DIR = "src/backend/wrappers"
+    OBJ_DIR = "obj"
+    BUILD_DIR = "build"
+    WRAPPER_DIR = f"src/backend/wrappers"
+    LIB_NAME = WRAPPER_DIR.split("/")[-1]
     class CustomBuildExtension(build_ext):
         def run(self):
             self.build_lib = BUILD_DIR
             self.inplace = False
             super().run()
+            
+    def get_deps(directory):
+        try:
+            with open(f"{directory}/Makefile.env", "r") as file:
+                content = file.read()
+            match = re.search(r'^TEST_DEPS\s*=\s*(.*?)(?<!\\)\n', content, re.DOTALL | re.MULTILINE)
+            if match:
+                deps = match.group(1).replace("\\", "").split()
+                return [f"{OBJ_DIR}/{dep}" for dep in deps]
+            else:
+                return []
+        except Exception as e:
+            return []
 
-    def get_extension(*args):
-        name = args[0]
-        c_sources = args[1]
-        
-        module = name.split(".")[-1]
-        sources = [f'{SRC_DIR}/{file}' for file in c_sources] + [f'{WRAPPER_DIR}/{module}/__init__.py']
-
-        include_dirs = [f'{SRC_DIR}/include'] + list(
-            set([ f'{SRC_DIR}/{"/".join(file.split("/")[:-1])}' for file in c_sources ])
-        )
+    def get_extension(module):
+        name = f'{LIB_NAME}.{module}'
+        sources = [f'{WRAPPER_DIR}/{module}/__init__.py']
+        objects = []
+        if module not in ["enums", "gmp"]:
+            objects += get_deps(f'{SRC_DIR}/{module}') + [
+                f'{OBJ_DIR}/{module}/{f.replace(".c", ".o")}' for f in os.listdir(os.path.join(SRC_DIR, module)) \
+                if f.endswith(".c") and not f.endswith(".test.c")
+            ]
+        include_dirs = [f'{SRC_DIR}/include'] + list(set(
+            [f'{SRC_DIR}/{"/".join(file.split("/")[1:-1])}' for file in objects]
+        ))
         
         return Extension(
             name,
             sources=sources,
+            extra_objects=objects,
             include_dirs=include_dirs,
-            libraries=["gmp"],
-            language="c",
+            libraries=["gmp"]
         )
 
     cython_directives = {
@@ -40,64 +58,17 @@ def wrap_all():
         "emit_code_comments": "False",
     }
 
-    enum_ext = get_extension("wrappers.enums", [])
-    gmp_ext = get_extension("wrappers.gmp", ["misc/conversion.c"])
-    rng_ext = get_extension("wrappers.rng", ["rng/rng.c"])
-    prime_ext = get_extension(
-        "wrappers.prime", 
-        ["prime/prime_test.c", "prime/prime_gen.c", "rng/rng.c"]
-    )
-    md5_ext = get_extension("wrappers.md5", ["md5/md5.c"])
-    sha1_ext = get_extension("wrappers.sha1", ["sha1/sha1.c"])
-    sha2_ext = get_extension("wrappers.sha2", ["sha2/sha2.c"])
-    sha3_ext = get_extension("wrappers.sha3", ["sha3/sha3.c"])
-    ec_ext = get_extension("wrappers.ec", ["ec/ec.c", "sha2/sha2.c", "misc/conversion.c"])
-    mac_ext = get_extension("wrappers.mac", [
-        "mac/hmac.c", "mac/cbc_mac.c", "md5/md5.c", "sha1/sha1.c", \
-        "sha2/sha2.c", "sha3/sha3.c", "aes/aes.c", "misc/conversion.c"
-    ])
-    des_ext = get_extension("wrappers.des", ["des/des.c", "misc/conversion.c"])
-    aes_ext = get_extension("wrappers.aes", ["aes/aes.c", "misc/conversion.c"])
-    rsa_ext = get_extension("wrappers.rsa", [
-        "rsa/enc.c", "rsa/sig.c", "rng/rng.c", "md5/md5.c", "sha1/sha1.c", "sha2/sha2.c", \
-        "sha3/sha3.c", "mgf/mgf.c", "misc/conversion.c", "prime/prime_test.c", "prime/prime_gen.c"
-    ])
-    elgamal_ext = get_extension("wrappers.elgamal", [
-        "elgamal/enc.c", "elgamal/sig.c", "rng/rng.c", "sha2/sha2.c", "misc/conversion.c", \
-        "prime/prime_test.c", "prime/prime_gen.c"
-    ])
-    ecelgamal_ext = get_extension("wrappers.ecelgamal", [
-        "ecelgamal/enc.c", "ecelgamal/sig.c", "ec/ec.c", "rng/rng.c", "sha2/sha2.c", \
-        "sha3/sha3.c", "misc/conversion.c"
-    ])
-    dsa_ext = get_extension("wrappers.dsa", [
-        "dsa/dsa.c", "rng/rng.c", "misc/conversion.c", "sha2/sha2.c",
-        "sha3/sha3.c", "prime/prime_gen.c", "prime/prime_test.c"
-    ])
-    ecdsa_ext = get_extension("wrappers.ecdsa", [
-        "ecdsa/ecdsa.c", "ec/ec.c", "rng/rng.c", "sha2/sha2.c", "sha3/sha3.c","misc/conversion.c"
-    ])
-    dh_ext = get_extension("wrappers.dh", [
-        "dh/dh.c", "elgamal/enc.c", "rng/rng.c", "misc/conversion.c", \
-        "prime/prime_gen.c", "prime/prime_test.c"
-    ])
-    ecdh_ext = get_extension("wrappers.ecdh", [
-        "ecdh/ecdh.c", "ecelgamal/enc.c", "ec/ec.c", "rng/rng.c", "sha2/sha2.c", \
-        "sha3/sha3.c", "misc/conversion.c"
-    ])
+    excludes = ["__pycache__"]
+    modules = [item for item in os.listdir(WRAPPER_DIR) if os.path.isdir(os.path.join(WRAPPER_DIR, item)) and item not in excludes]
+    extensions = [get_extension(module) for module in modules]
 
     # Cython setup
     setup(
         name="wrappers",
         ext_modules=cythonize(
-            [
-                enum_ext, gmp_ext, rng_ext, prime_ext, ec_ext,
-                md5_ext, sha1_ext, sha2_ext, sha3_ext, mac_ext, des_ext, aes_ext,
-                rsa_ext, elgamal_ext, ecelgamal_ext, dsa_ext, ecdsa_ext, dh_ext, ecdh_ext
-            ],
+            extensions,
             compiler_directives=cython_directives,
-            quiet=True,
-            nthreads=10
+            quiet=True
         ),
         cmdclass={'build_ext': CustomBuildExtension},
         zip_safe=False,
@@ -106,5 +77,5 @@ def wrap_all():
 if __name__ == '__main__':
     freeze_support()
     set_start_method('spawn')
-    p = Process(target=wrap_all)
+    p = Process(target=wrap_c_lib)
     p.start()

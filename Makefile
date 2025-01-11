@@ -1,5 +1,5 @@
 # Update number of cores to match your system
-NUM_CORES = 10
+NUM_CORES = 15
 SRC_DIR = src/backend
 
 all test prepare:
@@ -21,10 +21,10 @@ clean_wrapper:
 	rm -rf ./**/*cpython-*
 	find . -type f -path "*/wrappers/*.c*" -exec rm {} \;
 
-wrap:
+wrap: all
 	time python3 src/backend/wrappers/setup.py build_ext
 
-wrap_fast:
+wrap_fast: build_fast
 	time python3 src/backend/wrappers/setup.py build_ext -j $(NUM_CORES)
 
 .PHONY : all test test_% clean build_fast prepare clean_make wrap wrap_fast clean_wrapper
