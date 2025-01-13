@@ -1,4 +1,4 @@
-cdef extern from "enum.h":
+cdef extern from "common.h":
     ctypedef enum sec_level_t:
         _L0 "L0"
         _L1 "L1"

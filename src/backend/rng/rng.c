@@ -1,14 +1,17 @@
-#include <stdio.h>
 #include "rng.h"
 
 #define RAND_SOURCE "/dev/urandom"
 
 unsigned int get_random_seed()
 {
-    FILE *fp = fopen(RAND_SOURCE, "rb");
     unsigned long int rand_src;
+#ifdef WINDOWS_H
+    RtlGenRandom(&rand_src, sizeof(unsigned int));
+#else
+    FILE *fp = fopen(RAND_SOURCE, "rb");
     fread(&rand_src, sizeof(unsigned int), 1, fp);
     fclose(fp);
+#endif
     return rand_src;
 }
 

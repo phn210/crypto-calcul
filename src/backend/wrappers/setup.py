@@ -38,7 +38,7 @@ def wrap_c_lib():
                 f'{OBJ_DIR}/{module}/{f.replace(".c", ".o")}' for f in os.listdir(os.path.join(SRC_DIR, module)) \
                 if f.endswith(".c") and not f.endswith(".test.c")
             ]
-        include_dirs = [f'{SRC_DIR}/include'] + list(set(
+        include_dirs = [f'{SRC_DIR}'] + list(set(
             [f'{SRC_DIR}/{"/".join(file.split("/")[1:-1])}' for file in objects]
         ))
         

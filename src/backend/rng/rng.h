@@ -1,7 +1,7 @@
 #ifndef RNG_H
 #define RNG_H
 
-#include <gmp.h>
+#include "common.h"
 
 unsigned int get_random_seed();
 void rng_init(gmp_randstate_t state);

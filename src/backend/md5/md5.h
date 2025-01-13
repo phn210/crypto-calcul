@@ -2,7 +2,7 @@
 #ifndef MD5_H
 #define MD5_H
 
-#include <common.h>
+#include "common.h"
 
 #define MD5_BLOCK_SIZE 16 // MD5 outputs a 16 byte digest
 #define MD5_DIGEST_SIZE 16

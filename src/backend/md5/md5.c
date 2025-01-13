@@ -1,7 +1,3 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <memory.h>
 #include "md5.h"
 
 #define ROTLEFT(a, b) ((a << b) | (a >> (32 - b))) // rotate left

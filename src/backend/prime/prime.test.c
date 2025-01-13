@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "prime_test.h"
 #include "prime_gen.h"
 #include "rng.h"

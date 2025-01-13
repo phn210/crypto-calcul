@@ -2,7 +2,7 @@
 # Directories
 BASE_NAME = $(shell basename $(shell pwd))
 BIN_DIR = ../../../build/$(BASE_NAME)
-INC_DIR = ../include
+INC_DIR = ..
 OBJ_PARENT_DIR = ../../../obj
 OBJ_DIR = $(OBJ_PARENT_DIR)/$(BASE_NAME)
 SRC_DIR = .

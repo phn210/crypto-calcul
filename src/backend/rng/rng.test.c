@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <gmp.h>
 #include "rng.h"
 
 int main()
