@@ -59,8 +59,10 @@ void init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id)
         {
         case P224:
         {
-            curve->name = (char *)malloc(strlen(P224_NAME) + 1);
-            memcpy(curve->name, P224_NAME, strlen(P224_NAME));
+            size_t name_len = strlen(P224_NAME);
+            curve->name = (char *)malloc(name_len + 1);
+            memcpy(curve->name, P224_NAME, name_len);
+            curve->name[name_len] = '\0';
             curve->md_len = P224_MD_LEN;
             curve->efs = P224_EFS;
             curve->cof = P224_COF;
