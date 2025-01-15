@@ -31,7 +31,7 @@ void test_bigint_and_bytes()
     size_t len;
     unsigned char *bytes = (unsigned char *)malloc(count_bytes(num));
 
-    bigint_to_bytes(bytes, &len, num, BIG_ENDIAN);
+    bigint_to_bytes(bytes, &len, num, BIG);
     // gmp_printf("BigInt to Bytes: %Zd -> ", num);
     // for (size_t i = 0; i < len; i++)
     // {
@@ -39,7 +39,7 @@ void test_bigint_and_bytes()
     // }
     // printf("\n");
 
-    bytes_to_bigint(result, bytes, len, BIG_ENDIAN);
+    bytes_to_bigint(result, bytes, len, BIG);
 
     // gmp_printf("Bytes to BigInt: ");
     // for (size_t i = 0; i < len; i++)

@@ -20,7 +20,7 @@ void gen_public(mpz_t p, const mpz_t s, const public_params_t *pp)
     generator(&P, pp->curve);
     mul(&P, P, s, pp->curve);
     point_to_bytes(buf, P, pp->curve);
-    bytes_to_bigint(p, buf, point_len, BIG_ENDIAN);
+    bytes_to_bigint(p, buf, point_len, BIG);
     point_from_bytes(&P, buf, pp->curve);
 
     free(buf);
@@ -35,12 +35,12 @@ void compute_shared_secret(mpz_t shared_secret, const mpz_t s, const mpz_t p, co
     unsigned char *buf = (unsigned char *)malloc(point_len);
 
     size_t p_len;
-    bigint_to_bytes(buf, &p_len, p, BIG_ENDIAN);
+    bigint_to_bytes(buf, &p_len, p, BIG);
     point_from_bytes(&P, buf, pp->curve);
     mul(&P, P, s, pp->curve);
 
     point_to_bytes(buf, P, pp->curve);
-    bytes_to_bigint(shared_secret, buf, point_len, BIG_ENDIAN);
+    bytes_to_bigint(shared_secret, buf, point_len, BIG);
     mpz_mod(shared_secret, shared_secret, pp->curve.r);
 
     free(buf);

@@ -35,7 +35,7 @@ void crypto_sign(mpz_t s1, mpz_t s2, const unsigned char *m, size_t m_len, const
 
     // h = H(m)
     hash(m, m_len, buf, md_len);
-    bytes_to_bigint(h, buf, md_len, BIG_ENDIAN);
+    bytes_to_bigint(h, buf, md_len, BIG);
     int invertible;
     do
     {
@@ -98,7 +98,7 @@ char crypto_verify(const mpz_t s1, const mpz_t s2, const unsigned char *m, size_
 
     // h = H(m)
     hash(m, m_len, buf, md_len);
-    bytes_to_bigint(h, buf, md_len, BIG_ENDIAN);
+    bytes_to_bigint(h, buf, md_len, BIG);
 
     // u1 = h / s2 mod r
     mpz_invert(s2_inv, s2, pp->curve.r);

@@ -39,7 +39,7 @@ void crypto_sign(mpz_t r, mpz_t s, const unsigned char *m, size_t m_len, const p
     // h = H(m)
     unsigned char *md = (unsigned char *)malloc(hash_len);
     sha2(m, m_len, md, hash_len);
-    bytes_to_bigint(h, md, hash_len, BIG_ENDIAN);
+    bytes_to_bigint(h, md, hash_len, BIG);
 
     // s = k^-1 * (h - r * x) mod (p - 1)
     mpz_mul(tmp, r, sk->x);
@@ -76,7 +76,7 @@ int crypto_verify(const mpz_t r, const mpz_t s, const unsigned char *m, size_t m
     // h = H(m)
     unsigned char *md = (unsigned char *)malloc(hash_len);
     sha2(m, m_len, md, hash_len);
-    bytes_to_bigint(h, md, hash_len, BIG_ENDIAN);
+    bytes_to_bigint(h, md, hash_len, BIG);
 
     // v1 = y^r * r^s mod p
     mpz_powm(v1, pk->y, r, pp->p);

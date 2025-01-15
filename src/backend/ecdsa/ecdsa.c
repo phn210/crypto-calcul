@@ -55,7 +55,7 @@ void crypto_sign(mpz_t r, mpz_t s, const unsigned char *m, size_t m_len, const p
     unsigned char *md = (unsigned char *)malloc(md_len);
     hash(m, m_len, md, md_len);
 
-    bytes_to_bigint(e, md, md_len, BIG_ENDIAN);
+    bytes_to_bigint(e, md, md_len, BIG);
     if (n_len < md_len * 8)
     {
         mpz_tdiv_q_2exp(e, e, md_len * 8 - n_len);
@@ -132,7 +132,7 @@ int crypto_verify(const mpz_t r, const mpz_t s, const unsigned char *m, size_t m
     unsigned char *md = (unsigned char *)malloc(md_len);
     hash(m, m_len, md, md_len);
 
-    bytes_to_bigint(e, md, md_len, BIG_ENDIAN);
+    bytes_to_bigint(e, md, md_len, BIG);
     if (n_len < md_len * 8)
     {
         mpz_tdiv_q_2exp(e, e, md_len * 8 - n_len);

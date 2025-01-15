@@ -61,10 +61,10 @@ void crypto_encrypt(mpz_t c1, mpz_t c2, const mpz_t m, const pub_key_t *pk, cons
     mpz_urandomm(k, state, pp->curve.r);
     mul(&C1, tmp, k, pp->curve);
     point_to_bytes(buf_point, C1, pp->curve);
-    bytes_to_bigint(c1, buf_point, buf_len, BIG_ENDIAN);
+    bytes_to_bigint(c1, buf_point, buf_len, BIG);
 
     unsigned char *buf_m = (unsigned char *)malloc(m_len);
-    bigint_to_bytes(buf_m, &m_len, m, BIG_ENDIAN);
+    bigint_to_bytes(buf_m, &m_len, m, BIG);
 
     // k * Y
     mul(&tmp, pk->Y, k, pp->curve);
@@ -77,7 +77,7 @@ void crypto_encrypt(mpz_t c1, mpz_t c2, const mpz_t m, const pub_key_t *pk, cons
     {
         buf_m[i] = buf_m[i] ^ h[i];
     }
-    bytes_to_bigint(c2, buf_m, m_len, BIG_ENDIAN);
+    bytes_to_bigint(c2, buf_m, m_len, BIG);
 
     gmp_randclear(state);
     mpz_clear(k);
@@ -111,7 +111,7 @@ void crypto_decrypt(mpz_t m, const mpz_t c1, const mpz_t c2, const priv_key_t *s
     size_t buf_len = 2 * pp->curve.efs;
     unsigned char *buf_point = (unsigned char *)malloc(buf_len);
 
-    bigint_to_bytes(buf_point, &buf_len, c1, BIG_ENDIAN);
+    bigint_to_bytes(buf_point, &buf_len, c1, BIG);
     point_from_bytes(&tmp, buf_point, pp->curve);
     mul(&tmp, tmp, sk->x, pp->curve);
     point_to_bytes(buf_point, tmp, pp->curve);
@@ -121,13 +121,13 @@ void crypto_decrypt(mpz_t m, const mpz_t c1, const mpz_t c2, const priv_key_t *s
 
     size_t m_len = count_bytes(c2);
     unsigned char *buf_m = (unsigned char *)malloc(m_len);
-    bigint_to_bytes(buf_m, &m_len, c2, BIG_ENDIAN);
+    bigint_to_bytes(buf_m, &m_len, c2, BIG);
 
     for (size_t i = 0; i < m_len; i++)
     {
         buf_m[i] = buf_m[i] ^ h[i];
     }
-    bytes_to_bigint(m, buf_m, m_len, BIG_ENDIAN);
+    bytes_to_bigint(m, buf_m, m_len, BIG);
 
     free_point(&tmp);
     free(buf_m);

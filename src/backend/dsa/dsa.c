@@ -72,7 +72,7 @@ void crypto_sign(mpz_t r, mpz_t s, const unsigned char *m, int len, priv_key_t s
     }
     pp.hash(m, len, md, pp.md_len);
     // printf("%d\n", pp.md_len);
-    bytes_to_bigint(hm, md, pp.md_len, BIG_ENDIAN);
+    bytes_to_bigint(hm, md, pp.md_len, BIG);
 
     mpz_powm(r, pp.g, k, pp.p);
     mpz_mod(r, r, pp.q);
@@ -101,7 +101,7 @@ char crypto_verify(const mpz_t r, const mpz_t s, const unsigned char *m, int len
         exit(1);
     }
     pp.hash(m, len, md, pp.md_len);
-    bytes_to_bigint(hm, md, pp.md_len, BIG_ENDIAN);
+    bytes_to_bigint(hm, md, pp.md_len, BIG);
 
     mpz_invert(w, s, pp.q);
     mpz_mul(u1, hm, w);

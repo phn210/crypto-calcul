@@ -214,13 +214,13 @@ void crypto_encrypt_pkcs1(mpz_t c, const mpz_t m, const pub_key_t *pk)
     // Convert to bytes
     unsigned char *buf = (unsigned char *)malloc(m_len);
     size_t buf_len;
-    bigint_to_bytes(buf, &buf_len, m, BIG_ENDIAN);
+    bigint_to_bytes(buf, &buf_len, m, BIG);
     eme_pkcs1_encode(em, k, buf, buf_len);
 
     // Convert to MPZ
     mpz_t padded_m;
     mpz_init(padded_m);
-    bytes_to_bigint(padded_m, em, k, BIG_ENDIAN);
+    bytes_to_bigint(padded_m, em, k, BIG);
 
     // Encrypt
     rsaep(c, padded_m, pk);
@@ -248,7 +248,7 @@ void crypto_decrypt_pkcs1(mpz_t m, const mpz_t c, const priv_key_t *sk, rsa_algo
     unsigned char *buf = (unsigned char *)malloc(k);
     size_t buf_len;
     buf[0] = 0x00;
-    bigint_to_bytes(buf + 1, &buf_len, m, BIG_ENDIAN);
+    bigint_to_bytes(buf + 1, &buf_len, m, BIG);
 
     // Check padding
     if (buf[0] != 0x00 || buf[1] != 0x02)
@@ -264,7 +264,7 @@ void crypto_decrypt_pkcs1(mpz_t m, const mpz_t c, const priv_key_t *sk, rsa_algo
         i++;
     }
     // Copy message
-    bytes_to_bigint(m, buf + i + 1, k - i - 1, BIG_ENDIAN);
+    bytes_to_bigint(m, buf + i + 1, k - i - 1, BIG);
     free(buf);
 }
 
@@ -358,13 +358,13 @@ void crypto_encrypt_oaep(mpz_t c, const mpz_t m, const pub_key_t *pk, sec_level_
     // Convert to bytes
     unsigned char *buf = (unsigned char *)malloc(m_len);
     size_t buf_len;
-    bigint_to_bytes(buf, &buf_len, m, BIG_ENDIAN);
+    bigint_to_bytes(buf, &buf_len, m, BIG);
     eme_oaep_encode(em, k, buf, buf_len, sec_level);
 
     // Convert to MPZ
     mpz_t padded_m;
     mpz_init(padded_m);
-    bytes_to_bigint(padded_m, em, k, BIG_ENDIAN);
+    bytes_to_bigint(padded_m, em, k, BIG);
 
     // Encrypt
     rsaep(c, padded_m, pk);
@@ -412,7 +412,7 @@ void crypto_decrypt_oaep(mpz_t m, const mpz_t c, const priv_key_t *sk, rsa_algo_
     unsigned char *buf = (unsigned char *)malloc(k);
     size_t buf_len;
     buf[0] = 0x00;
-    bigint_to_bytes(buf + 1, &buf_len, m, BIG_ENDIAN);
+    bigint_to_bytes(buf + 1, &buf_len, m, BIG);
 
     // Check padding
     if (buf[0] != 0x00)
@@ -455,7 +455,7 @@ void crypto_decrypt_oaep(mpz_t m, const mpz_t c, const priv_key_t *sk, rsa_algo_
         i++;
     }
 
-    bytes_to_bigint(m, maskedDB + i + 1, k - i - hash_len - 2, BIG_ENDIAN);
+    bytes_to_bigint(m, maskedDB + i + 1, k - i - hash_len - 2, BIG);
 
     free(buf);
     free(maskedSeed);

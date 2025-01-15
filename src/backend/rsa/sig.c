@@ -144,7 +144,7 @@ void crypto_sign_pkcs1(mpz_t s, const mpz_t m, const priv_key_t *sk, rsa_algo_t 
 {
     unsigned char *buf = (unsigned char *)malloc(count_bytes(m));
     size_t buf_len;
-    bigint_to_bytes(buf, &buf_len, m, BIG_ENDIAN);
+    bigint_to_bytes(buf, &buf_len, m, BIG);
 
     size_t k = count_bytes(sk->n);
     unsigned char *em = (unsigned char *)malloc(k);
@@ -153,7 +153,7 @@ void crypto_sign_pkcs1(mpz_t s, const mpz_t m, const priv_key_t *sk, rsa_algo_t 
     // Convert to MPZ
     mpz_t padded_m;
     mpz_init(padded_m);
-    bytes_to_bigint(padded_m, em, k, BIG_ENDIAN);
+    bytes_to_bigint(padded_m, em, k, BIG);
 
     // Sign
     rsasp1(s, padded_m, sk, algorithm);
@@ -167,7 +167,7 @@ int crypto_verify_pkcs1(const mpz_t m, const mpz_t s, const pub_key_t *pk, sec_l
 {
     unsigned char *buf = (unsigned char *)malloc(count_bytes(m));
     size_t buf_len;
-    bigint_to_bytes(buf, &buf_len, m, BIG_ENDIAN);
+    bigint_to_bytes(buf, &buf_len, m, BIG);
 
     size_t k = count_bytes(pk->n);
     unsigned char *em = (unsigned char *)malloc(k);
@@ -176,7 +176,7 @@ int crypto_verify_pkcs1(const mpz_t m, const mpz_t s, const pub_key_t *pk, sec_l
     // Convert to MPZ
     mpz_t padded_m, signed_em;
     mpz_inits(padded_m, signed_em, NULL);
-    bytes_to_bigint(padded_m, em, k, BIG_ENDIAN);
+    bytes_to_bigint(padded_m, em, k, BIG);
     rsavp1(signed_em, s, pk);
 
     // Verify
@@ -334,7 +334,7 @@ void crypto_sign_pss(mpz_t s, const mpz_t m, const priv_key_t *sk, rsa_algo_t al
 {
     unsigned char *buf = (unsigned char *)malloc(count_bytes(m));
     size_t buf_len;
-    bigint_to_bytes(buf, &buf_len, m, BIG_ENDIAN);
+    bigint_to_bytes(buf, &buf_len, m, BIG);
 
     size_t k = count_bytes(sk->n);
     unsigned char *em = (unsigned char *)malloc(k);
@@ -343,7 +343,7 @@ void crypto_sign_pss(mpz_t s, const mpz_t m, const priv_key_t *sk, rsa_algo_t al
     // Convert to MPZ
     mpz_t padded_m;
     mpz_init(padded_m);
-    bytes_to_bigint(padded_m, em, k, BIG_ENDIAN);
+    bytes_to_bigint(padded_m, em, k, BIG);
 
     // Sign
     rsasp1(s, padded_m, sk, algorithm);
@@ -357,7 +357,7 @@ int crypto_verify_pss(const mpz_t m, const mpz_t s, const pub_key_t *pk, sec_lev
 {
     unsigned char *buf = (unsigned char *)malloc(count_bytes(m));
     size_t buf_len;
-    bigint_to_bytes(buf, &buf_len, m, BIG_ENDIAN);
+    bigint_to_bytes(buf, &buf_len, m, BIG);
 
     size_t k = count_bytes(pk->n);
     unsigned char *em = (unsigned char *)malloc(k);
@@ -367,7 +367,7 @@ int crypto_verify_pss(const mpz_t m, const mpz_t s, const pub_key_t *pk, sec_lev
     mpz_t signed_em;
     mpz_init(signed_em);
     rsavp1(signed_em, s, pk);
-    bigint_to_bytes(em, &em_len, signed_em, BIG_ENDIAN);
+    bigint_to_bytes(em, &em_len, signed_em, BIG);
 
     if (em_len != k)
     {
