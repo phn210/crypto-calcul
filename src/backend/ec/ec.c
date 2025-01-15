@@ -76,8 +76,10 @@ void init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id)
         }
         case P384:
         {
-            curve->name = (char *)malloc(strlen(P384_NAME) + 1);
-            memcpy(curve->name, P384_NAME, strlen(P384_NAME));
+            size_t name_len = strlen(P384_NAME);
+            curve->name = (char *)malloc(name_len + 1);
+            memcpy(curve->name, P384_NAME, name_len);
+            curve->name[name_len] = '\0';
             curve->md_len = P384_MD_LEN;
             curve->efs = P384_EFS;
             curve->cof = P384_COF;
@@ -91,8 +93,10 @@ void init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id)
         }
         case P256:
         {
-            curve->name = (char *)malloc(strlen(P256_NAME) + 1);
-            memcpy(curve->name, P256_NAME, strlen(P256_NAME));
+            size_t name_len = strlen(P256_NAME);
+            curve->name = (char *)malloc(name_len + 1);
+            memcpy(curve->name, P256_NAME, name_len);
+            curve->name[name_len] = '\0';
             curve->md_len = P256_MD_LEN;
             curve->efs = P256_EFS;
             curve->cof = P256_COF;
@@ -106,8 +110,10 @@ void init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id)
         }
         case P521:
         {
-            curve->name = (char *)malloc(strlen(P521_NAME) + 1);
-            memcpy(curve->name, P521_NAME, strlen(P521_NAME));
+            size_t name_len = strlen(P521_NAME);
+            curve->name = (char *)malloc(name_len + 1);
+            memcpy(curve->name, P521_NAME, name_len);
+            curve->name[name_len] = '\0';
             curve->md_len = P521_MD_LEN;
             curve->efs = P521_EFS;
             curve->cof = P521_COF;
@@ -121,8 +127,10 @@ void init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id)
         }
         case P256K1:
         {
-            curve->name = (char *)malloc(strlen(P256K1_NAME) + 1);
-            memcpy(curve->name, P256K1_NAME, strlen(P256K1_NAME));
+            size_t name_len = strlen(P256K1_NAME);
+            curve->name = (char *)malloc(name_len + 1);
+            memcpy(curve->name, P256K1_NAME, name_len);
+            curve->name[name_len] = '\0';
             curve->md_len = P256K1_MD_LEN;
             curve->efs = P256K1_EFS;
             curve->cof = P256K1_COF;
@@ -136,8 +144,10 @@ void init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id)
         }
         case W25519:
         {
-            curve->name = (char *)malloc(strlen(W25519_NAME) + 1);
-            memcpy(curve->name, W25519_NAME, strlen(W25519_NAME));
+            size_t name_len = strlen(W25519_NAME);
+            curve->name = (char *)malloc(name_len + 1);
+            memcpy(curve->name, W25519_NAME, name_len);
+            curve->name[name_len] = '\0';
             curve->md_len = W25519_MD_LEN;
             curve->efs = W25519_EFS;
             curve->cof = W25519_COF;
@@ -151,8 +161,10 @@ void init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id)
         }
         case W448:
         {
-            curve->name = (char *)malloc(strlen(W448_NAME) + 1);
-            memcpy(curve->name, W448_NAME, strlen(W448_NAME));
+            size_t name_len = strlen(W448_NAME);
+            curve->name = (char *)malloc(name_len + 1);
+            memcpy(curve->name, W448_NAME, name_len);
+            curve->name[name_len] = '\0';
             curve->md_len = W448_MD_LEN;
             curve->efs = W448_EFS;
             curve->cof = W448_COF;
@@ -178,8 +190,10 @@ void init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id)
         {
         case C25519:
         {
-            curve->name = (char *)malloc(strlen(C25519_NAME) + 1);
-            memcpy(curve->name, C25519_NAME, strlen(C25519_NAME));
+            size_t name_len = strlen(C25519_NAME);
+            curve->name = (char *)malloc(name_len + 1);
+            memcpy(curve->name, C25519_NAME, name_len);
+            curve->name[name_len] = '\0';
             curve->md_len = C25519_MD_LEN;
             curve->efs = C25519_EFS;
             curve->cof = C25519_COF;
@@ -193,8 +207,10 @@ void init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id)
         }
         case C448:
         {
-            curve->name = (char *)malloc(strlen(C448_NAME) + 1);
-            memcpy(curve->name, C448_NAME, strlen(C448_NAME));
+            size_t name_len = strlen(C448_NAME);
+            curve->name = (char *)malloc(name_len + 1);
+            memcpy(curve->name, C448_NAME, name_len);
+            curve->name[name_len] = '\0';
             curve->md_len = C448_MD_LEN;
             curve->efs = C448_EFS;
             curve->cof = C448_COF;
@@ -220,9 +236,10 @@ void init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id)
         {
         case ED25519:
         {
-            curve->name = (char *)malloc(strlen(ED25519_NAME) + 1);
-            memcpy(curve->name, ED25519_NAME, strlen(ED25519_NAME));
-            // curve->hash = sha2;
+            size_t name_len = strlen(ED25519_NAME);
+            curve->name = (char *)malloc(name_len + 1);
+            memcpy(curve->name, ED25519_NAME, name_len);
+            curve->name[name_len] = '\0';
             curve->md_len = ED25519_MD_LEN;
             curve->efs = ED25519_EFS;
             curve->cof = ED25519_COF;
@@ -236,9 +253,10 @@ void init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id)
         }
         case ED448:
         {
-            curve->name = (char *)malloc(strlen(ED448_NAME) + 1);
-            memcpy(curve->name, ED448_NAME, strlen(ED448_NAME));
-            // curve->hash = sha2;
+            size_t name_len = strlen(ED448_NAME);
+            curve->name = (char *)malloc(name_len + 1);
+            memcpy(curve->name, ED448_NAME, name_len);
+            curve->name[name_len] = '\0';
             curve->md_len = ED448_MD_LEN;
             curve->efs = ED448_EFS;
             curve->cof = ED448_COF;
@@ -252,9 +270,10 @@ void init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id)
         }
         case E448:
         {
-            curve->name = (char *)malloc(strlen(E448_NAME) + 1);
-            memcpy(curve->name, E448_NAME, strlen(E448_NAME));
-            // curve->hash = sha2;
+            size_t name_len = strlen(E448_NAME);
+            curve->name = (char *)malloc(name_len + 1);
+            memcpy(curve->name, E448_NAME, name_len);
+            curve->name[name_len] = '\0';
             curve->md_len = E448_MD_LEN;
             curve->efs = E448_EFS;
             curve->cof = E448_COF;
@@ -280,7 +299,6 @@ void init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id)
         exit(EXIT_FAILURE);
     }
     }
-    // curve->hash = sha2;
 }
 
 void free_curve(curve_t *curve)
