@@ -85,12 +85,12 @@ void test_pkcs7_padding()
     char *input = "Hello, world!\0";
     size_t len = strlen(input);
     size_t block_size = 8;
+    size_t padded_len, unpadded_len;
 
-    unsigned char *padded = pkcs7_padding((unsigned char *)input, len, block_size);
-    unsigned char *unpadded = pkcs7_unpadding(padded, strlen((const char *)padded), block_size);
+    unsigned char *padded = pkcs7_padding((unsigned char *)input, len, &padded_len, block_size);
+    unsigned char *unpadded = pkcs7_unpadding(padded, padded_len, &unpadded_len, block_size);
 
-    printf("PKCS#7 Padding:\t\t%s\n", strcmp(input, (const char *)unpadded) == 0 ? "PASSED" : "FAILED");
-
+    printf("PKCS#7 Padding:\t\t%s\n", memcmp(input, unpadded, unpadded_len) == 0 ? "PASSED" : "FAILED");
     free(padded);
     free(unpadded);
 }

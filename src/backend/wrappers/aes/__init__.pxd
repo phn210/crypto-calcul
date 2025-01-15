@@ -34,8 +34,8 @@ cdef extern from "aes.h":
     void aes_file_decrypt(const char *, const char *, unsigned char *, unsigned char *, AES_KEY_SIZE, AES_MODE);
 
 cdef extern from "conversion.h":
-    unsigned char *pkcs7_padding(unsigned char *, size_t, size_t)
-    unsigned char *pkcs7_unpadding(unsigned char *, size_t, size_t)
+    unsigned char *pkcs7_padding(unsigned char *, size_t, size_t *, size_t)
+    unsigned char *pkcs7_unpadding(unsigned char *, size_t, size_t *, size_t)
 
 cdef class AES:
     cdef AES_KEY_SIZE key_size

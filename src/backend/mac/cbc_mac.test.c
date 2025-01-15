@@ -8,12 +8,12 @@ void test_cbc_mac_function()
 
     cbc_mac((void *)key, strlen(key), (void *)data, strlen(data), mac, L1);
 
-    printf("CBC-MAC: ");
-    for (int i = 0; i < 16; i++) // AES block size
-    {
-        printf("%02x", mac[i]);
-    }
-    printf("\n");
+    // printf("CBC-MAC: ");
+    // for (int i = 0; i < 16; i++) // AES block size
+    // {
+    //     printf("%02x", mac[i]);
+    // }
+    // printf("\n");
 
     int result = cbc_mac_verify((void *)key, strlen(key), (void *)data, strlen(data), mac, L1);
     printf("CBC-MAC:\t%s\n", result == 0 ? "PASSED" : "FAILED");

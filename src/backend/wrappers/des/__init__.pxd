@@ -12,8 +12,8 @@ cdef extern from "des.h":
     void des_file(const char *, const char *, const uint64_t, des_mode_t)
 
 cdef extern from "conversion.h":
-    unsigned char *pkcs7_padding(unsigned char *, size_t, size_t)
-    unsigned char *pkcs7_unpadding(unsigned char *, size_t, size_t)
+    unsigned char *pkcs7_padding(unsigned char *, size_t, size_t *, size_t)
+    unsigned char *pkcs7_unpadding(unsigned char *, size_t, size_t *, size_t)
 
 cdef class DES:
     cpdef des(self, bytes data, bytes key, mode)

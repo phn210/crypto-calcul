@@ -47,7 +47,7 @@ int main()
     printf("\n===================== AES TEST =====================\n\n");
 
     char *key = "133457799BBCDFF1133457799BBCDFF1";
-    char message[] = "Hello world! My name is John Doe.";
+    char message[] = "Hello world! My name is John Doe.\0";
 
     size_t len = strlen((const char *)message);
     size_t key_len = strlen((const char *)key);
@@ -61,9 +61,8 @@ int main()
     // }
 
     // Pad input if necessary
-    unsigned char *padded_message = pkcs7_padding((unsigned char *)message, len, AES_BLOCK_SIZE);
-
-    size_t padded_len = strlen((const char *)padded_message);
+    size_t padded_len;
+    unsigned char *padded_message = pkcs7_padding((unsigned char *)message, len, &padded_len, AES_BLOCK_SIZE);
     size_t len_blocks = padded_len / AES_BLOCK_SIZE;
 
     // printf("\nPadded message hex: ");
@@ -101,11 +100,12 @@ int main()
     aes_decrypt_ecb(encrypted_ecb, decrypted_ecb, key_hex, padded_len, AES_KEY_SIZE_128);
 
     // Unpad decrypted message
-    unsigned char *unpadded_message = pkcs7_unpadding(decrypted_ecb, padded_len, AES_BLOCK_SIZE);
+    size_t decrypted_len;
+    unsigned char *unpadded_message = pkcs7_unpadding(decrypted_ecb, padded_len, &decrypted_len, AES_BLOCK_SIZE);
 
     // printf("\nDecrypted (ECB): %s\n", unpadded_message);
 
-    printf("AES-ECB-128:\t%s\n", strcmp(message, (const char *)unpadded_message) == 0 ? "PASS" : "FAIL");
+    printf("AES-ECB-128:\t%s\n", memcmp(message, unpadded_message, strlen(message)) == 0 ? "PASS" : "FAIL");
 
     free(encrypted_ecb);
     free(decrypted_ecb);
@@ -144,11 +144,11 @@ int main()
     // }
 
     // Unpad decrypted message
-    unpadded_message = pkcs7_unpadding(decrypted_cbc, padded_len, AES_BLOCK_SIZE);
+    unpadded_message = pkcs7_unpadding(decrypted_cbc, padded_len, &decrypted_len, AES_BLOCK_SIZE);
 
     // printf("\nDecrypted (CBC): %s\n", unpadded_message);
 
-    printf("AES-CBC-128:\t%s\n", strcmp(message, (const char *)unpadded_message) == 0 ? "PASS" : "FAIL");
+    printf("AES-CBC-128:\t%s\n", memcmp(message, unpadded_message, strlen(message)) == 0 ? "PASS" : "FAIL");
 
     free(encrypted_cbc);
     free(decrypted_cbc);
@@ -195,10 +195,10 @@ int main()
     // }
 
     // Unpad decrypted message
-    unpadded_message = pkcs7_unpadding(decrypted_cbc_256, padded_len, AES_BLOCK_SIZE);
+    unpadded_message = pkcs7_unpadding(decrypted_cbc_256, padded_len, &decrypted_len, AES_BLOCK_SIZE);
 
     // printf("\nDecrypted (CBC): %s\n", unpadded_message);
-    printf("AES-CBC-256:\t%s\n", strcmp(message, (const char *)unpadded_message) == 0 ? "PASS" : "FAIL");
+    printf("AES-CBC-256:\t%s\n", memcmp(message, unpadded_message, strlen(message)) == 0 ? "PASS" : "FAIL");
 
     free(encrypted_cbc_256);
     free(decrypted_cbc_256);
@@ -237,10 +237,10 @@ int main()
     // }
 
     // Unpad decrypted message
-    unpadded_message = pkcs7_unpadding(decrypted_cfb, padded_len, AES_BLOCK_SIZE);
+    unpadded_message = pkcs7_unpadding(decrypted_cfb, padded_len, &decrypted_len, AES_BLOCK_SIZE);
 
     // printf("\nDecrypted (CFB): %s\n", unpadded_message);
-    printf("AES-CFB-128:\t%s\n", strcmp(message, (const char *)unpadded_message) == 0 ? "PASS" : "FAIL");
+    printf("AES-CFB-128:\t%s\n", memcmp(message, unpadded_message, strlen(message)) == 0 ? "PASS" : "FAIL");
 
     free(encrypted_cfb);
     free(decrypted_cfb);
@@ -279,10 +279,10 @@ int main()
     // }
 
     // Unpad decrypted message
-    unpadded_message = pkcs7_unpadding(decrypted_ofb, padded_len, AES_BLOCK_SIZE);
+    unpadded_message = pkcs7_unpadding(decrypted_ofb, padded_len, &decrypted_len, AES_BLOCK_SIZE);
 
     // printf("\nDecrypted (OFB): %s\n", unpadded_message);
-    printf("AES-OFB-128:\t%s\n", strcmp(message, (const char *)unpadded_message) == 0 ? "PASS" : "FAIL");
+    printf("AES-OFB-128:\t%s\n", memcmp(message, unpadded_message, strlen(message)) == 0 ? "PASS" : "FAIL");
 
     free(encrypted_ofb);
     free(decrypted_ofb);
@@ -321,10 +321,10 @@ int main()
     // }
 
     // Unpad decrypted message
-    unpadded_message = pkcs7_unpadding(decrypted_ctr, padded_len, AES_BLOCK_SIZE);
+    unpadded_message = pkcs7_unpadding(decrypted_ctr, padded_len, &decrypted_len, AES_BLOCK_SIZE);
 
     // printf("\nDecrypted (CTR): %s\n", unpadded_message);
-    printf("AES-CTR-128:\t%s\n", strcmp(message, (const char *)unpadded_message) == 0 ? "PASS" : "FAIL");
+    printf("AES-CTR-128:\t%s\n", memcmp(message, unpadded_message, strlen(message)) == 0 ? "PASS" : "FAIL");
 
     free(encrypted_ctr);
     free(decrypted_ctr);

@@ -538,8 +538,8 @@ void aes_file_encrypt(const char *input_file, const char *output_file, unsigned 
     unsigned char *input_data = malloc(len);
     fread(input_data, 1, len, input);
 
-    unsigned char *padded_data = pkcs7_padding(input_data, len, AES_BLOCK_SIZE);
-    len = strlen((const char *)padded_data);
+    unsigned char *padded_data = pkcs7_padding(input_data, len, &len, AES_BLOCK_SIZE);
+    // len = strlen((const char *)padded_data);
 
     unsigned char *output_data = malloc(len);
 
@@ -623,8 +623,8 @@ void aes_file_decrypt(const char *input_file, const char *output_file, unsigned 
         exit(EXIT_FAILURE);
     }
 
-    unsigned char *unpadded_data = pkcs7_unpadding(output_data, len, AES_BLOCK_SIZE);
-    len = strlen((const char *)unpadded_data);
+    unsigned char *unpadded_data = pkcs7_unpadding(output_data, len, &len, AES_BLOCK_SIZE);
+    // len = strlen((const char *)unpadded_data);
 
     fwrite(unpadded_data, 1, len, output);
 

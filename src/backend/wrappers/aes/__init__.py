@@ -127,14 +127,16 @@ class AES:
     @cython.ccall
     def pad(self, data: bytes, length: cython.size_t) -> bytes:
         in_bytes = cython.cast(cython.p_uchar, data)
-        result = cython.cast(bytes, pkcs7_padding(in_bytes, length, _AES_BLOCK_SIZE))
-        return result
+        padded_len: cython.size_t = 0
+        result = cython.cast(bytes, pkcs7_padding(in_bytes, length, cython.address(padded_len), _AES_BLOCK_SIZE))
+        return result[:padded_len]
 
     @cython.ccall
     def unpad(self, padded_data: bytes, length: cython.size_t) -> bytes:
         in_bytes = cython.cast(cython.p_uchar, padded_data)
-        result = cython.cast(bytes, pkcs7_unpadding(in_bytes, length, _AES_BLOCK_SIZE))
-        return result
+        unpadded_len: cython.size_t = 0
+        result = cython.cast(bytes, pkcs7_unpadding(in_bytes, length, cython.address(unpadded_len), _AES_BLOCK_SIZE))
+        return result[:unpadded_len]
     
 class AES_128(AES):
     def __init__(self, mode: AESMode):

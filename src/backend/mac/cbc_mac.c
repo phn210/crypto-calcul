@@ -20,8 +20,8 @@ void cbc_mac(const void *key, size_t keysize, const void *data, size_t data_len,
         exit(EXIT_FAILURE);
     }
 
-    unsigned char *padded_message = pkcs7_padding((unsigned char *)data, data_len, AES_BLOCK_SIZE);
-    size_t padded_len = strlen((const char *)padded_message);
+    size_t padded_len;
+    unsigned char *padded_message = pkcs7_padding((unsigned char *)data, data_len, &padded_len, AES_BLOCK_SIZE);
 
     unsigned char key_block[AES_BLOCK_SIZE];
     memset(key_block, 0, AES_BLOCK_SIZE);

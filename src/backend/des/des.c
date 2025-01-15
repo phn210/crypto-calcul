@@ -171,8 +171,8 @@ void des_file(const char *input_file, const char *output_file, const uint64_t ke
     {
         unsigned char *input_data = malloc(file_size);
         fread(input_data, 1, file_size, input);
-        unsigned char *padded_data = pkcs7_padding(input_data, file_size, DES_BLOCK_SIZE);
-        len = strlen((const char *)padded_data) / 8;
+        unsigned char *padded_data = pkcs7_padding(input_data, file_size, &len, DES_BLOCK_SIZE);
+        len = len / 8;
         input_blocks = malloc(len * sizeof(uint64_t));
         memcpy(input_blocks, padded_data, len * 8);
     }
@@ -199,8 +199,8 @@ void des_file(const char *input_file, const char *output_file, const uint64_t ke
     {
         unsigned char *output_data = malloc(len * 8);
         memcpy(output_data, output_blocks, len * 8);
-        unsigned char *unpadded_data = pkcs7_unpadding(output_data, len * 8, DES_BLOCK_SIZE);
-        fwrite(unpadded_data, 1, strlen((const char *)unpadded_data), output);
+        unsigned char *unpadded_data = pkcs7_unpadding(output_data, len * 8, &len, DES_BLOCK_SIZE);
+        fwrite(unpadded_data, 1, len, output);
     }
 
     fclose(input);

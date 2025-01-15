@@ -19,7 +19,7 @@ void string_to_hex(unsigned char *output, const char *input, size_t input_len);
 void hex_to_string(char *output, const unsigned char *input, size_t input_len);
 size_t count_bytes(const mpz_t n);
 
-unsigned char *pkcs7_padding(unsigned char *input, size_t len, size_t block_size);
-unsigned char *pkcs7_unpadding(unsigned char *input, size_t len, size_t block_size);
+unsigned char *pkcs7_padding(unsigned char *input, size_t len, size_t *out_len, size_t block_size);
+unsigned char *pkcs7_unpadding(unsigned char *input, size_t len, size_t *out_len, size_t block_size);
 
 #endif

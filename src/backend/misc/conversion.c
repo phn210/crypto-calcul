@@ -73,26 +73,25 @@ size_t count_bytes(const mpz_t n)
     return (bit_count + 7) / 8;
 }
 
-unsigned char *pkcs7_padding(unsigned char *input, size_t len, size_t block_size)
+unsigned char *pkcs7_padding(unsigned char *input, size_t len, size_t *out_len, size_t block_size)
 {
-    size_t padded_len = len + (block_size - len % block_size);
+    *out_len = len + (block_size - len % block_size);
     size_t padding_value = block_size - (len % block_size);
-    unsigned char *output = malloc(padded_len + 1);
+    unsigned char *output = malloc(*out_len);
     if (output == NULL)
     {
         printf("Error: Memory allocation failed.\n");
         exit(1);
     }
     memcpy(output, input, len);
-    for (size_t i = len; i < padded_len; i++)
+    for (size_t i = len; i < *out_len; i++)
     {
         output[i] = padding_value;
     }
-    output[padded_len] = '\0';
     return output;
 }
 
-unsigned char *pkcs7_unpadding(unsigned char *input, size_t len, size_t block_size)
+unsigned char *pkcs7_unpadding(unsigned char *input, size_t len, size_t *out_len, size_t block_size)
 {
     if (len % block_size != 0)
     {
@@ -105,7 +104,8 @@ unsigned char *pkcs7_unpadding(unsigned char *input, size_t len, size_t block_si
         printf("Error: Invalid padding value.\n");
         exit(1);
     }
-    for (size_t i = len - padding_value; i < len; i++)
+    *out_len = len - padding_value;
+    for (size_t i = *out_len; i < len; i++)
     {
         if (input[i] != padding_value)
         {
@@ -113,12 +113,12 @@ unsigned char *pkcs7_unpadding(unsigned char *input, size_t len, size_t block_si
             exit(1);
         }
     }
-    unsigned char *output = malloc(len - padding_value);
+    unsigned char *output = malloc(*out_len);
     if (output == NULL)
     {
         printf("Error: Memory allocation failed.\n");
         exit(1);
     }
-    memcpy(output, input, len - padding_value);
+    memcpy(output, input, *out_len);
     return output;
 }
