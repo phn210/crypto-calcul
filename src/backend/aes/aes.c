@@ -322,6 +322,11 @@ void aes_encrypt_ecb(unsigned char *input, unsigned char *output, unsigned char 
     AES_ROUNDS rounds = get_rounds(key_size);
 
     unsigned char *w = malloc(AES_BLOCK_SIZE * (rounds + 1));
+    if (w == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     aes_key_expansion(key, w, key_size, rounds);
 
     for (size_t i = 0; i < len; i += AES_BLOCK_SIZE)
@@ -336,6 +341,11 @@ void aes_decrypt_ecb(unsigned char *input, unsigned char *output, unsigned char 
     AES_ROUNDS rounds = get_rounds(key_size);
 
     unsigned char *w = malloc(AES_BLOCK_SIZE * (rounds + 1));
+    if (w == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     aes_key_expansion(key, w, key_size, rounds);
 
     for (size_t i = 0; i < len; i += AES_BLOCK_SIZE)
@@ -350,6 +360,11 @@ void aes_encrypt_cbc(unsigned char *input, unsigned char *output, unsigned char 
     AES_ROUNDS rounds = get_rounds(key_size);
 
     unsigned char *w = malloc(AES_BLOCK_SIZE * (rounds + 1));
+    if (w == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     aes_key_expansion(key, w, key_size, rounds);
 
     unsigned char last_block[AES_BLOCK_SIZE];
@@ -374,6 +389,11 @@ void aes_decrypt_cbc(unsigned char *input, unsigned char *output, unsigned char 
     AES_ROUNDS rounds = get_rounds(key_size);
 
     unsigned char *w = malloc(AES_BLOCK_SIZE * (rounds + 1));
+    if (w == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     aes_key_expansion(key, w, key_size, rounds);
 
     unsigned char last_block[AES_BLOCK_SIZE];
@@ -400,6 +420,11 @@ void aes_encrypt_cfb(unsigned char *input, unsigned char *output, unsigned char 
     AES_ROUNDS rounds = get_rounds(key_size);
 
     unsigned char *w = malloc(AES_BLOCK_SIZE * (rounds + 1));
+    if (w == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     aes_key_expansion(key, w, key_size, rounds);
 
     unsigned char last_block[AES_BLOCK_SIZE];
@@ -423,6 +448,11 @@ void aes_decrypt_cfb(unsigned char *input, unsigned char *output, unsigned char 
     AES_ROUNDS rounds = get_rounds(key_size);
 
     unsigned char *w = malloc(AES_BLOCK_SIZE * (rounds + 1));
+    if (w == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     aes_key_expansion(key, w, key_size, rounds);
 
     unsigned char last_block[AES_BLOCK_SIZE];
@@ -446,6 +476,11 @@ void aes_encrypt_ofb(unsigned char *input, unsigned char *output, unsigned char 
     AES_ROUNDS rounds = get_rounds(key_size);
 
     unsigned char *w = malloc(AES_BLOCK_SIZE * (rounds + 1));
+    if (w == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     aes_key_expansion(key, w, key_size, rounds);
 
     unsigned char last_block[AES_BLOCK_SIZE];
@@ -467,6 +502,11 @@ void aes_decrypt_ofb(unsigned char *input, unsigned char *output, unsigned char 
     AES_ROUNDS rounds = get_rounds(key_size);
 
     unsigned char *w = malloc(AES_BLOCK_SIZE * (rounds + 1));
+    if (w == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     aes_key_expansion(key, w, key_size, rounds);
 
     unsigned char last_block[AES_BLOCK_SIZE];
@@ -488,6 +528,11 @@ void aes_ctr(unsigned char *input, unsigned char *output, unsigned char *nonce, 
     AES_ROUNDS rounds = get_rounds(key_size);
 
     unsigned char *w = malloc(AES_BLOCK_SIZE * (rounds + 1));
+    if (w == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     aes_key_expansion(key, w, key_size, rounds);
 
     // Initialize the 16-byte counter block with the nonce
@@ -536,12 +581,20 @@ void aes_file_encrypt(const char *input_file, const char *output_file, unsigned 
     fseek(input, 0, SEEK_SET);
 
     unsigned char *input_data = malloc(len);
+    if (input_data == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     fread(input_data, 1, len, input);
 
     unsigned char *padded_data = pkcs7_padding(input_data, len, &len, AES_BLOCK_SIZE);
-    // len = strlen((const char *)padded_data);
-
     unsigned char *output_data = malloc(len);
+    if (output_data == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
 
     switch (mode)
     {
@@ -594,9 +647,18 @@ void aes_file_decrypt(const char *input_file, const char *output_file, unsigned 
     fseek(input, 0, SEEK_SET);
 
     unsigned char *input_data = malloc(len);
+    if (input_data == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     fread(input_data, 1, len, input);
-
     unsigned char *output_data = malloc(len);
+    if (output_data == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
 
     switch (mode)
     {
@@ -624,8 +686,6 @@ void aes_file_decrypt(const char *input_file, const char *output_file, unsigned 
     }
 
     unsigned char *unpadded_data = pkcs7_unpadding(output_data, len, &len, AES_BLOCK_SIZE);
-    // len = strlen((const char *)unpadded_data);
-
     fwrite(unpadded_data, 1, len, output);
 
     fclose(input);

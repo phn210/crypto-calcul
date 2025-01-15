@@ -77,9 +77,29 @@ void hmac_init(hmac_ctx_t *ctx, const void *key, size_t key_len, sec_level_t sec
     const size_t BLOCK_SIZE = ctx->b;
 
     ctx->key = malloc(BLOCK_SIZE);
+    if (ctx->key == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     ctx->i_key_pad = malloc(BLOCK_SIZE);
+    if (ctx->i_key_pad == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     ctx->o_key_pad = malloc(BLOCK_SIZE);
+    if (ctx->o_key_pad == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     ctx->out = malloc(ctx->l);
+    if (ctx->out == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     memset(ctx->key, 0, BLOCK_SIZE);
     memset(ctx->i_key_pad, 0, BLOCK_SIZE);
     memset(ctx->o_key_pad, 0, BLOCK_SIZE);
@@ -175,6 +195,11 @@ void *hmac_file(const char *filename, const void *key, size_t keysize,
     fseek(file, 0, SEEK_SET);
 
     unsigned char *file_contents = malloc(file_size);
+    if (file_contents == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     fread(file_contents, 1, file_size, file);
 
     hmac(key, keysize, file_contents, file_size, mac, sec_level, hash_function);
@@ -199,6 +224,11 @@ int hmac_file_verify(const char *filename, const void *key, size_t keysize,
     fseek(file, 0, SEEK_SET);
 
     unsigned char *file_contents = malloc(file_size);
+    if (file_contents == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     fread(file_contents, 1, file_size, file);
 
     int result = hmac_verify(key, keysize, file_contents, file_size, mac, sec_level, hash_function);

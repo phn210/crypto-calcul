@@ -38,6 +38,11 @@ void crypto_sign(mpz_t r, mpz_t s, const unsigned char *m, size_t m_len, const p
 
     // h = H(m)
     unsigned char *md = (unsigned char *)malloc(hash_len);
+    if (md == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     sha2(m, m_len, md, hash_len);
     bytes_to_bigint(h, md, hash_len, BIG);
 
@@ -75,6 +80,11 @@ int crypto_verify(const mpz_t r, const mpz_t s, const unsigned char *m, size_t m
 
     // h = H(m)
     unsigned char *md = (unsigned char *)malloc(hash_len);
+    if (md == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     sha2(m, m_len, md, hash_len);
     bytes_to_bigint(h, md, hash_len, BIG);
 

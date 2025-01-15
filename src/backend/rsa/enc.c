@@ -204,6 +204,11 @@ void crypto_encrypt_pkcs1(mpz_t c, const mpz_t m, const pub_key_t *pk)
     size_t m_len = count_bytes(m);
     size_t k = count_bytes(pk->n);
     unsigned char *em = (unsigned char *)malloc(k);
+    if (em == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
 
     if (m_len > k - 11)
     {
@@ -213,6 +218,11 @@ void crypto_encrypt_pkcs1(mpz_t c, const mpz_t m, const pub_key_t *pk)
 
     // Convert to bytes
     unsigned char *buf = (unsigned char *)malloc(m_len);
+    if (buf == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     size_t buf_len;
     bigint_to_bytes(buf, &buf_len, m, BIG);
     eme_pkcs1_encode(em, k, buf, buf_len);
@@ -246,6 +256,11 @@ void crypto_decrypt_pkcs1(mpz_t m, const mpz_t c, const priv_key_t *sk, rsa_algo
 
     // Convert to bytes
     unsigned char *buf = (unsigned char *)malloc(k);
+    if (buf == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     size_t buf_len;
     buf[0] = 0x00;
     bigint_to_bytes(buf + 1, &buf_len, m, BIG);
@@ -300,6 +315,11 @@ void eme_oaep_encode(unsigned char *em, size_t em_len, unsigned char *m, size_t 
         fprintf(stderr, "Invalid security level\n");
         exit(EXIT_FAILURE);
     }
+    if (db == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
 
     if (m_len > em_len - 2 * hash_len - 2)
     {
@@ -313,12 +333,22 @@ void eme_oaep_encode(unsigned char *em, size_t em_len, unsigned char *m, size_t 
 
     // Generate seed
     unsigned char *seed = (unsigned char *)malloc(hash_len);
+    if (seed == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     gmp_randstate_t state;
     rng_init(state);
     rand_bytes((char *)seed, state, hash_len);
 
     // Generate mask
     unsigned char *dbMask = (unsigned char *)malloc(em_len - hash_len - 1);
+    if (dbMask == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     mgf1(dbMask, em_len - hash_len - 1, seed, hash_len, SHA2, sec_level);
 
     // XOR db and dbMask
@@ -329,6 +359,11 @@ void eme_oaep_encode(unsigned char *em, size_t em_len, unsigned char *m, size_t 
 
     // Generate mask
     unsigned char *seedMask = (unsigned char *)malloc(hash_len);
+    if (seedMask == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     mgf1(seedMask, hash_len, db, em_len - hash_len - 1, SHA2, sec_level);
 
     // XOR seed and seedMask
@@ -354,9 +389,19 @@ void crypto_encrypt_oaep(mpz_t c, const mpz_t m, const pub_key_t *pk, sec_level_
     size_t m_len = count_bytes(m);
     size_t k = count_bytes(pk->n);
     unsigned char *em = (unsigned char *)malloc(k);
+    if (em == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
 
     // Convert to bytes
     unsigned char *buf = (unsigned char *)malloc(m_len);
+    if (buf == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     size_t buf_len;
     bigint_to_bytes(buf, &buf_len, m, BIG);
     eme_oaep_encode(em, k, buf, buf_len, sec_level);
@@ -410,6 +455,11 @@ void crypto_decrypt_oaep(mpz_t m, const mpz_t c, const priv_key_t *sk, rsa_algo_
 
     // Convert to bytes
     unsigned char *buf = (unsigned char *)malloc(k);
+    if (buf == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     size_t buf_len;
     buf[0] = 0x00;
     bigint_to_bytes(buf + 1, &buf_len, m, BIG);
@@ -423,13 +473,28 @@ void crypto_decrypt_oaep(mpz_t m, const mpz_t c, const priv_key_t *sk, rsa_algo_
 
     // Calculate maskedSeed and maskedDB
     unsigned char *maskedSeed = (unsigned char *)malloc(hash_len);
+    if (maskedSeed == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     unsigned char *maskedDB = (unsigned char *)malloc(k - hash_len - 1);
+    if (maskedDB == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
 
     memcpy(maskedSeed, buf + 1, hash_len);
     memcpy(maskedDB, buf + 1 + hash_len, k - hash_len - 1);
 
     // Generate seedMask
     unsigned char *seedMask = (unsigned char *)malloc(hash_len);
+    if (seedMask == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     mgf1(seedMask, hash_len, maskedDB, k - hash_len - 1, SHA2, sec_level);
 
     // XOR maskedSeed and seedMask
@@ -440,6 +505,11 @@ void crypto_decrypt_oaep(mpz_t m, const mpz_t c, const priv_key_t *sk, rsa_algo_
 
     // Generate dbMask
     unsigned char *dbMask = (unsigned char *)malloc(k - hash_len - 1);
+    if (dbMask == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     mgf1(dbMask, k - hash_len - 1, maskedSeed, hash_len, SHA2, sec_level);
 
     // XOR maskedDB and dbMask

@@ -170,10 +170,20 @@ void des_file(const char *input_file, const char *output_file, const uint64_t ke
     if (mode == DES_ENCRYPT)
     {
         unsigned char *input_data = malloc(file_size);
+        if (input_data == NULL)
+        {
+            fprintf(stderr, "Memory allocation failed\n");
+            exit(EXIT_FAILURE);
+        }
         fread(input_data, 1, file_size, input);
         unsigned char *padded_data = pkcs7_padding(input_data, file_size, &len, DES_BLOCK_SIZE);
         len = len / 8;
         input_blocks = malloc(len * sizeof(uint64_t));
+        if (input_blocks == NULL)
+        {
+            fprintf(stderr, "Memory allocation failed\n");
+            exit(EXIT_FAILURE);
+        }
         memcpy(input_blocks, padded_data, len * 8);
     }
     else
@@ -185,9 +195,19 @@ void des_file(const char *input_file, const char *output_file, const uint64_t ke
         }
         len = file_size / 8;
         input_blocks = malloc(len * sizeof(uint64_t));
+        if (input_blocks == NULL)
+        {
+            fprintf(stderr, "Memory allocation failed\n");
+            exit(EXIT_FAILURE);
+        }
         fread(input_blocks, sizeof(uint64_t), len, input);
     }
     output_blocks = malloc(len * sizeof(uint64_t));
+    if (output_blocks == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
 
     des(input_blocks, output_blocks, key, len, mode);
 
@@ -198,6 +218,11 @@ void des_file(const char *input_file, const char *output_file, const uint64_t ke
     else
     {
         unsigned char *output_data = malloc(len * 8);
+        if (output_data == NULL)
+        {
+            fprintf(stderr, "Memory allocation failed\n");
+            exit(EXIT_FAILURE);
+        }
         memcpy(output_data, output_blocks, len * 8);
         unsigned char *unpadded_data = pkcs7_unpadding(output_data, len * 8, &len, DES_BLOCK_SIZE);
         fwrite(unpadded_data, 1, len, output);

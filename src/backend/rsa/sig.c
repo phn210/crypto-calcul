@@ -122,6 +122,11 @@ void emsa_pkcs1_encode(unsigned char *em, size_t em_len, const unsigned char *m,
         fprintf(stderr, "Invalid security level\n");
         exit(EXIT_FAILURE);
     }
+    if (md == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
 
     sha2(m, m_len, md + HASH_ID_SIZE, md_len);
 
@@ -143,11 +148,21 @@ void emsa_pkcs1_encode(unsigned char *em, size_t em_len, const unsigned char *m,
 void crypto_sign_pkcs1(mpz_t s, const mpz_t m, const priv_key_t *sk, rsa_algo_t algorithm, sec_level_t sec_level)
 {
     unsigned char *buf = (unsigned char *)malloc(count_bytes(m));
+    if (buf == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     size_t buf_len;
     bigint_to_bytes(buf, &buf_len, m, BIG);
 
     size_t k = count_bytes(sk->n);
     unsigned char *em = (unsigned char *)malloc(k);
+    if (em == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     emsa_pkcs1_encode(em, k, buf, buf_len, sec_level);
 
     // Convert to MPZ
@@ -166,11 +181,21 @@ void crypto_sign_pkcs1(mpz_t s, const mpz_t m, const priv_key_t *sk, rsa_algo_t 
 int crypto_verify_pkcs1(const mpz_t m, const mpz_t s, const pub_key_t *pk, sec_level_t sec_level)
 {
     unsigned char *buf = (unsigned char *)malloc(count_bytes(m));
+    if (buf == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     size_t buf_len;
     bigint_to_bytes(buf, &buf_len, m, BIG);
 
     size_t k = count_bytes(pk->n);
     unsigned char *em = (unsigned char *)malloc(k);
+    if (em == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     emsa_pkcs1_encode(em, k, buf, buf_len, sec_level);
 
     // Convert to MPZ
@@ -215,11 +240,21 @@ void emsa_pss_encode(unsigned char *em, size_t em_bits, const unsigned char *m, 
 
     // Hash message
     unsigned char *m_prime = (unsigned char *)malloc(hash_len * 2 + 8);
+    if (m_prime == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     memset(m_prime, 0, 8);
     sha2(m, m_len, m_prime + 8, hash_len);
 
     // Generate salt
     unsigned char *salt = (unsigned char *)malloc(hash_len);
+    if (salt == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     gmp_randstate_t state;
     rng_init(state);
     rand_bytes((char *)salt, state, hash_len);
@@ -227,16 +262,31 @@ void emsa_pss_encode(unsigned char *em, size_t em_bits, const unsigned char *m, 
 
     // Compute DB
     unsigned char *db = (unsigned char *)malloc(em_len - hash_len - 1);
+    if (db == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     memset(db, 0, em_len - 2 * hash_len - 2);
     db[em_len - 2 * hash_len - 2] = 0x01;
     memcpy(db + em_len - 2 * hash_len - 1, salt, hash_len);
 
     // Generate H
     unsigned char *h = (unsigned char *)malloc(hash_len);
+    if (h == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     sha2(m_prime, hash_len * 2 + 8, h, hash_len);
 
     // Generate dbMask
     unsigned char *dbMask = (unsigned char *)malloc(em_len - hash_len - 1);
+    if (dbMask == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     mgf1(dbMask, em_len - hash_len - 1, h, hash_len, SHA2, sec_level);
     for (int i = 0; i < em_len - hash_len - 1; i++)
     {
@@ -283,6 +333,11 @@ int emsa_pss_verify(const unsigned char *em, size_t em_bits, const unsigned char
 
     // Generate H
     unsigned char *h = (unsigned char *)malloc(hash_len);
+    if (h == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     memcpy(h, em + em_len - hash_len - 1, hash_len);
 
     // Verify
@@ -293,9 +348,19 @@ int emsa_pss_verify(const unsigned char *em, size_t em_bits, const unsigned char
     }
 
     unsigned char *dbMask = (unsigned char *)malloc(em_len - hash_len - 1);
+    if (dbMask == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     mgf1(dbMask, em_len - hash_len - 1, h, hash_len, SHA2, sec_level);
 
     unsigned char *db = (unsigned char *)malloc(em_len - hash_len - 1);
+    if (db == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     for (int i = 0; i < em_len - hash_len - 1; i++)
     {
         db[i] = em[i] ^ dbMask[i];
@@ -315,6 +380,11 @@ int emsa_pss_verify(const unsigned char *em, size_t em_bits, const unsigned char
     }
 
     unsigned char *m_check = (unsigned char *)malloc(hash_len * 2 + 8);
+    if (m_check == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     memset(m_check, 0, 8);
     sha2(m, m_len, m_check + 8, hash_len);
     memcpy(m_check + hash_len + 8, db + em_len - 2 * hash_len - 1, hash_len);
@@ -333,11 +403,21 @@ int emsa_pss_verify(const unsigned char *em, size_t em_bits, const unsigned char
 void crypto_sign_pss(mpz_t s, const mpz_t m, const priv_key_t *sk, rsa_algo_t algorithm, sec_level_t sec_level)
 {
     unsigned char *buf = (unsigned char *)malloc(count_bytes(m));
+    if (buf == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     size_t buf_len;
     bigint_to_bytes(buf, &buf_len, m, BIG);
 
     size_t k = count_bytes(sk->n);
     unsigned char *em = (unsigned char *)malloc(k);
+    if (em == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     emsa_pss_encode(em, mpz_sizeinbase(sk->n, 2) - 1, buf, buf_len, sec_level);
 
     // Convert to MPZ
@@ -356,11 +436,21 @@ void crypto_sign_pss(mpz_t s, const mpz_t m, const priv_key_t *sk, rsa_algo_t al
 int crypto_verify_pss(const mpz_t m, const mpz_t s, const pub_key_t *pk, sec_level_t sec_level)
 {
     unsigned char *buf = (unsigned char *)malloc(count_bytes(m));
+    if (buf == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     size_t buf_len;
     bigint_to_bytes(buf, &buf_len, m, BIG);
 
     size_t k = count_bytes(pk->n);
     unsigned char *em = (unsigned char *)malloc(k);
+    if (em == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
 
     // Convert to MPZ
     size_t em_len;

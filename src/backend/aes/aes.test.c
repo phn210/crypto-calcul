@@ -81,13 +81,28 @@ int main()
     // printf("\n\n--- AES ECB 128 bits ---\n");
 
     unsigned char *input_blocks = malloc(padded_len);
+    if (input_blocks == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     for (size_t i = 0; i < padded_len; i++)
     {
         input_blocks[i] = padded_message[i];
     }
 
     unsigned char *encrypted_ecb = malloc(padded_len);
+    if (encrypted_ecb == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     unsigned char *decrypted_ecb = malloc(padded_len);
+    if (decrypted_ecb == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
 
     aes_encrypt_ecb(input_blocks, encrypted_ecb, key_hex, padded_len, AES_KEY_SIZE_128);
 
@@ -125,7 +140,17 @@ int main()
     // }
 
     unsigned char *encrypted_cbc = malloc(padded_len);
+    if (encrypted_cbc == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     unsigned char *decrypted_cbc = malloc(padded_len);
+    if (decrypted_cbc == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
 
     aes_encrypt_cbc(input_blocks, encrypted_cbc, iv_cbc, key_hex, padded_len, AES_KEY_SIZE_128);
 
@@ -176,7 +201,17 @@ int main()
     // }
 
     unsigned char *encrypted_cbc_256 = malloc(padded_len);
+    if (encrypted_cbc_256 == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     unsigned char *decrypted_cbc_256 = malloc(padded_len);
+    if (decrypted_cbc_256 == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
 
     aes_encrypt_cbc(input_blocks, encrypted_cbc_256, iv_cbc_256, key_hex, padded_len, AES_KEY_SIZE_256);
 
@@ -218,7 +253,17 @@ int main()
     // }
 
     unsigned char *encrypted_cfb = malloc(padded_len);
+    if (encrypted_cfb == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     unsigned char *decrypted_cfb = malloc(padded_len);
+    if (decrypted_cfb == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
 
     aes_encrypt_cfb(input_blocks, encrypted_cfb, iv_cfb, key_hex, padded_len, AES_KEY_SIZE_128);
 
@@ -260,7 +305,17 @@ int main()
     // }
 
     unsigned char *encrypted_ofb = malloc(padded_len);
+    if (encrypted_ofb == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     unsigned char *decrypted_ofb = malloc(padded_len);
+    if (decrypted_ofb == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
 
     aes_encrypt_ofb(input_blocks, encrypted_ofb, iv_ofb, key_hex, padded_len, AES_KEY_SIZE_128);
 
@@ -302,8 +357,18 @@ int main()
     // }
 
     unsigned char *encrypted_ctr = malloc(padded_len);
+    if (encrypted_ctr == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     unsigned char *decrypted_ctr = malloc(padded_len);
 
+    if (decrypted_ctr == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     aes_ctr(input_blocks, encrypted_ctr, nonce_ctr, key_hex, padded_len, AES_KEY_SIZE_128);
 
     // printf("\nEncrypted (CTR): ");

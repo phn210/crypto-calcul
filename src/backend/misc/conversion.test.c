@@ -29,7 +29,12 @@ void test_bigint_and_bytes()
     mpz_init(result);
 
     size_t len;
-    unsigned char *bytes = (unsigned char *)malloc(count_bytes(num));
+    unsigned char *bytes = malloc(count_bytes(num));
+    if (bytes == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
 
     bigint_to_bytes(bytes, &len, num, BIG);
     // gmp_printf("BigInt to Bytes: %Zd -> ", num);
@@ -63,7 +68,17 @@ void test_string_and_hex()
     char *input = "Hello, world!\0";
     size_t len = strlen(input);
     unsigned char *hex = malloc(len * 2);
+    if (hex == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     char *output = malloc(len);
+    if (output == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
 
     string_to_hex(hex, input, len);
     // printf("String to Hex: %s -> %s\n", input, hex);

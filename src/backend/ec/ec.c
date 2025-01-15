@@ -299,6 +299,11 @@ void init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id)
         exit(EXIT_FAILURE);
     }
     }
+    if (curve->name == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
 }
 
 void free_curve(curve_t *curve)

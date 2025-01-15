@@ -4,7 +4,7 @@ void test_cbc_mac_function()
 {
     const char *key = "secret";
     const char *data = "Hello, CBC-MAC!";
-    unsigned char *mac = malloc(AES_BLOCK_SIZE);
+    unsigned char mac[AES_BLOCK_SIZE];
 
     cbc_mac((void *)key, strlen(key), (void *)data, strlen(data), mac, L1);
 

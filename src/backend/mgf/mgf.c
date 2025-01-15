@@ -6,7 +6,12 @@
 
 void mgf1(unsigned char *mask, size_t mask_len, const unsigned char *seed, size_t seed_len, hash_func_t hash_function, sec_level_t sec_level)
 {
-    unsigned char *buf = (unsigned char *)malloc(seed_len + 4);
+    unsigned char *buf = malloc(seed_len + 4);
+    if (buf == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     memcpy(buf, seed, seed_len);
     size_t hash_len;
     void (*hash)(const void *, size_t, void *, size_t);

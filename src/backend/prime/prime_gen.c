@@ -35,6 +35,11 @@ void gen_prime_b(mpz_t n, gmp_randstate_t state, int b, int k, int t, prime_test
         mpz_add_ui(q, q, 1);
 
     mpz_t *small_primes = (mpz_t *)malloc(k * sizeof(mpz_t));
+    if (small_primes == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     prepare_small_primes(small_primes, k);
 
     int j = 1;
@@ -67,6 +72,11 @@ void gen_prime_m(mpz_t n, gmp_randstate_t state, mpz_t m, int k, int t, prime_te
         mpz_add_ui(q, q, 1);
 
     mpz_t *small_primes = (mpz_t *)malloc(k * sizeof(mpz_t));
+    if (small_primes == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     prepare_small_primes(small_primes, k);
 
     int j = 1;

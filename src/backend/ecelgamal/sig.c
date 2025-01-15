@@ -32,6 +32,11 @@ void crypto_sign(mpz_t s1, mpz_t s2, const unsigned char *m, size_t m_len, const
     gmp_randstate_t state;
     rng_init(state);
     unsigned char *buf = (unsigned char *)malloc(md_len);
+    if (buf == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
 
     // h = H(m)
     hash(m, m_len, buf, md_len);
@@ -95,6 +100,11 @@ char crypto_verify(const mpz_t s1, const mpz_t s2, const unsigned char *m, size_
     init_point(&P);
     init_affine(&tmp_affine);
     unsigned char *buf = (unsigned char *)malloc(md_len);
+    if (buf == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
 
     // h = H(m)
     hash(m, m_len, buf, md_len);

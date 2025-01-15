@@ -50,6 +50,11 @@ void crypto_encrypt(mpz_t c1, mpz_t c2, const mpz_t m, const pub_key_t *pk, cons
     size_t m_len = count_bytes(m);
     size_t buf_len = 2 * pp->curve.efs;
     unsigned char *buf_point = (unsigned char *)malloc(buf_len);
+    if (buf_point == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
 
     // Generate random k
     gmp_randstate_t state;
@@ -64,6 +69,11 @@ void crypto_encrypt(mpz_t c1, mpz_t c2, const mpz_t m, const pub_key_t *pk, cons
     bytes_to_bigint(c1, buf_point, buf_len, BIG);
 
     unsigned char *buf_m = (unsigned char *)malloc(m_len);
+    if (buf_m == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     bigint_to_bytes(buf_m, &m_len, m, BIG);
 
     // k * Y
@@ -71,6 +81,11 @@ void crypto_encrypt(mpz_t c1, mpz_t c2, const mpz_t m, const pub_key_t *pk, cons
     point_to_bytes(buf_point, tmp, pp->curve);
 
     unsigned char *h = (unsigned char *)malloc(md_len);
+    if (h == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     hash(buf_point, buf_len, h, md_len);
 
     for (size_t i = 0; i < m_len; i++)
@@ -110,6 +125,11 @@ void crypto_decrypt(mpz_t m, const mpz_t c1, const mpz_t c2, const priv_key_t *s
     init_point(&tmp);
     size_t buf_len = 2 * pp->curve.efs;
     unsigned char *buf_point = (unsigned char *)malloc(buf_len);
+    if (buf_point == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
 
     bigint_to_bytes(buf_point, &buf_len, c1, BIG);
     point_from_bytes(&tmp, buf_point, pp->curve);
@@ -117,10 +137,20 @@ void crypto_decrypt(mpz_t m, const mpz_t c1, const mpz_t c2, const priv_key_t *s
     point_to_bytes(buf_point, tmp, pp->curve);
 
     unsigned char *h = (unsigned char *)malloc(md_len);
+    if (h == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     hash(buf_point, buf_len, h, md_len);
 
     size_t m_len = count_bytes(c2);
     unsigned char *buf_m = (unsigned char *)malloc(m_len);
+    if (buf_m == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
     bigint_to_bytes(buf_m, &m_len, c2, BIG);
 
     for (size_t i = 0; i < m_len; i++)

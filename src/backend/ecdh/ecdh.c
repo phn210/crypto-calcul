@@ -16,6 +16,11 @@ void gen_public(mpz_t p, const mpz_t s, const public_params_t *pp)
     init_point(&P);
     size_t point_len = 2 * pp->curve.efs;
     unsigned char *buf = (unsigned char *)malloc(point_len);
+    if (buf == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
 
     generator(&P, pp->curve);
     mul(&P, P, s, pp->curve);
@@ -33,6 +38,11 @@ void compute_shared_secret(mpz_t shared_secret, const mpz_t s, const mpz_t p, co
     init_point(&P);
     size_t point_len = 2 * pp->curve.efs;
     unsigned char *buf = (unsigned char *)malloc(point_len);
+    if (buf == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
 
     size_t p_len;
     bigint_to_bytes(buf, &p_len, p, BIG);
