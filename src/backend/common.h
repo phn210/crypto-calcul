@@ -9,11 +9,14 @@
 #include <string.h>
 
 #ifdef WINDOWS_H
-#include <ntsecapi.h>
+
+#include <windows.h>
+#define RtlGenRandom SystemFunction036
+BOOLEAN NTAPI RtlGenRandom(PVOID RandomBuffer, ULONG RandomBufferLength);
+
 #endif
 
 typedef unsigned char BYTE; // 8-bit byte
-typedef unsigned int WORD;  // 32-bit word, change to "long" for 16-bit machines
 
 typedef enum sec_level
 {

@@ -89,6 +89,7 @@ aes_128_cbc.decrypt_file(f'{RELATIVE_TEST_DIR}/aes_output_enc.txt', f'{RELATIVE_
 
 rsa = RSA(SecurityLevel.L1, RSAVariant.PKCS1)
 rsa.keygen()
+print(rsa.pubKey.e)
 message = bytes('Hello, RSA!', 'utf-8')
 encrypted = rsa.encrypt(message)
 decrypted = rsa.decrypt(encrypted, RSAAlgo.STANDARD)
@@ -138,3 +139,4 @@ secret_B = ecdh.gen_secret()
 public_B = ecdh.gen_public(secret_B)
 shared_secret_A = ecdh.compute_shared_secret(secret_A, public_B)
 shared_secret_B = ecdh.compute_shared_secret(secret_B, public_A)
+print("Done!")

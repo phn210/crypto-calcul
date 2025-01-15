@@ -24,7 +24,8 @@ clean_make:
 clean_wrapper:
 	@rm -rf ./**/*cpython-*
 	@rm -rf build/wrappers
-	@find . -type f -path "*/wrappers/*.c*" -exec rm {} \;
+	@rm -rf ./**/wrappers/**/*.c*
+# @find . -type f -path "*/wrappers/*.c*" -exec rm {} \;
 
 wrap: all
 	@python3 src/backend/wrappers/setup.py build_ext

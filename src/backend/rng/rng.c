@@ -6,7 +6,9 @@ unsigned int get_random_seed()
 {
     unsigned long int rand_src;
 #ifdef WINDOWS_H
-    RtlGenRandom(&rand_src, sizeof(unsigned int));
+    while (!RtlGenRandom(&rand_src, sizeof(unsigned int)))
+    {
+    };
 #else
     FILE *fp = fopen(RAND_SOURCE, "rb");
     fread(&rand_src, sizeof(unsigned int), 1, fp);

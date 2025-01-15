@@ -10,9 +10,9 @@
 typedef struct
 {
     BYTE data[64];
-    WORD datalen;
-    unsigned long long bitlen;
-    WORD state[4];
+    uint32_t datalen;
+    uint64_t bitlen;
+    uint32_t state[4];
 } md5_ctx;
 
 void md5_init(md5_ctx *ctx);

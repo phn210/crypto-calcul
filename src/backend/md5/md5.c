@@ -36,7 +36,7 @@
 
 void md5_transform(md5_ctx *ctx, const BYTE data[])
 {
-    WORD a, b, c, d, m[16], i, j;
+    uint32_t a, b, c, d, m[16], i, j;
     for (i = 0, j = 0; i < 16; ++i, j += 4)
     {
         m[i] = (data[j]) + (data[j + 1] << 8) + (data[j + 2] << 16) + (data[j + 3] << 24);
@@ -132,7 +132,7 @@ void md5_init(md5_ctx *ctx)
 
 void md5_update(md5_ctx *ctx, const BYTE data[], size_t len)
 {
-    WORD i;
+    uint32_t i;
     for (i = 0; i < len; ++i)
     {
         ctx->data[ctx->datalen] = data[i];
@@ -148,7 +148,7 @@ void md5_update(md5_ctx *ctx, const BYTE data[], size_t len)
 
 void md5_final(md5_ctx *ctx, BYTE hash[])
 {
-    WORD i = ctx->datalen;
+    uint32_t i = ctx->datalen;
     if (ctx->datalen < 56)
     {
         ctx->data[i++] = 0x80;

@@ -9,10 +9,10 @@
 typedef struct
 {
 	BYTE data[64];
-	WORD datalen;
-	unsigned long long bitlen;
-	WORD state[5];
-	WORD k[4];
+	uint32_t datalen;
+	uint64_t bitlen;
+	uint32_t state[5];
+	uint32_t k[4];
 } sha1_ctx;
 
 /*********************** FUNCTION DECLARATIONS **********************/
