@@ -37,8 +37,9 @@ def wrap_c_lib():
         objects = []
         if module not in ["enums", "gmp"]:
             objects += get_deps(f'{SRC_DIR}/{module}') + [
-                f'{OBJ_DIR}/{module}/{f.replace(".c", ".o")}' for f in os.listdir(os.path.join(SRC_DIR, module)) \
-                if f.endswith(".c") and not f.endswith(".test.c")
+                f'{OBJ_DIR}/{module}/{f.replace(".c", ".o")}' for f \
+                    in platform.os.listdir(platform.os.path.join(SRC_DIR, module)) \
+                    if f.endswith(".c") and not f.endswith(".test.c")
             ]
         include_dirs = [f'{SRC_DIR}'] + list(set(
             [f'{SRC_DIR}/{"/".join(file.split("/")[1:-1])}' for file in objects]
@@ -64,7 +65,8 @@ def wrap_c_lib():
     }
 
     excludes = ["__pycache__"]
-    modules = [item for item in os.listdir(WRAPPER_DIR) if os.path.isdir(os.path.join(WRAPPER_DIR, item)) and item not in excludes]
+    modules = [item for item in platform.os.listdir(WRAPPER_DIR) \
+        if platform.os.path.isdir(platform.os.path.join(WRAPPER_DIR, item)) and item not in excludes]
     extensions = [get_extension(module) for module in modules]
     
     # Cython setup
