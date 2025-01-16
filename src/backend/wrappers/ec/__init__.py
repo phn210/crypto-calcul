@@ -218,7 +218,7 @@ class EC:
         len_byte = self.info().efs if self.curve_type == ECType.MONTGOMERY else self.info().efs * 2
         buf = cython.cast(cython.p_uchar, malloc(len_byte))
         point_to_bytes(buf, p.p, self.curve)
-        result = cython.cast(bytes, buf)[:len_byte]
+        result = cython.declare(bytes, buf[:len_byte])
         free(buf)
         return result
     

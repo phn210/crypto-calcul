@@ -1,3 +1,6 @@
+from utils import add_build_to_path
+add_build_to_path()
+
 from wrappers.enums import HashFunction, SecurityLevel
 from wrappers.gmp import GMPInteger
 from wrappers.rng import RNG
@@ -89,7 +92,6 @@ aes_128_cbc.decrypt_file(f'{RELATIVE_TEST_DIR}/aes_output_enc.txt', f'{RELATIVE_
 
 rsa = RSA(SecurityLevel.L1, RSAVariant.PKCS1)
 rsa.keygen()
-print(rsa.pubKey.e)
 message = bytes('Hello, RSA!', 'utf-8')
 encrypted = rsa.encrypt(message)
 decrypted = rsa.decrypt(encrypted, RSAAlgo.STANDARD)

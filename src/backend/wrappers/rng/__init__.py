@@ -34,6 +34,6 @@ class RNG:
     def rand_bytes(self, byte_len: cython.int) -> bytes:
         buf = cython.cast(cython.p_char, malloc(byte_len))
         rand_bytes(buf, self.state.state, byte_len)
-        result = cython.cast(bytes, buf)[:byte_len]
+        result = cython.declare(bytes, buf[:byte_len])
         free(buf)
         return result

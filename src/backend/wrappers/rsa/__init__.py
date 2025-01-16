@@ -96,7 +96,7 @@ class RSA:
         c_len: cython.size_t = 0
         bigint_to_bytes(c, cython.address(c_len), tmp.value, BIG)
 
-        result = cython.cast(bytes, c[:c_len])
+        result = cython.declare(bytes, c[:c_len])
         del tmp
         free(c)
         return result
@@ -122,7 +122,7 @@ class RSA:
         m_len: cython.size_t = 0
         bigint_to_bytes(m, cython.address(m_len), tmp.value, BIG)
 
-        result = cython.cast(bytes, m[:m_len])
+        result = cython.declare(bytes, m[:m_len])
         del tmp
         free(m)
         return result
@@ -148,7 +148,7 @@ class RSA:
         s_len: cython.size_t = 0
         bigint_to_bytes(s, cython.address(s_len), tmp.value, BIG)
 
-        result = cython.cast(bytes, s[:s_len])
+        result = cython.declare(bytes, s[:s_len])
         del tmp
         free(s)
         return result

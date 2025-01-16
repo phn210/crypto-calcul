@@ -78,7 +78,7 @@ class AES:
             elif self.mode == AES_MODE_GCM:
                 raise NotImplementedError("AES GCM mode is not implemented")
 
-        result = cython.cast(bytes, out_ptr)[:data_len]
+        result = cython.declare(bytes, out_ptr[:data_len])
         free(out_ptr)
         return result
     
@@ -123,19 +123,20 @@ class AES:
 
         aes_file_decrypt(in_ptr, out_ptr, key_ptr, iv_ptr, self.key_size, self.mode)
 
-    
     @cython.ccall
     def pad(self, data: bytes, length: cython.size_t) -> bytes:
-        in_bytes = cython.cast(cython.p_uchar, data)
+        in_bytes = cython.declare(cython.p_uchar, data)
         padded_len: cython.size_t = 0
-        result = cython.cast(bytes, pkcs7_padding(in_bytes, length, cython.address(padded_len), _AES_BLOCK_SIZE))
+        padded_data = pkcs7_padding(in_bytes, length, cython.address(padded_len), _AES_BLOCK_SIZE)
+        result = cython.declare(bytes, padded_data[:padded_len])
         return result[:padded_len]
 
     @cython.ccall
     def unpad(self, padded_data: bytes, length: cython.size_t) -> bytes:
-        in_bytes = cython.cast(cython.p_uchar, padded_data)
+        in_bytes = cython.declare(cython.p_uchar, padded_data)
         unpadded_len: cython.size_t = 0
-        result = cython.cast(bytes, pkcs7_unpadding(in_bytes, length, cython.address(unpadded_len), _AES_BLOCK_SIZE))
+        data = pkcs7_unpadding(in_bytes, length, cython.address(unpadded_len), _AES_BLOCK_SIZE)
+        result = cython.declare(bytes, data[:unpadded_len])
         return result[:unpadded_len]
     
 class AES_128(AES):

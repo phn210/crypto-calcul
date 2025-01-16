@@ -1,3 +1,6 @@
+# Debug files
+debug.*
+
 # Build files
 build
 obj

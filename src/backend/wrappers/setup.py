@@ -4,12 +4,14 @@ from multiprocessing import Process, freeze_support, set_start_method
 from setuptools import setup, Extension
 import os, re
 
+# os.environ["CC"] = "clang"
+SRC_DIR = "src/backend"
+OBJ_DIR = "obj"
+BUILD_DIR = "build"
+WRAPPER_DIR = f"src/backend/wrappers"
+LIB_NAME = WRAPPER_DIR.split("/")[-1]
+
 def wrap_c_lib():
-    SRC_DIR = "src/backend"
-    OBJ_DIR = "obj"
-    BUILD_DIR = "build"
-    WRAPPER_DIR = f"src/backend/wrappers"
-    LIB_NAME = WRAPPER_DIR.split("/")[-1]
     class CustomBuildExtension(build_ext):
         def run(self):
             self.build_lib = BUILD_DIR
@@ -47,7 +49,9 @@ def wrap_c_lib():
             sources=sources,
             extra_objects=objects,
             include_dirs=include_dirs,
-            libraries=["gmp"]
+            libraries=["gmp"],
+            # extra_compile_args=["-fsanitize=address", "-fno-omit-frame-pointer", "-g"],
+            # extra_link_args=["-fsanitize=address", "-shared-libasan"],
         )
 
     cython_directives = {
@@ -61,7 +65,7 @@ def wrap_c_lib():
     excludes = ["__pycache__"]
     modules = [item for item in os.listdir(WRAPPER_DIR) if os.path.isdir(os.path.join(WRAPPER_DIR, item)) and item not in excludes]
     extensions = [get_extension(module) for module in modules]
-
+    
     # Cython setup
     setup(
         name="wrappers",

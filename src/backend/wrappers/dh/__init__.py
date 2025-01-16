@@ -16,7 +16,7 @@ class DiffieHellman:
         secret_len: cython.size_t = 0
         bigint_to_bytes(secret, cython.address(secret_len), s.value, BIG)
         
-        result = cython.cast(bytes, secret[:secret_len])
+        result = cython.declare(bytes, secret[:secret_len])
         del s
         free(secret)
         return result
@@ -33,7 +33,7 @@ class DiffieHellman:
         public_len: cython.size_t = 0
         bigint_to_bytes(public, cython.address(public_len), p.value, BIG)
         
-        result = cython.cast(bytes, public[:public_len])
+        result = cython.declare(bytes, public[:public_len])
         del s, p
         free(public)
         return result
@@ -52,7 +52,7 @@ class DiffieHellman:
         shared_len: cython.size_t = 0
         bigint_to_bytes(secret, cython.address(shared_len), ss.value, BIG)
         
-        result = cython.cast(bytes, shared[:shared_len])
+        result = cython.declare(bytes, shared[:shared_len])
         del s, p, ss
         free(shared)
         return result

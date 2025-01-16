@@ -47,7 +47,7 @@ class HMAC(MAC):
         mac = cython.cast(cython.p_char, malloc(self.mac_len))
         hmac(cython.cast(cython.p_void, key), len(key), cython.cast(cython.p_void, data), len(data),
             cython.cast(cython.p_void, mac), self.sec_level.value, self.hash_function.value)
-        result = cython.cast(bytes, mac)[:self.mac_len]
+        result = cython.declare(bytes, mac[:self.mac_len])
         free(mac)
         return result
     
@@ -57,7 +57,7 @@ class HMAC(MAC):
         mac = cython.cast(cython.p_char, malloc(self.mac_len))
         hmac_file(cython.cast(cython.p_char, in_file), cython.cast(cython.p_void, key), len(key),
             cython.cast(cython.p_void, mac), self.sec_level.value, self.hash_function.value)
-        result = cython.cast(bytes, mac)[:self.mac_len]
+        result = cython.declare(bytes, mac[:self.mac_len])
         free(mac)
         return result
     
@@ -84,7 +84,7 @@ class CBCMAC(MAC):
         mac = cython.cast(cython.p_char, malloc(_AES_BLOCK_SIZE))
         cbc_mac(cython.cast(cython.p_void, key), len(key), cython.cast(cython.p_void, data), len(data),
             cython.cast(cython.p_void, mac), self.sec_level.value)
-        result = cython.cast(bytes, mac)[:_AES_BLOCK_SIZE]
+        result = cython.declare(bytes, mac[:_AES_BLOCK_SIZE])
         free(mac)
         return result
     
@@ -94,7 +94,7 @@ class CBCMAC(MAC):
         mac = cython.cast(cython.p_char, malloc(_AES_BLOCK_SIZE))
         cbc_mac_file(cython.cast(cython.p_char, in_file), cython.cast(cython.p_void, key), len(key),
             cython.cast(cython.p_void, mac), self.sec_level.value)
-        result = cython.cast(bytes, mac)[:_AES_BLOCK_SIZE]
+        result = cython.declare(bytes, mac[:_AES_BLOCK_SIZE])
         free(mac)
         return result
     

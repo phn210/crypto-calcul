@@ -20,7 +20,7 @@ class SHA2:
         md = cython.cast(cython.p_char, malloc(self.md_len))
         buf_m = cython.declare(cython.p_char, m)
         sha2(buf_m, len(m), md, self.md_len)
-        result = cython.cast(bytes, md)[:self.md_len]
+        result = cython.declare(bytes, md[:self.md_len])
         free(md)
         return result
 

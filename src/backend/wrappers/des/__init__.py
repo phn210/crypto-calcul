@@ -7,15 +7,15 @@ class DES:
         assert len(data) / _DES_BLOCK_SIZE == len(data) // _DES_BLOCK_SIZE
         num_blocks = len(data) // _DES_BLOCK_SIZE
 
-        in_blocks = cython.cast(cython.p_ulonglong, malloc(num_blocks))
-        out_blocks = cython.cast(cython.p_ulonglong, malloc(num_blocks))
+        in_blocks = cython.cast(cython.p_ulonglong, malloc(num_blocks * _DES_BLOCK_SIZE))
+        out_blocks = cython.cast(cython.p_ulonglong, malloc(num_blocks * _DES_BLOCK_SIZE))
 
         for i in range(num_blocks):
             in_blocks[i] = cython.cast(cython.ulonglong, int.from_bytes(data[i*8:i*8+8], byteorder='little'))
         key_block = cython.cast(cython.ulonglong, int.from_bytes(key, byteorder='little'))
 
         des(in_blocks, out_blocks, key_block, num_blocks, mode)
-        result = cython.cast(bytes, cython.cast(cython.p_char, out_blocks))[:len(data)]
+        result = cython.declare(bytes, cython.cast(cython.p_char, out_blocks)[:len(data)])
         free(in_blocks)
         free(out_blocks)
         return result
@@ -52,14 +52,16 @@ class DES:
 
     @cython.ccall
     def pad(self, data: bytes, length: cython.size_t) -> bytes:
-        in_bytes = cython.cast(cython.p_uchar, data)
+        in_bytes = cython.declare(cython.p_uchar, data)
         padded_len: cython.size_t = 0
-        result = cython.cast(bytes, pkcs7_padding(in_bytes, length, cython.address(padded_len), _DES_BLOCK_SIZE))
+        padded_data = pkcs7_padding(in_bytes, length, cython.address(padded_len), _DES_BLOCK_SIZE)
+        result = cython.declare(bytes, padded_data[:padded_len])
         return result[:padded_len]
 
     @cython.ccall
     def unpad(self, padded_data: bytes, length: cython.size_t) -> bytes:
-        in_bytes = cython.cast(cython.p_uchar, padded_data)
+        in_bytes = cython.declare(cython.p_uchar, padded_data)
         unpadded_len: cython.size_t = 0
-        result = cython.cast(bytes, pkcs7_unpadding(in_bytes, length, cython.address(unpadded_len), _DES_BLOCK_SIZE))
+        data = pkcs7_unpadding(in_bytes, length, cython.address(unpadded_len), _DES_BLOCK_SIZE)
+        result = cython.declare(bytes, data[:unpadded_len])
         return result[:unpadded_len]

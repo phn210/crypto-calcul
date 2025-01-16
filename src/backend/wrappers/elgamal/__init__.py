@@ -90,7 +90,7 @@ class ElGamal:
         m = cython.cast(cython.p_uchar, malloc(count_bytes(tmp.value)))
         m_len: cython.size_t = 0
         bigint_to_bytes(m, cython.address(m_len), tmp.value, BIG)
-        result = cython.cast(bytes, m[:m_len])
+        result = cython.declare(bytes, m[:m_len])
         del tmp, tmp1, tmp2
         free(m)
         return result

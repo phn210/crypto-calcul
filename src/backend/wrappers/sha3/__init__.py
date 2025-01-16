@@ -26,7 +26,7 @@ class SHA3:
     def digest(self) -> bytes:
         md = cython.cast(cython.p_char, malloc(self.ctx.md_len))
         sha3_final(md, cython.address(self.ctx))
-        result = cython.cast(bytes, md)
+        result = cython.declare(bytes, md)
         free(md)
         return result
     
@@ -35,7 +35,7 @@ class SHA3:
         md = cython.cast(cython.p_char, malloc(self.ctx.md_len))
         buf_m = cython.declare(cython.p_char, m)
         sha3(buf_m, len(m), md, self.ctx.md_len)
-        result = cython.cast(bytes, md)[:self.ctx.md_len]
+        result = cython.declare(bytes, md[:self.ctx.md_len])
         free(md)
         return result
 
@@ -62,7 +62,7 @@ class SHAKE:
     def squeeze(self, len: cython.int) -> bytes:
         out = cython.cast(cython.p_char, malloc(len))
         shake_out(cython.address(self.ctx), out, len)
-        result = cython.cast(bytes, out)[:len]
+        result = cython.declare(bytes, out[:len])
         free(out)
         return result
 
