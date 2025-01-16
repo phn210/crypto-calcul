@@ -213,7 +213,7 @@ int main()
         exit(EXIT_FAILURE);
     }
 
-    aes_encrypt_cbc(input_blocks, encrypted_cbc_256, iv_cbc_256, key_hex, padded_len, AES_KEY_SIZE_256);
+    aes_encrypt_cbc(input_blocks, encrypted_cbc_256, iv_cbc_256, key_hex_256, padded_len, AES_KEY_SIZE_256);
 
     // printf("\nEncrypted (CBC): ");
     // for (size_t i = 0; i < padded_len; i++)
@@ -221,7 +221,7 @@ int main()
     //     printf("%02x", encrypted_cbc_256[i]);
     // }
 
-    aes_decrypt_cbc(encrypted_cbc_256, decrypted_cbc_256, iv_cbc_256, key_hex, padded_len, AES_KEY_SIZE_256);
+    aes_decrypt_cbc(encrypted_cbc_256, decrypted_cbc_256, iv_cbc_256, key_hex_256, padded_len, AES_KEY_SIZE_256);
 
     // printf("\nDecrypted (CBC) hex: ");
     // for (size_t i = 0; i < padded_len; i++)

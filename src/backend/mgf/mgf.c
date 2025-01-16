@@ -85,14 +85,23 @@ void mgf1(unsigned char *mask, size_t mask_len, const unsigned char *seed, size_
 
     int num_blocks = (mask_len + hash_len - 1) / hash_len;
 
+    unsigned char *md = malloc(hash_len);
+    if (md == NULL)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        free(buf);
+        exit(EXIT_FAILURE);
+    }
+
     for (int i = 0; i < num_blocks; i++)
     {
         buf[seed_len] = (i >> 24) & 0xFF;
         buf[seed_len + 1] = (i >> 16) & 0xFF;
         buf[seed_len + 2] = (i >> 8) & 0xFF;
         buf[seed_len + 3] = i & 0xFF;
+        hash(buf, seed_len + 4, md, hash_len);
         size_t len = (i + 1) * hash_len > mask_len ? mask_len - i * hash_len : hash_len;
-        hash(buf, seed_len + 4, mask + i * hash_len, len);
+        memcpy(mask + i * hash_len, md, len);
     }
 
     free(buf);

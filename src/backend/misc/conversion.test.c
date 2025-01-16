@@ -67,14 +67,9 @@ void test_string_and_hex()
 {
     char *input = "Hello, world!\0";
     size_t len = strlen(input);
-    unsigned char *hex = malloc(len * 2);
-    if (hex == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
-    char *output = malloc(len);
-    if (output == NULL)
+    unsigned char *hex = malloc(len * 2 + 1);
+    char *output = malloc(len + 1);
+    if (hex == NULL || output == NULL)
     {
         fprintf(stderr, "Memory allocation failed\n");
         exit(EXIT_FAILURE);
@@ -86,7 +81,7 @@ void test_string_and_hex()
     // printf("Hex to String: %s -> %s\n", hex, output);
 
     printf("String <-> Hex:\t\t");
-    if (strcmp(input, output) == 0)
+    if (memcmp(input, output, len) == 0)
         printf("PASSED\n");
     else
         printf("FAILED\n");

@@ -8,7 +8,7 @@ OBJ_DIR = $(OBJ_PARENT_DIR)/$(BASE_NAME)
 SRC_DIR = .
 
 # Compiler and flags
-CC = clang
+CC = gcc
 CFLAGS = -I$(INC_DIR) $(if $(strip $(TEST_DEPS)), \
 	$(shell echo $(TEST_DEPS) | awk '{for(i=1;i<=NF;i++){split($$i, a, "/"); printf "../"a[1]" "}}' | xargs -n1 | sort -u | sed 's/^/-I/' | xargs), \
 ) -Wall -Wextra
