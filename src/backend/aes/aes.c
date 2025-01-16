@@ -48,12 +48,12 @@ void aes_key_expansion(unsigned char *key, unsigned char *w, AES_KEY_SIZE key_si
     unsigned char temp[4];
     unsigned char rcon[4];
 
-    for (int i = 0; i < key_size; i++)
+    for (unsigned int i = 0; i < key_size; i++)
     {
         w[i] = key[i];
     }
 
-    for (int i = key_size; i < 4 * 4 * (rounds + 1); i += 4)
+    for (unsigned int i = key_size; i < 4 * 4 * (rounds + 1); i += 4)
     {
         for (int j = 0; j < 4; j++)
         {
@@ -240,7 +240,7 @@ void aes_block_encrypt(unsigned char *block, unsigned char *w, AES_ROUNDS rounds
 
     aes_add_round_key(state, w);
 
-    for (int round = 1; round < rounds; round++)
+    for (unsigned int round = 1; round < rounds; round++)
     {
         aes_sub_bytes(state);
         aes_shift_rows(state);

@@ -8,10 +8,10 @@ OBJ_DIR = $(OBJ_PARENT_DIR)/$(BASE_NAME)
 SRC_DIR = .
 
 # Compiler and flags
-CC = gcc
+CC = clang
 CFLAGS = -I$(INC_DIR) $(if $(strip $(TEST_DEPS)), \
 	$(shell echo $(TEST_DEPS) | awk '{for(i=1;i<=NF;i++){split($$i, a, "/"); printf "../"a[1]" "}}' | xargs -n1 | sort -u | sed 's/^/-I/' | xargs), \
-)
+) -Wall -Wextra
 LDFLAGS = -lgmp
 
 # Source files
@@ -28,7 +28,7 @@ all: $(TEST_PATHS)
 
 # Create executables for test files
 $(BIN_DIR)/%: $(OBJ_PATHS) $(DEP_PATHS) | $(BIN_DIR)
-	@$(CC) -o $@  $(OBJ_DIR)/$(notdir $@).o $(NON_TEST_OBJ_PATHS) $(DEP_PATHS) $(LDFLAGS)
+	$(CC) -o $@  $(OBJ_DIR)/$(notdir $@).o $(NON_TEST_OBJ_PATHS) $(DEP_PATHS) $(LDFLAGS)
 
 # Compile dependencies
 $(DEP_PATHS):
@@ -37,7 +37,7 @@ $(DEP_PATHS):
 # Compile source files to object files
 $(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
 	@mkdir -p $(dir $@)
-	@$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 # Create directories if they don't exist
 $(OBJ_DIR):

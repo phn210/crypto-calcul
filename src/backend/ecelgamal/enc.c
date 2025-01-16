@@ -26,16 +26,16 @@ void keygen(priv_key_t *sk, pub_key_t *pk, const public_params_t *pp)
 
 void crypto_encrypt(mpz_t c1, mpz_t c2, const mpz_t m, const pub_key_t *pk, const public_params_t *pp, hash_func_t hash_function)
 {
-    void (*hash)(const void *, size_t, void *, size_t);
+    void *(*hash)(const void *, size_t, void *, size_t);
     size_t md_len = pp->curve.md_len;
 
     switch (hash_function)
     {
     case SHA2:
-        hash = (void (*)(const void *, size_t, void *, size_t))&sha2;
+        hash = &sha2;
         break;
     case SHA3:
-        hash = (void (*)(const void *, size_t, void *, size_t))&sha3;
+        hash = &sha3;
         break;
     default:
         fprintf(stderr, "Invalid hash function\n");
@@ -105,16 +105,16 @@ void crypto_encrypt(mpz_t c1, mpz_t c2, const mpz_t m, const pub_key_t *pk, cons
 
 void crypto_decrypt(mpz_t m, const mpz_t c1, const mpz_t c2, const priv_key_t *sk, const public_params_t *pp, hash_func_t hash_function)
 {
-    void (*hash)(const void *, size_t, void *, size_t);
+    void *(*hash)(const void *, size_t, void *, size_t);
     size_t md_len = pp->curve.md_len;
 
     switch (hash_function)
     {
     case SHA2:
-        hash = (void (*)(const void *, size_t, void *, size_t))&sha2;
+        hash = &sha2;
         break;
     case SHA3:
-        hash = (void (*)(const void *, size_t, void *, size_t))&sha3;
+        hash = &sha3;
         break;
     default:
         fprintf(stderr, "Invalid hash function\n");

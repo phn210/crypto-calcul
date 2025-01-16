@@ -183,7 +183,7 @@ void eme_pkcs1_encode(unsigned char *em, size_t em_len, const unsigned char *m, 
 
     em[0] = 0x00;
     em[1] = 0x02;
-    for (int i = 2; i < em_len - m_len - 1; i++)
+    for (unsigned int i = 2; i < em_len - m_len - 1; i++)
     {
         em[i] = 0x00;
         while (em[i] == 0x00)
@@ -294,30 +294,45 @@ void eme_oaep_encode(unsigned char *em, size_t em_len, unsigned char *m, size_t 
     case L0:
         hash_len = SHA224_DIGEST_SIZE;
         db = (unsigned char *)malloc(em_len - hash_len - 1);
+        if (db == NULL)
+        {
+            fprintf(stderr, "Memory allocation failed\n");
+            exit(EXIT_FAILURE);
+        }
         memcpy(db, empty_hash_sha224, hash_len);
         break;
     case L1:
         hash_len = SHA256_DIGEST_SIZE;
         db = (unsigned char *)malloc(em_len - hash_len - 1);
+        if (db == NULL)
+        {
+            fprintf(stderr, "Memory allocation failed\n");
+            exit(EXIT_FAILURE);
+        }
         memcpy(db, empty_hash_sha256, hash_len);
         break;
     case L2:
         hash_len = SHA384_DIGEST_SIZE;
         db = (unsigned char *)malloc(em_len - hash_len - 1);
+        if (db == NULL)
+        {
+            fprintf(stderr, "Memory allocation failed\n");
+            exit(EXIT_FAILURE);
+        }
         memcpy(db, empty_hash_sha384, hash_len);
         break;
     case L3:
         hash_len = SHA512_DIGEST_SIZE;
         db = (unsigned char *)malloc(em_len - hash_len - 1);
+        if (db == NULL)
+        {
+            fprintf(stderr, "Memory allocation failed\n");
+            exit(EXIT_FAILURE);
+        }
         memcpy(db, empty_hash_sha512, hash_len);
         break;
     default:
         fprintf(stderr, "Invalid security level\n");
-        exit(EXIT_FAILURE);
-    }
-    if (db == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
         exit(EXIT_FAILURE);
     }
 
@@ -333,7 +348,9 @@ void eme_oaep_encode(unsigned char *em, size_t em_len, unsigned char *m, size_t 
 
     // Generate seed
     unsigned char *seed = (unsigned char *)malloc(hash_len);
-    if (seed == NULL)
+    unsigned char *dbMask = (unsigned char *)malloc(em_len - hash_len - 1);
+    unsigned char *seedMask = (unsigned char *)malloc(hash_len);
+    if (seed == NULL || dbMask == NULL || seedMask == NULL)
     {
         fprintf(stderr, "Memory allocation failed\n");
         exit(EXIT_FAILURE);
@@ -343,31 +360,19 @@ void eme_oaep_encode(unsigned char *em, size_t em_len, unsigned char *m, size_t 
     rand_bytes((char *)seed, state, hash_len);
 
     // Generate mask
-    unsigned char *dbMask = (unsigned char *)malloc(em_len - hash_len - 1);
-    if (dbMask == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
     mgf1(dbMask, em_len - hash_len - 1, seed, hash_len, SHA2, sec_level);
 
     // XOR db and dbMask
-    for (int i = 0; i < em_len - hash_len - 1; i++)
+    for (unsigned int i = 0; i < em_len - hash_len - 1; i++)
     {
         db[i] ^= dbMask[i];
     }
 
     // Generate mask
-    unsigned char *seedMask = (unsigned char *)malloc(hash_len);
-    if (seedMask == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
     mgf1(seedMask, hash_len, db, em_len - hash_len - 1, SHA2, sec_level);
 
     // XOR seed and seedMask
-    for (int i = 0; i < hash_len; i++)
+    for (unsigned int i = 0; i < hash_len; i++)
     {
         seed[i] ^= seedMask[i];
     }
@@ -388,16 +393,11 @@ void crypto_encrypt_oaep(mpz_t c, const mpz_t m, const pub_key_t *pk, sec_level_
 {
     size_t m_len = count_bytes(m);
     size_t k = count_bytes(pk->n);
-    unsigned char *em = (unsigned char *)malloc(k);
-    if (em == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
+    unsigned char *em = malloc(k);
+    unsigned char *buf = malloc(m_len);
 
     // Convert to bytes
-    unsigned char *buf = (unsigned char *)malloc(m_len);
-    if (buf == NULL)
+    if (em == NULL || buf == NULL)
     {
         fprintf(stderr, "Memory allocation failed\n");
         exit(EXIT_FAILURE);
@@ -454,8 +454,11 @@ void crypto_decrypt_oaep(mpz_t m, const mpz_t c, const priv_key_t *sk, rsa_algo_
     rsadp(m, c, sk, algorithm);
 
     // Convert to bytes
-    unsigned char *buf = (unsigned char *)malloc(k);
-    if (buf == NULL)
+    unsigned char *buf = malloc(k);
+    unsigned char *maskedSeed = malloc(hash_len);
+    unsigned char *maskedDB = malloc(k - hash_len - 1);
+    unsigned char *seedMask = malloc(hash_len);
+    if (buf == NULL || maskedSeed == NULL || maskedDB == NULL || seedMask == NULL)
     {
         fprintf(stderr, "Memory allocation failed\n");
         exit(EXIT_FAILURE);
@@ -472,33 +475,14 @@ void crypto_decrypt_oaep(mpz_t m, const mpz_t c, const priv_key_t *sk, rsa_algo_
     }
 
     // Calculate maskedSeed and maskedDB
-    unsigned char *maskedSeed = (unsigned char *)malloc(hash_len);
-    if (maskedSeed == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
-    unsigned char *maskedDB = (unsigned char *)malloc(k - hash_len - 1);
-    if (maskedDB == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
-
     memcpy(maskedSeed, buf + 1, hash_len);
     memcpy(maskedDB, buf + 1 + hash_len, k - hash_len - 1);
 
     // Generate seedMask
-    unsigned char *seedMask = (unsigned char *)malloc(hash_len);
-    if (seedMask == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
     mgf1(seedMask, hash_len, maskedDB, k - hash_len - 1, SHA2, sec_level);
 
     // XOR maskedSeed and seedMask
-    for (int i = 0; i < hash_len; i++)
+    for (unsigned int i = 0; i < hash_len; i++)
     {
         maskedSeed[i] ^= seedMask[i];
     }
@@ -513,7 +497,7 @@ void crypto_decrypt_oaep(mpz_t m, const mpz_t c, const priv_key_t *sk, rsa_algo_
     mgf1(dbMask, k - hash_len - 1, maskedSeed, hash_len, SHA2, sec_level);
 
     // XOR maskedDB and dbMask
-    for (int i = 0; i < k - hash_len - 1; i++)
+    for (unsigned int i = 0; i < k - hash_len - 1; i++)
     {
         maskedDB[i] ^= dbMask[i];
     }
@@ -524,7 +508,6 @@ void crypto_decrypt_oaep(mpz_t m, const mpz_t c, const priv_key_t *sk, rsa_algo_
     {
         i++;
     }
-
     bytes_to_bigint(m, maskedDB + i + 1, k - i - hash_len - 2, BIG);
 
     free(buf);

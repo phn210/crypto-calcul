@@ -105,7 +105,7 @@ void test_shake()
         // SHAKE256, 1600-bit test pattern
         "6A1A9D7846436E4DCA5728B6F760EEF0CA92BF0BE5615E96959D767197A0BEEB"};
 
-    int i, j, fails;
+    int i, j;
     sha3_ctx_t sha3;
     uint8_t buf[32], ref[32];
 

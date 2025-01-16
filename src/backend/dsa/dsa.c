@@ -35,11 +35,11 @@ void setup(public_params_t *pp, sec_level_t level, hash_func_t hash)
     switch (hash)
     {
     case SHA2:
-        pp->hash = sha2;
+        pp->hash = &sha2;
         break;
 
     default: // SHA3
-        pp->hash = sha3;
+        pp->hash = &sha3;
         break;
     }
 }

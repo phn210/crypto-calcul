@@ -98,7 +98,7 @@ void sha1_update(sha1_ctx *ctx, const BYTE data[], size_t len)
 	}
 }
 
-void sha1_final(sha1_ctx *ctx, BYTE hash[])
+void sha1_final(sha1_ctx *ctx, BYTE hash[SHA1_DIGEST_SIZE])
 {
 	uint32_t i;
 
@@ -146,12 +146,13 @@ void sha1_final(sha1_ctx *ctx, BYTE hash[])
 
 void *sha1(const void *m, size_t len, void *md, size_t md_len)
 {
-	BYTE *hash = (BYTE *)md;
+	BYTE hash[SHA1_DIGEST_SIZE];
 	sha1_ctx ctx;
 
 	sha1_init(&ctx);
 	sha1_update(&ctx, (BYTE *)m, len);
 	sha1_final(&ctx, hash);
+	memcpy(md, hash, SHA1_DIGEST_SIZE);
 
 	return md;
 }

@@ -18,7 +18,7 @@ typedef struct
 /*********************** FUNCTION DECLARATIONS **********************/
 void sha1_init(sha1_ctx *ctx);
 void sha1_update(sha1_ctx *ctx, const BYTE data[], size_t len);
-void sha1_final(sha1_ctx *ctx, BYTE hash[]);
+void sha1_final(sha1_ctx *ctx, BYTE hash[SHA1_DIGEST_SIZE]);
 void *sha1(const void *m, size_t len, void *md, size_t md_len);
 
 #endif

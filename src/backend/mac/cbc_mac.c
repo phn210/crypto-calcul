@@ -25,7 +25,7 @@ void cbc_mac(const void *key, size_t keysize, const void *data, size_t data_len,
 
     unsigned char key_block[AES_BLOCK_SIZE];
     memset(key_block, 0, AES_BLOCK_SIZE);
-    memcpy(key_block, key, key_len < AES_BLOCK_SIZE ? key_len : AES_BLOCK_SIZE);
+    memcpy(key_block, key, keysize < AES_BLOCK_SIZE ? keysize : AES_BLOCK_SIZE);
 
     unsigned char iv[AES_BLOCK_SIZE];
     memset(iv, 0, AES_BLOCK_SIZE);

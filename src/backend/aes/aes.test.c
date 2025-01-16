@@ -50,7 +50,7 @@ int main()
     char message[] = "Hello world! My name is John Doe.\0";
 
     size_t len = strlen((const char *)message);
-    size_t key_len = strlen((const char *)key);
+    // size_t key_len = strlen((const char *)key);
 
     // printf("Plaintext: %s\n", message);
     // printf("Key: %s\n", key);
@@ -63,7 +63,7 @@ int main()
     // Pad input if necessary
     size_t padded_len;
     unsigned char *padded_message = pkcs7_padding((unsigned char *)message, len, &padded_len, AES_BLOCK_SIZE);
-    size_t len_blocks = padded_len / AES_BLOCK_SIZE;
+    // size_t len_blocks = padded_len / AES_BLOCK_SIZE;
 
     // printf("\nPadded message hex: ");
     // for (size_t i = 0; i < padded_len; i++)

@@ -288,7 +288,7 @@ void emsa_pss_encode(unsigned char *em, size_t em_bits, const unsigned char *m, 
         exit(EXIT_FAILURE);
     }
     mgf1(dbMask, em_len - hash_len - 1, h, hash_len, SHA2, sec_level);
-    for (int i = 0; i < em_len - hash_len - 1; i++)
+    for (unsigned int i = 0; i < em_len - hash_len - 1; i++)
     {
         db[i] ^= dbMask[i];
     }
@@ -361,13 +361,13 @@ int emsa_pss_verify(const unsigned char *em, size_t em_bits, const unsigned char
         fprintf(stderr, "Memory allocation failed\n");
         exit(EXIT_FAILURE);
     }
-    for (int i = 0; i < em_len - hash_len - 1; i++)
+    for (unsigned int i = 0; i < em_len - hash_len - 1; i++)
     {
         db[i] = em[i] ^ dbMask[i];
     }
     db[0] &= 0xFF >> mask_bits;
 
-    for (int i = 0; i < em_len - 2 * hash_len - 2; i++)
+    for (unsigned int i = 0; i < em_len - 2 * hash_len - 2; i++)
     {
         if (db[i] != 0x00)
         {
