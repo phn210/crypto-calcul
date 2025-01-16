@@ -22,7 +22,7 @@ def wrap_c_lib():
         try:
             with open(f"{directory}/Makefile.env", "r") as file:
                 content = file.read()
-            match = platform.re.search(r'^TEST_DEPS\s*=\s*(.*?)(?<!\\)\n', content, re.DOTALL | re.MULTILINE)
+            match = platform.re.search(r'^TEST_DEPS\s*=\s*(.*?)(?<!\\)\n', content, platform.re.DOTALL | platform.re.MULTILINE)
             if match:
                 deps = match.group(1).replace("\\", "").split()
                 return [f"{OBJ_DIR}/{dep}" for dep in deps]
