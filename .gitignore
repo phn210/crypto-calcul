@@ -7,6 +7,7 @@ obj
 
 # Generated files
 src/backend/*/**/Makefile
+src/backend/*/**/Makefile.win
 **/__init__.c*
 **/__init__.html
 **/**output**.txt

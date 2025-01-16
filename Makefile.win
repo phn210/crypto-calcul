@@ -1,0 +1,43 @@
+# Update number of cores to match your system
+SHELL := pwsh
+.SHELLFLAGS := -NoProfile -NonInteractive -Command
+NUM_CORES = 2
+SRC_DIR = src/backend
+MAKE := C:\msys64\usr\bin\make.exe
+MAKEFLAGS += --no-print-directory
+
+setup:
+	./setup.sh
+
+all test prepare:
+	@cd src/backend && make $@ -f Makefile.win
+
+build_fast:
+	@cd src/backend && $(MAKE) all -j $(NUM_CORES) -f Makefile.win
+
+test_%: prepare
+	@cd $(SRC_DIR)/$* && make test -f Makefile.win
+
+clean: clean_wrapper
+	@cd src/backend && make $@ -f Makefile.win
+
+clean_make:
+	@rm -Recurse -Force $(SRC_DIR)/*/Makefile.win
+
+clean_wrapper:
+	@rm -Recurse -Force ./**/*cpython-*
+	@if (Test-Path "build/wrappers") { <#\
+		#>rm -Recurse -Force build/wrappers <#\
+	#>}
+	@rm -Recurse -Force ./**/wrappers/**/*.c*
+
+wrap: all
+	@python3 src/backend/wrappers/setup.py build_ext
+	@python3 src/backend/wrappers/setup.py clean
+
+wrap_fast:
+	.\.venv\Scripts\activate && <#\
+	#>python src/backend/wrappers/setup.py build_ext -j $(NUM_CORES) && <#\
+	#>python src/backend/wrappers/setup.py clean
+
+.PHONY : all test test_% clean build_fast prepare clean_make wrap wrap_fast clean_wrapper setup
