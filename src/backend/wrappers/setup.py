@@ -2,9 +2,9 @@ from Cython.Build import cythonize
 from Cython.Distutils import build_ext
 from multiprocessing import Process, freeze_support, set_start_method
 from setuptools import setup, Extension
-import os, re
+import platform
 
-# os.environ["CC"] = "clang"
+# platform.os.environ["CC"] = "clang"
 SRC_DIR = "src/backend"
 OBJ_DIR = "obj"
 BUILD_DIR = "build"
@@ -22,7 +22,7 @@ def wrap_c_lib():
         try:
             with open(f"{directory}/Makefile.env", "r") as file:
                 content = file.read()
-            match = re.search(r'^TEST_DEPS\s*=\s*(.*?)(?<!\\)\n', content, re.DOTALL | re.MULTILINE)
+            match = platform.re.search(r'^TEST_DEPS\s*=\s*(.*?)(?<!\\)\n', content, re.DOTALL | re.MULTILINE)
             if match:
                 deps = match.group(1).replace("\\", "").split()
                 return [f"{OBJ_DIR}/{dep}" for dep in deps]
@@ -52,6 +52,7 @@ def wrap_c_lib():
             libraries=["gmp"],
             # extra_compile_args=["-fsanitize=address", "-fno-omit-frame-pointer", "-g"],
             # extra_link_args=["-fsanitize=address", "-shared-libasan"],
+            extra_compile_args=["DWINDOWS_H"] if (platform.system() == 'Windows') else []
         )
 
     cython_directives = {
