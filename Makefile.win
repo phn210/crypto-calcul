@@ -6,9 +6,6 @@ SRC_DIR = src/backend
 MAKE := C:\msys64\usr\bin\make.exe
 MAKEFLAGS += --no-print-directory
 
-setup:
-	./setup.sh
-
 all test prepare:
 	@cd src/backend && make $@ -f Makefile.win
 

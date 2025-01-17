@@ -1,20 +1,14 @@
+-include ../../.env
+
 # List all subdirectories dynamically
 SUBDIRS := $(shell find . -mindepth 1 -maxdepth 1 -type d)
 SUBDIRS_NAME := $(SUBDIRS:./%=%)
-EXCLUDE_DIRS := wrappers include ss
+EXCLUDE_DIRS := wrappers include $(EXCLUDED_MODULES)
 INCLUDE_DIRS := $(filter-out $(EXCLUDE_DIRS), $(SUBDIRS_NAME))
 MAKE_FILES := $(INCLUDE_DIRS:%=%/Makefile)
 
-%/Makefile.env:
-	@if [ ! -f $@ ]; then \
-		echo "TEST_DEPS = " > $@; \
-	fi \
-
-%/Makefile: %/Makefile.env template
-	@cd $* && \
-	cp Makefile.env Makefile; \
-	cat ../template >> Makefile && \
-	cd ..
+%/Makefile: template
+	cp template $*/Makefile
 
 prepare: $(MAKE_FILES)
 

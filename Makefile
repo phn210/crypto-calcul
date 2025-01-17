@@ -1,13 +1,14 @@
+-include .env
+
 # Update number of cores to match your system
-NUM_CORES = 15
 SRC_DIR = src/backend
 MAKEFLAGS += --no-print-directory
 
-setup:
-	./setup.sh
-
 all test prepare:
 	@cd src/backend && make $@
+
+setup:
+	./setup.sh
 
 build_fast:
 	@cd src/backend && make all -j $(NUM_CORES)
@@ -24,15 +25,10 @@ clean_make:
 clean_wrapper:
 	@rm -rf ./**/*cpython-*
 	@rm -rf build/wrappers
-	@rm -rf ./**/wrappers/**/*.c*
-# @find . -type f -path "*/wrappers/*.c*" -exec rm {} \;
+	@find . -type f -path "*/wrappers/*.c*" -exec rm {} \;
 
 wrap: all
 	@python3 src/backend/wrappers/setup.py build_ext
-	@python3 src/backend/wrappers/setup.py clean
-
-wrap_fast: build_fast
-	@python3 src/backend/wrappers/setup.py build_ext -j $(NUM_CORES)
 	@python3 src/backend/wrappers/setup.py clean
 
 .PHONY : all test test_% clean build_fast prepare clean_make wrap wrap_fast clean_wrapper setup

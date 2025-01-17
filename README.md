@@ -6,30 +6,44 @@
 
 ## Prerequisites
 
-- C compiler
-- `GMP` library
-- Python3
-- Cython
+- C compiler, e.g. `gcc` or `clang`
+- [`GMP`](https://gmplib.org/)
+- `python3`
+- `cython`
 
-## Building the Library
+### Windows
 
-To build the library, follow these steps:
+It's recommended to install `gcc`, `GMP`, and `python3` with [`MSYS2`](https://www.msys2.org/), and `pwsh` to follow the next steps.
 
-1. Clone the repository.
+```sh
+# Run in MSYS2 terminal
+pacman -S mingw-w64-x86_64-gcc \
+         mingw-w64-x86_64-gmp \
+         mingw-w64-x86_64-python \
+         mingw-w64-x86_64-python-pip
+```
 
-2. Ensure you have a C compiler and `GMP` library installed.
+## Building the Library (Linux/MacOS)
 
-3. Single-command setup:
-   ```sh
-   make
-   ```
-   This will compile all the C source files, create the executables for testing, and wrap C library into Python library.
+Clone the repository, ensure the prerequisites are installed, and build the library with follow these steps:
 
-   If you want to build the library step-by-step, follow the next instructions.
+### For Linux/MacOS
 
-   **Note.** This command runs in parallel by default, you might want to adjust the NUM_CORES variable to match your system.
+#### Single-command
 
-3. Build the C library:
+```sh
+make setup
+```
+
+This will compile all the C source files, create the executables for testing, and wrap C library into Python library.
+
+If you want to build the library step-by-step, follow the next instructions.
+
+**Note.** This command runs in parallel by default, you might want to adjust the NUM_CORES variable to match your system.
+
+#### Step-by-step
+
+1. Build the C library:
 
    ```sh
    # Basic
@@ -39,18 +53,17 @@ To build the library, follow these steps:
    make build_fast
    ```
 
-4. Setup Python virtual environment and install dependencies:
+2. Setup Python virtual environment and install dependencies:
+      
    ```sh
    python3 -m venv .venv
-
-   if [ -z "$PYTHONPATH" ]; then echo "export PYTHONPATH=$(pwd)/build" >> .venv/bin/activate; fi
 
    source .venv/bin/activate
 
    pip install -r requirements.txt
    ```
 
-5. Wrap C modules into Python modules with Cython:
+3. Wrap C modules into Python modules with Cython:
 
    ```sh
    # Basic
@@ -58,6 +71,35 @@ To build the library, follow these steps:
 
    # Parallel
    make wrap_fast
+   ```
+
+### For Windows
+
+1. Build the C library:
+
+   ```sh
+   make all -f Makefile.win
+   ```
+
+2. Setup Python virtual environment and install dependencies:
+      
+   ```sh
+   python3 -m venv .venv
+
+   .venv\\bin\\activate
+   # or .venv\\Scripts\\Activate.ps1
+
+   pip install -r requirements.txt
+   ```
+
+3. Wrap C modules into Python modules with Cython:
+
+   ```sh
+   # Basic
+   make wrap -f Makefile.win
+
+   # Parallel
+   make wrap_fast -f Makefile.win
    ```
 
 ## Running Tests
@@ -70,13 +112,14 @@ To run the tests, follow these steps:
 
    ```sh
    # Run all tests
-   make test
+   make test # -f Makefile.win
 
    # Run tests of a module
-   make test_<module_name>
+   make test_<module_name> # -f Makefile.win
    ```
 
-3. Test Python library for UI:
+   3. Test Python library for UI:
+
    ```sh
    python3 src/frontend/test.py
    ```
@@ -86,5 +129,5 @@ To run the tests, follow these steps:
 To clean up the build artifacts, run:
 
 ```sh
-make clean
+make clean # -f Makefile.win
 ```

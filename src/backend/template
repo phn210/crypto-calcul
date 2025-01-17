@@ -1,25 +1,26 @@
+-include .env ../../../.env
 
 # Directories
 BASE_NAME = $(shell basename $(shell pwd))
-BIN_DIR = ../../../build/$(BASE_NAME)
+BIN_DIR = ../../../$(ROOT_BIN_DIR)/$(BASE_NAME)
 INC_DIR = ..
-OBJ_PARENT_DIR = ../../../obj
+OBJ_PARENT_DIR = ../../../$(ROOT_OBJ_DIR)
 OBJ_DIR = $(OBJ_PARENT_DIR)/$(BASE_NAME)
 SRC_DIR = .
 
 # Compiler and flags
-CC = gcc
-CFLAGS = -I$(INC_DIR) $(if $(strip $(TEST_DEPS)), \
-	$(shell echo $(TEST_DEPS) | awk '{for(i=1;i<=NF;i++){split($$i, a, "/"); printf "../"a[1]" "}}' | xargs -n1 | sort -u | sed 's/^/-I/' | xargs), \
-) -Wall -Wextra
-LDFLAGS = -lgmp
+CC = $(if $(filter debug,$(APP_ENV)), clang, gcc)
+CFLAGS += -I$(INC_DIR) $(if $(strip $(DEPS)), \
+	$(shell echo $(DEPS) | sed 's/^"//;s/"$$//' | tr ' ' '\n' | awk '{split($$1, a, "/"); print "-I../" a[1]}' | sort -u | xargs), \
+) $(if $(filter debug,$(APP_ENV)), $(SAN_CFLAGS),)
+LDFLAGS += $(if $(filter debug,$(APP_ENV)), $(SAN_LDFLAGS),)
 
 # Source files
 SRCS = $(shell find . -name "*.c")
 TEST_SRCS = $(filter %.test.c, $(SRCS))
 OBJS = $(SRCS:$(SRC_DIR)/%.c=%.o)
 TESTS = $(TEST_SRCS:$(SRC_DIR)/%.c=%)
-DEP_PATHS = $(TEST_DEPS:%.o=$(OBJ_PARENT_DIR)/%.o)
+DEP_PATHS = $(DEPS:%.o=$(OBJ_PARENT_DIR)/%.o)
 OBJ_PATHS = $(OBJS:%=$(OBJ_DIR)/%)
 TEST_PATHS = $(TESTS:%=$(BIN_DIR)/%)
 NON_TEST_OBJ_PATHS = $(filter-out %.test.o, $(OBJ_PATHS))
@@ -35,7 +36,7 @@ $(DEP_PATHS):
 	@cd ../$(shell basename $(dir $@)) && make $@
 
 # Compile source files to object files
-$(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
+$(OBJ_DIR)/%.o: %.c ../template | $(OBJ_DIR)
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 

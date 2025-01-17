@@ -1,34 +1,44 @@
 from Cython.Build import cythonize
 from Cython.Distutils import build_ext
+from dotenv import load_dotenv, get_key
 from multiprocessing import Process, freeze_support, set_start_method
 from setuptools import setup, Extension
-import platform
+import platform, logging
 
-# platform.os.environ["CC"] = "clang"
-SRC_DIR = "src/backend"
-OBJ_DIR = "obj"
-BUILD_DIR = "build"
-WRAPPER_DIR = f"src/backend/wrappers"
+logging.getLogger("dotenv").setLevel(logging.ERROR)
+load_dotenv()
+
+SRC_DIR = platform.os.environ["C_SRC_DIR"]
+OBJ_DIR = platform.os.environ["ROOT_OBJ_DIR"]
+BUILD_DIR = platform.os.environ["ROOT_BIN_DIR"]
+WRAPPER_DIR = f"{SRC_DIR}/wrappers"
 LIB_NAME = WRAPPER_DIR.split("/")[-1]
+
+CFLAGS = platform.os.environ["CFLAGS"].split(" ")
+LDFLAGS = platform.os.environ["LDFLAGS"].split(" ")
+
+if platform.os.environ["APP_ENV"] == "debug":
+    platform.os.environ["CC"] = "clang"
+    SANITIZER = platform.os.environ["SANITIZER"]
+    CFLAGS += platform.os.environ["SAN_CFLAGS"].replace("$(SANITIZER)", SANITIZER).split(" ")
+    LDFLAGS += platform.os.environ["SAN_LDFLAGS"].replace("$(SANITIZER)", SANITIZER).split(" ")
+
+if (platform.system() == 'Windows'):
+    CFLAGS += ["-DWINDOWS_H"]
 
 def wrap_c_lib():
     class CustomBuildExtension(build_ext):
         def run(self):
             self.build_lib = BUILD_DIR
             self.inplace = False
+            self.parallel = int(platform.os.cpu_count() * 1.5)
             super().run()
             
     def get_deps(directory):
         try:
-            with open(f"{directory}/Makefile.env", "r") as file:
-                content = file.read()
-            match = platform.re.search(r'^TEST_DEPS\s*=\s*(.*?)(?<!\\)\n', content, platform.re.DOTALL | platform.re.MULTILINE)
-            if match:
-                deps = match.group(1).replace("\\", "").split()
-                return [f"{OBJ_DIR}/{dep}" for dep in deps]
-            else:
-                return []
-        except Exception as e:
+            deps = get_key(dotenv_path=f"{directory}/.env", key_to_get="DEPS").split()
+            return [f"{OBJ_DIR}/{dep}" for dep in deps]
+        except Exception:
             return []
 
     def get_extension(module):
@@ -50,10 +60,8 @@ def wrap_c_lib():
             sources=sources,
             extra_objects=objects,
             include_dirs=include_dirs,
-            libraries=["gmp"],
-            # extra_compile_args=["-fsanitize=address", "-fno-omit-frame-pointer", "-g"],
-            # extra_link_args=["-fsanitize=address", "-shared-libasan"],
-            extra_compile_args=["DWINDOWS_H"] if (platform.system() == 'Windows') else []
+            extra_compile_args=CFLAGS,
+            extra_link_args=LDFLAGS
         )
 
     cython_directives = {
@@ -75,7 +83,8 @@ def wrap_c_lib():
         ext_modules=cythonize(
             extensions,
             compiler_directives=cython_directives,
-            quiet=True
+            quiet=True,
+            annotate=True,
         ),
         cmdclass={'build_ext': CustomBuildExtension},
         zip_safe=False,

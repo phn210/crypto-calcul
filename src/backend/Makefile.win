@@ -9,7 +9,7 @@ MAKE_FILES = $(INCLUDE_DIRS:%=%/Makefile.win)
 
 %/Makefile.env:
 	@if (-Not (Test-Path "$@")) { <#\
-		#>"TEST_DEPS = " | Out-File -FilePath $@ -Encoding UTF8 <#\
+		#>"DEPS = " | Out-File -FilePath $@ -Encoding UTF8 <#\
 	#>}
 
 %/Makefile.win: %/Makefile.env template.win
