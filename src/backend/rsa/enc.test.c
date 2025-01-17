@@ -41,7 +41,7 @@ void test_encrypt_decrypt(priv_key_t sk, pub_key_t pk, public_params_t pp)
     else
         printf("FAILED\n");
 
-    mpz_clears(pp.e, sk.n, sk.p, sk.q, sk.d, pk.n, pk.e, m, c, decrypted_m, NULL);
+    mpz_clears(pp.e, sk.n, sk.p, sk.q, sk.d, sk.dp, sk.dq, sk.q_inv, pk.n, pk.e, m, c, decrypted_m, NULL);
 }
 
 void test_encrypt_decrypt_crt(priv_key_t sk, pub_key_t pk, public_params_t pp)
@@ -85,7 +85,7 @@ void test_encrypt_decrypt_pkcs1(priv_key_t sk, pub_key_t pk, public_params_t pp)
     else
         printf("FAILED\n");
 
-    mpz_clears(pp.e, sk.n, sk.p, sk.q, sk.d, pk.n, pk.e, m, c, decrypted_m, NULL);
+    mpz_clears(pp.e, sk.n, sk.p, sk.q, sk.d, sk.dp, sk.dq, sk.q_inv, pk.n, pk.e, m, c, decrypted_m, NULL);
 }
 
 void test_encrypt_decrypt_pkcs1_crt(priv_key_t sk, pub_key_t pk, public_params_t pp)
@@ -126,7 +126,7 @@ void test_encrypt_decrypt_oaep(priv_key_t sk, pub_key_t pk, public_params_t pp, 
     else
         printf("FAILED\n");
 
-    mpz_clears(pp.e, sk.n, sk.p, sk.q, sk.d, pk.n, pk.e, m, c, decrypted_m, NULL);
+    mpz_clears(pp.e, sk.n, sk.p, sk.q, sk.d, sk.dp, sk.dq, sk.q_inv, pk.n, pk.e, m, c, decrypted_m, NULL);
 }
 
 void test_encrypt_decrypt_oaep_crt(priv_key_t sk, pub_key_t pk, public_params_t pp, sec_level_t sec_level)

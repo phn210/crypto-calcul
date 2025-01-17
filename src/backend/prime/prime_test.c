@@ -6,7 +6,9 @@ int test_fermat_base(mpz_t a, mpz_t n)
     mpz_init(check);
     mpz_sub_ui(check, n, 1);
     mpz_powm(check, a, check, n);
-    return mpz_cmp_ui(check, 1) == 0;
+    int res = mpz_cmp_ui(check, 1) == 0;
+    mpz_clear(check);
+    return res;
 }
 
 int test_fermat(mpz_t n, gmp_randstate_t state, int t)
@@ -55,6 +57,7 @@ int test_miller_rabin_base(mpz_t a, mpz_t n, mpz_t n1, mpz_t r, int s)
             return 0;
         }
     }
+    mpz_clear(y);
     return 1;
 }
 
@@ -84,6 +87,7 @@ int test_miller_rabin(mpz_t n, gmp_randstate_t state, int t)
         }
         mpz_clear(a);
     }
+    mpz_clears(r, n1, NULL);
     return 1;
 }
 

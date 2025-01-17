@@ -53,6 +53,8 @@ void keygen(priv_key_t *sk, pub_key_t *pk, public_params_t pp)
     rand_int_m(sk->x, state, pp.q);
 
     mpz_powm(pk->y, pp.g, sk->x, pp.p);
+
+    gmp_randclear(state);
 }
 
 void crypto_sign(mpz_t r, mpz_t s, const unsigned char *m, int len, priv_key_t sk, public_params_t pp)
@@ -71,7 +73,6 @@ void crypto_sign(mpz_t r, mpz_t s, const unsigned char *m, int len, priv_key_t s
         exit(1);
     }
     pp.hash(m, len, md, pp.md_len);
-    // printf("%d\n", pp.md_len);
     bytes_to_bigint(hm, md, pp.md_len, BIG);
 
     mpz_powm(r, pp.g, k, pp.p);
@@ -84,6 +85,8 @@ void crypto_sign(mpz_t r, mpz_t s, const unsigned char *m, int len, priv_key_t s
     mpz_mod(s, s, pp.q);
 
     mpz_clears(hm, k, tmp, NULL);
+    gmp_randclear(state);
+    free(md);
 }
 
 char crypto_verify(const mpz_t r, const mpz_t s, const unsigned char *m, int len, pub_key_t pk, public_params_t pp)
@@ -117,6 +120,7 @@ char crypto_verify(const mpz_t r, const mpz_t s, const unsigned char *m, int len
 
     int res = mpz_cmp(v, r) == 0;
     mpz_clears(hm, w, u1, u2, v, NULL);
+    free(md);
 
     return res;
 }

@@ -8,6 +8,8 @@
 #include <stdint.h>
 #include <string.h>
 
+#define UNUSED(x) (void)(x)
+
 #ifdef WINDOWS_H
 
 #include <windows.h>

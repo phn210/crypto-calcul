@@ -37,7 +37,7 @@ void test_sign_verify(priv_key_t sk, pub_key_t pk, public_params_t pp)
     else
         printf("FAILED\n");
 
-    mpz_clears(pp.e, sk.n, sk.p, sk.q, sk.d, pk.n, pk.e, m, s, NULL);
+    mpz_clears(pp.e, sk.n, sk.p, sk.q, sk.d, sk.dp, sk.dq, sk.q_inv, pk.n, pk.e, m, s, NULL);
 }
 
 void test_sign_verify_crt(priv_key_t sk, pub_key_t pk, public_params_t pp)
@@ -74,7 +74,7 @@ void test_sign_verify_pkcs1(priv_key_t sk, pub_key_t pk, public_params_t pp, sec
     else
         printf("FAILED\n");
 
-    mpz_clears(pp.e, sk.n, sk.p, sk.q, sk.d, pk.n, pk.e, m, s, NULL);
+    mpz_clears(pp.e, sk.n, sk.p, sk.q, sk.d, sk.dp, sk.dq, sk.q_inv, pk.n, pk.e, m, s, NULL);
 }
 
 void test_sign_verify_pkcs1_crt(priv_key_t sk, pub_key_t pk, public_params_t pp, sec_level_t sec_level)
@@ -110,7 +110,7 @@ void test_sign_verify_pss(priv_key_t sk, pub_key_t pk, public_params_t pp, sec_l
     else
         printf("FAILED\n");
 
-    mpz_clears(pp.e, sk.n, sk.p, sk.q, sk.d, pk.n, pk.e, m, s, NULL);
+    mpz_clears(pp.e, sk.n, sk.p, sk.q, sk.d, sk.dp, sk.dq, sk.q_inv, pk.n, pk.e, m, s, NULL);
 }
 
 void test_sign_verify_pss_crt(priv_key_t sk, pub_key_t pk, public_params_t pp, sec_level_t sec_level)

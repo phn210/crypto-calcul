@@ -31,26 +31,25 @@ void cbc_mac(const void *key, size_t keysize, const void *data, size_t data_len,
     memset(iv, 0, AES_BLOCK_SIZE);
 
     unsigned char *input_blocks = malloc(padded_len);
-    if (input_blocks == NULL)
+    unsigned char *encrypted_ecb = malloc(padded_len);
+    if (input_blocks == NULL || encrypted_ecb == NULL)
     {
         fprintf(stderr, "Memory allocation failed\n");
         exit(EXIT_FAILURE);
     }
+
     for (size_t i = 0; i < padded_len; i++)
     {
         input_blocks[i] = padded_message[i];
     }
 
-    unsigned char *encrypted_ecb = malloc(padded_len);
-    if (encrypted_ecb == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
-
     aes_encrypt_cbc(input_blocks, encrypted_ecb, iv, key_block, padded_len, key_len);
 
     memcpy(mac, encrypted_ecb + padded_len - AES_BLOCK_SIZE, AES_BLOCK_SIZE);
+
+    free(padded_message);
+    free(input_blocks);
+    free(encrypted_ecb);
 }
 
 int cbc_mac_verify(const void *key, size_t keysize, const void *data, size_t data_len, const void *mac, sec_level_t sec_level)

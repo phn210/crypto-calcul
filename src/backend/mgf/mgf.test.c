@@ -29,6 +29,8 @@ void test_mgf1(const unsigned char *seed, size_t seed_len, const unsigned char *
     {
         printf("FAILED\n");
     }
+
+    free(mask);
 }
 
 int main()

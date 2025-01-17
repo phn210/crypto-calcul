@@ -185,6 +185,9 @@ void des_file(const char *input_file, const char *output_file, const uint64_t ke
             exit(EXIT_FAILURE);
         }
         memcpy(input_blocks, padded_data, len * 8);
+
+        free(input_data);
+        free(padded_data);
     }
     else
     {
@@ -226,6 +229,9 @@ void des_file(const char *input_file, const char *output_file, const uint64_t ke
         memcpy(output_data, output_blocks, len * 8);
         unsigned char *unpadded_data = pkcs7_unpadding(output_data, len * 8, &len, DES_BLOCK_SIZE);
         fwrite(unpadded_data, 1, len, output);
+
+        free(output_data);
+        free(unpadded_data);
     }
 
     fclose(input);

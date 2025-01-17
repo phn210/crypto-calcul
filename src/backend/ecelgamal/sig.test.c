@@ -39,8 +39,9 @@ void test_sign_verify(priv_key_t sk, pub_key_t pk, public_params_t pp, hash_func
     else
         printf("FAILED\n");
 
-    mpz_clears(s1, s2, NULL);
+    mpz_clears(s1, s2, sk.x, NULL);
     free_curve(&pp.curve);
+    free_point(&pk.Y);
 }
 
 int main()

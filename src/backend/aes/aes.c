@@ -334,6 +334,8 @@ void aes_encrypt_ecb(unsigned char *input, unsigned char *output, unsigned char 
         aes_block_encrypt(input + i, w, rounds);
         memcpy(output + i, input + i, AES_BLOCK_SIZE);
     }
+
+    free(w);
 }
 
 void aes_decrypt_ecb(unsigned char *input, unsigned char *output, unsigned char *key, size_t len, AES_KEY_SIZE key_size)
@@ -353,6 +355,8 @@ void aes_decrypt_ecb(unsigned char *input, unsigned char *output, unsigned char 
         aes_block_decrypt(input + i, w, rounds);
         memcpy(output + i, input + i, AES_BLOCK_SIZE);
     }
+
+    free(w);
 }
 
 void aes_encrypt_cbc(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size)
@@ -382,6 +386,8 @@ void aes_encrypt_cbc(unsigned char *input, unsigned char *output, unsigned char 
         memcpy(output + i, input + i, AES_BLOCK_SIZE);
         memcpy(last_block, output + i, AES_BLOCK_SIZE);
     }
+
+    free(w);
 }
 
 void aes_decrypt_cbc(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size)
@@ -413,6 +419,8 @@ void aes_decrypt_cbc(unsigned char *input, unsigned char *output, unsigned char 
 
         memcpy(last_block, temp_block, AES_BLOCK_SIZE);
     }
+
+    free(w);
 }
 
 void aes_encrypt_cfb(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size)
@@ -441,6 +449,8 @@ void aes_encrypt_cfb(unsigned char *input, unsigned char *output, unsigned char 
 
         memcpy(last_block, output + i, AES_BLOCK_SIZE);
     }
+
+    free(w);
 }
 
 void aes_decrypt_cfb(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size)
@@ -469,6 +479,8 @@ void aes_decrypt_cfb(unsigned char *input, unsigned char *output, unsigned char 
 
         memcpy(last_block, input + i, AES_BLOCK_SIZE);
     }
+
+    free(w);
 }
 
 void aes_encrypt_ofb(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size)
@@ -495,6 +507,8 @@ void aes_encrypt_ofb(unsigned char *input, unsigned char *output, unsigned char 
             output[i + j] = input[i + j] ^ last_block[j];
         }
     }
+
+    free(w);
 }
 
 void aes_decrypt_ofb(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size)
@@ -521,6 +535,8 @@ void aes_decrypt_ofb(unsigned char *input, unsigned char *output, unsigned char 
             output[i + j] = input[i + j] ^ last_block[j];
         }
     }
+
+    free(w);
 }
 
 void aes_ctr(unsigned char *input, unsigned char *output, unsigned char *nonce, unsigned char *key, size_t len, AES_KEY_SIZE key_size)

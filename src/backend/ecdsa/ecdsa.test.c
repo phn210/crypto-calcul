@@ -41,6 +41,8 @@ void test_sign_verify(priv_key_t sk, pub_key_t pk, public_params_t pp, hash_func
 
     mpz_clears(r, s, NULL);
     free_curve(&pp.curve);
+    free_point(&pk.Q);
+    mpz_clear(sk.d);
 }
 
 int main()

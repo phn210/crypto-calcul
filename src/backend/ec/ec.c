@@ -416,7 +416,10 @@ char equals(const point_t p, const point_t q, const curve_t curve)
     mpz_mod(tmp, tmp, curve.p);
     res &= mpz_cmp_ui(tmp, 0) == 0;
     if (curve.type == MONTGOMERY)
+    {
+        mpz_clear(tmp);
         return res;
+    }
 
     mpz_addmul(tmp, p.y, q.z);
     mpz_submul(tmp, q.y, p.z);
@@ -571,7 +574,7 @@ void add(point_t *r, const point_t p, const point_t q, const curve_t curve)
         mpz_set(r->y, Y3);
         mpz_set(r->z, Z3);
 
-        mpz_clears(t0, t1, t2, t3, t4, t5, X3, Y3, Z3, NULL);
+        mpz_clears(b3, t0, t1, t2, t3, t4, t5, X3, Y3, Z3, NULL);
         break;
     }
     case EDWARDS:

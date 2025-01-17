@@ -124,6 +124,7 @@ int main()
 
     free(encrypted_ecb);
     free(decrypted_ecb);
+    free(unpadded_message);
 
     // printf("\n--- AES CBC 128 bits ---\n");
 
@@ -177,6 +178,7 @@ int main()
 
     free(encrypted_cbc);
     free(decrypted_cbc);
+    free(unpadded_message);
 
     // printf("\n--- AES CBC 256 bits ---\n");
 
@@ -237,6 +239,7 @@ int main()
 
     free(encrypted_cbc_256);
     free(decrypted_cbc_256);
+    free(unpadded_message);
 
     // printf("\n--- AES CFB 128 bits ---\n");
 
@@ -289,6 +292,7 @@ int main()
 
     free(encrypted_cfb);
     free(decrypted_cfb);
+    free(unpadded_message);
 
     // printf("\n--- AES OFB 128 bits ---\n");
 
@@ -341,6 +345,7 @@ int main()
 
     free(encrypted_ofb);
     free(decrypted_ofb);
+    free(unpadded_message);
 
     // printf("\n--- AES CTR 128 bits ---\n");
 
@@ -393,6 +398,8 @@ int main()
 
     free(encrypted_ctr);
     free(decrypted_ctr);
+    free(unpadded_message);
+    free(padded_message);
 
     // printf("\n--- AES File Encryption ---\n");
 

@@ -43,7 +43,9 @@ void test_encrypt_decrypt(priv_key_t sk, pub_key_t pk, public_params_t pp, hash_
     else
         printf("FAILED\n");
 
-    mpz_clears(m, c1, c2, decrypted_m, NULL);
+    mpz_clears(m, c1, c2, sk.x, decrypted_m, NULL);
+    free_curve(&pp.curve);
+    free_point(&pk.Y);
 }
 
 int main()

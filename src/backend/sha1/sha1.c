@@ -146,6 +146,7 @@ void sha1_final(sha1_ctx *ctx, BYTE hash[SHA1_DIGEST_SIZE])
 
 void *sha1(const void *m, size_t len, void *md, size_t md_len)
 {
+	UNUSED(md_len);
 	BYTE hash[SHA1_DIGEST_SIZE];
 	sha1_ctx ctx;
 

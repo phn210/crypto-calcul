@@ -108,10 +108,10 @@ int main()
 
     // Remove padding
     size_t decrypted_len;
-    decrypted_message = pkcs7_unpadding(decrypted_message, padded_len, &decrypted_len, DES_BLOCK_SIZE);
+    unsigned char *unpadded_message = pkcs7_unpadding(decrypted_message, padded_len, &decrypted_len, DES_BLOCK_SIZE);
 
     // printf("\nDecrypted: %s\n", decrypted_message);
-    printf("DES:\t\t%s\n", memcmp(message, decrypted_message, strlen(message)) == 0 ? "PASS" : "FAIL");
+    printf("DES:\t\t%s\n", memcmp(message, unpadded_message, strlen(message)) == 0 ? "PASS" : "FAIL");
 
     // printf("\nFile encryption/decryption\n");
 
@@ -134,6 +134,8 @@ int main()
     free(decrypted);
     free(input_blocks);
     free(decrypted_message);
+    free(padded_message);
+    free(unpadded_message);
 
     // printf("\n===================================================\n\n");
 

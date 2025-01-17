@@ -136,6 +136,9 @@ void hmac_update(hmac_ctx_t *ctx, const void *data, size_t data_len)
     memcpy(outer, ctx->o_key_pad, ctx->b);
     memcpy(outer + ctx->b, (unsigned char *)ctx->hash(inner, inner_len, inner, ctx->l), ctx->l);
     memcpy(ctx->out, ctx->hash(outer, outer_len, outer, ctx->l), ctx->l);
+
+    free(inner);
+    free(outer);
 }
 
 void hmac_final(hmac_ctx_t *ctx, void *mac)

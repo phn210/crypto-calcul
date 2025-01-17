@@ -59,7 +59,7 @@ void test_bigint_and_bytes()
     else
         printf("FAILED\n");
 
-    mpz_clear(num);
+    mpz_clears(num, result, NULL);
     free(bytes);
 }
 

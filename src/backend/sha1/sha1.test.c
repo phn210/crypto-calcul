@@ -6,7 +6,7 @@ void hash_to_string(const unsigned char *hash, char *output)
 {
     for (int i = 0; i < HASH_SIZE; i++)
     {
-        sprintf(output + (i * 2), "%02x", hash[i]);
+        snprintf(output + (i * 2), 3, "%02x", hash[i]);
     }
     output[HASH_SIZE * 2] = '\0';
 }
@@ -18,10 +18,10 @@ void testvec1()
     unsigned char result[HASH_SIZE];
     char hexresult[HASH_SIZE * 2 + 1];
 
-    sha1(string, strlen((char const*)string), result, HASH_SIZE);
+    sha1(string, strlen((char const *)string), result, HASH_SIZE);
     hash_to_string(result, hexresult);
 
-    if (strncmp(hexresult, (char const*)expect, HASH_SIZE * 2) == 0)
+    if (strncmp(hexresult, (char const *)expect, HASH_SIZE * 2) == 0)
     {
         printf("Test Vector 1: PASSED\n");
     }
@@ -40,10 +40,10 @@ void testvec2()
     unsigned char result[HASH_SIZE];
     char hexresult[HASH_SIZE * 2 + 1];
 
-    sha1(string, strlen((char const*)string), result, HASH_SIZE);
+    sha1(string, strlen((char const *)string), result, HASH_SIZE);
     hash_to_string(result, hexresult);
 
-    if (strncmp(hexresult, (char const*)expect, HASH_SIZE * 2) == 0)
+    if (strncmp(hexresult, (char const *)expect, HASH_SIZE * 2) == 0)
     {
         printf("Test Vector 2: PASSED\n");
     }
@@ -62,10 +62,10 @@ void testvec3()
     unsigned char result[HASH_SIZE];
     char hexresult[HASH_SIZE * 2 + 1];
 
-    sha1(string, strlen((char const*)string), result, HASH_SIZE);
+    sha1(string, strlen((char const *)string), result, HASH_SIZE);
     hash_to_string(result, hexresult);
 
-    if (strncmp(hexresult, (char const*)expect, HASH_SIZE * 2) == 0)
+    if (strncmp(hexresult, (char const *)expect, HASH_SIZE * 2) == 0)
     {
         printf("Test Vector 3: PASSED\n");
     }
@@ -87,12 +87,12 @@ void testvec4()
     sha1_ctx ctx;
 
     sha1_init(&ctx);
-    sha1_update(&ctx, string1, strlen((char const*)string1));
-    sha1_update(&ctx, string2, strlen((char const*)string2));
+    sha1_update(&ctx, string1, strlen((char const *)string1));
+    sha1_update(&ctx, string2, strlen((char const *)string2));
     sha1_final(&ctx, result);
     hash_to_string(result, hexresult);
 
-    if (strncmp(hexresult, (char const*)expect, HASH_SIZE * 2) == 0)
+    if (strncmp(hexresult, (char const *)expect, HASH_SIZE * 2) == 0)
     {
         printf("Test Vector 4: PASSED\n");
     }
@@ -117,10 +117,10 @@ void testvec5()
     }
     string[1000000] = '\0';
 
-    sha1(string, strlen((char const*)string), result, HASH_SIZE);
+    sha1(string, strlen((char const *)string), result, HASH_SIZE);
     hash_to_string(result, hexresult);
 
-    if (strncmp(hexresult, (char const*)expect, HASH_SIZE * 2) == 0)
+    if (strncmp(hexresult, (char const *)expect, HASH_SIZE * 2) == 0)
     {
         printf("Test Vector 5: PASSED\n");
     }

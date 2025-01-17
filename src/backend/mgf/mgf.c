@@ -105,4 +105,5 @@ void mgf1(unsigned char *mask, size_t mask_len, const unsigned char *seed, size_
     }
 
     free(buf);
+    free(md);
 }

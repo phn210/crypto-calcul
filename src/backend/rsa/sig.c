@@ -88,6 +88,7 @@ int crypto_verify(const mpz_t m, const mpz_t s, const pub_key_t *pk)
     rsavp1(m_check, s, pk);
 
     int result = mpz_cmp(m, m_check) == 0;
+    mpz_clear(m_check);
     return result;
 }
 
@@ -300,6 +301,7 @@ void emsa_pss_encode(unsigned char *em, size_t em_bits, const unsigned char *m, 
     memcpy(em + em_len - hash_len - 1, h, hash_len);
     em[em_len - 1] = 0xBC;
 
+    gmp_randclear(state);
     free(m_prime);
     free(salt);
     free(db);

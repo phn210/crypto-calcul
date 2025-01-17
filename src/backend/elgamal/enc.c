@@ -34,6 +34,8 @@ void keygen(priv_key_t *sk, pub_key_t *pk, const public_params_t *pp)
     rand_int_m(sk->x, state, pp->p);
 
     mpz_powm(pk->y, pp->g, sk->x, pp->p);
+
+    gmp_randclear(state);
 }
 
 void crypto_encrypt(mpz_t c1, mpz_t c2, const mpz_t m, const pub_key_t *pk, const public_params_t *pp)
@@ -50,6 +52,7 @@ void crypto_encrypt(mpz_t c1, mpz_t c2, const mpz_t m, const pub_key_t *pk, cons
     mpz_mod(c2, c2, pp->p);
 
     mpz_clear(k);
+    gmp_randclear(state);
 }
 
 void crypto_decrypt(mpz_t m, const mpz_t c1, const mpz_t c2, const priv_key_t *sk, const public_params_t *pp)

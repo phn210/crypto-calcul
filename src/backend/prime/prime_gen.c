@@ -60,7 +60,12 @@ void gen_prime_b(mpz_t n, gmp_randstate_t state, int b, int k, int t, prime_test
         }
     }
     mpz_set(n, q);
-    mpz_clear(q);
+    mpz_clears(q, tmp, NULL);
+    for (int i = 0; i < k; i++)
+    {
+        mpz_clear(small_primes[i]);
+    }
+    free(small_primes);
 }
 
 void gen_prime_m(mpz_t n, gmp_randstate_t state, mpz_t m, int k, int t, prime_test_t test)
@@ -97,5 +102,10 @@ void gen_prime_m(mpz_t n, gmp_randstate_t state, mpz_t m, int k, int t, prime_te
         }
     }
     mpz_set(n, q);
-    mpz_clear(q);
+    mpz_clears(q, tmp, NULL);
+    for (int i = 0; i < k; i++)
+    {
+        mpz_clear(small_primes[i]);
+    }
+    free(small_primes);
 }

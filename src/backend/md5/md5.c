@@ -188,6 +188,7 @@ void md5_final(md5_ctx *ctx, BYTE hash[])
 
 void *md5(const void *m, size_t len, void *md, size_t md_len)
 {
+    UNUSED(md_len);
     md5_ctx ctx;
     md5_init(&ctx);
     md5_update(&ctx, (BYTE *)m, len);
