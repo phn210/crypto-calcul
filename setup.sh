@@ -10,4 +10,4 @@ source .venv/bin/activate
 
 pip install -r requirements.txt
 
-make wrap_fast
+make wrap
