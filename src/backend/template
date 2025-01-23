@@ -1,7 +1,7 @@
 -include .env ../../../.env
 
 # Directories
-BASE_NAME = $(shell basename $(shell pwd))
+BASE_NAME = $(shell basename "$(shell pwd)")
 BIN_DIR = ../../../$(ROOT_BIN_DIR)/$(BASE_NAME)
 INC_DIR = ..
 OBJ_PARENT_DIR = ../../../$(ROOT_OBJ_DIR)
