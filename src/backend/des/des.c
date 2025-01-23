@@ -128,7 +128,7 @@ void des_key_schedule(const uint64_t key, des_ctx_t *ctx)
  * output: array of 64-bit blocks
  * key: 64-bit key
  * len: number of blocks
- * mode: 'e' for encryption, 'd' for decryption
+ * mode: DES_ENCRYPT or DES_DECRYPT
  */
 void des(uint64_t *input, uint64_t *output, const uint64_t key, int len, des_mode_t mode)
 {
@@ -149,6 +149,13 @@ void des(uint64_t *input, uint64_t *output, const uint64_t key, int len, des_mod
     }
 }
 
+/* 
+* DES file encryption/decryption function
+* input_file: path to input file
+* output_file: path to output file
+* key: 64-bit key
+* mode: DES_ENCRYPT or DES_DECRYPT
+*/
 void des_file(const char *input_file, const char *output_file, const uint64_t key, des_mode_t mode)
 {
     FILE *input = fopen(input_file, "rb");
