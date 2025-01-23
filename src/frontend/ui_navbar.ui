@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>NavBar</class>
+ <widget class="QWidget" name="NavBar">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>314</width>
+    <height>935</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QFrame" name="frame">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>281</width>
+     <height>935</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: #303657;</string>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_4">
+    <property name="spacing">
+     <number>30</number>
+    </property>
+    <item>
+     <widget class="QPushButton" name="pushButton_3">
+      <property name="acceptDrops">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-style: none;
+color: white;
+font-size: 20px;
+font-weight: bold;
+background-color: #3f4773;
+border-radius: 10;
+text-align: left;
+padding-left: 10;</string>
+      </property>
+      <property name="text">
+       <string>Basic primitives</string>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pushButton_2">
+      <property name="acceptDrops">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-style: none;
+color: white;
+font-size: 20px;
+font-weight: bold;
+background-color: #3f4773;
+border-radius: 10;
+text-align: left;
+padding-left: 10;</string>
+      </property>
+      <property name="text">
+       <string>Hash functions</string>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pushButton_4">
+      <property name="acceptDrops">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-style: none;
+color: white;
+font-size: 20px;
+font-weight: bold;
+background-color: #3f4773;
+border-radius: 10;
+text-align: left;
+padding-left: 10;</string>
+      </property>
+      <property name="text">
+       <string>Secret Key Cryptography</string>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pushButton_5">
+      <property name="acceptDrops">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-style: none;
+color: white;
+font-size: 20px;
+font-weight: bold;
+background-color: #3f4773;
+border-radius: 10;
+text-align: left;
+padding-left: 10;</string>
+      </property>
+      <property name="text">
+       <string>Public Key Cryptography</string>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pushButton_7">
+      <property name="acceptDrops">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-style: none;
+color: white;
+font-size: 20px;
+font-weight: bold;
+background-color: #3f4773;
+border-radius: 10;
+text-align: left;
+padding-left: 10;</string>
+      </property>
+      <property name="text">
+       <string>Elliptic Curves Cryptography</string>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pushButton_6">
+      <property name="acceptDrops">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border-style: none;
+color: white;
+font-size: 20px;
+font-weight: bold;
+background-color: #3f4773;
+border-radius: 10;
+text-align: left;
+padding-left: 10;</string>
+      </property>
+      <property name="text">
+       <string>Advanced Modules</string>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
