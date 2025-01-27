@@ -9,6 +9,7 @@ src/backend/*/**/Makefile.win
 **/__init__.html
 **/**output**.txt
 __pycache__
+*.autosave
 
 # Environment files
 .venv
@@ -16,6 +17,7 @@ __pycache__
 
 # Editor files
 .vscode
+.qtcreator
 
 # Prerequisites
 *.d
