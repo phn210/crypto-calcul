@@ -16,6 +16,7 @@ __pycache__
 
 # Editor files
 .vscode
+.qtcreator
 
 # Prerequisites
 *.d

@@ -76,11 +76,11 @@ def wrap_c_lib():
     excludes = ["__pycache__"]
     modules = [item for item in os.listdir(WRAPPER_DIR) \
         if os.path.isdir(os.path.join(WRAPPER_DIR, item)) and item not in excludes]
-    top_module = Extension(
-        name="cryptocalcul",
-        sources=[f"{WRAPPER_DIR}/cryptocalcul.py"]
-        # + [f'{WRAPPER_DIR}/{module}/__init__.py' for module in modules],
-    )
+    # top_module = Extension(
+    #     name="cryptocalcul",
+    #     sources=[f"{WRAPPER_DIR}/cryptocalcul.py"]
+    #     # + [f'{WRAPPER_DIR}/{module}/__init__.py' for module in modules],
+    # )
     extensions = [get_extension(module) for module in modules] 
     # + [parent_module]
     
@@ -92,7 +92,8 @@ def wrap_c_lib():
             compiler_directives=cython_directives,
             quiet=True,
             annotate=True,
-        ) + [top_module],
+        ),
+        # + [top_module],
         # packages=find_packages(SRC_DIR),
         # package_data={"*": ['*.pxd']},
         cmdclass={'build_ext': CustomBuildExtension},
