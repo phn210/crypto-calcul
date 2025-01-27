@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1000</width>
-    <height>811</height>
+    <height>935</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -39,382 +39,319 @@
      </property>
     </widget>
    </item>
-
-<!-- PRNG -->
    <item>
     <widget class="QFrame" name="prngFrame">
-    <property name="frameShape">
-    <enum>QFrame::StyledPanel</enum>
-    </property>
-    <layout class="QVBoxLayout" name="prngLayout">
-    <!-- Title -->
-    <item>
-        <widget class="QLabel" name="prngLabel">
-        <property name="styleSheet">
-        <string>font-size: 18px; font-weight: bold;</string>
-        </property>
-        <property name="text">
-        <string>PRNG</string>
-        </property>
-        </widget>
-    </item>
-    
-    <!-- Seed Input -->
-    <item>
-        <layout class="QHBoxLayout" name="seedLayout">
-        <item>
-        <widget class="QCheckBox" name="enableSeed">
-        <property name="text">
-            <string>Enter Seed</string>
-        </property>
-        </widget>
-        </item>
-        <item>
-        <widget class="QLineEdit" name="seedInput">
-        <property name="placeholderText">
-            <string>Seed Value</string>
-        </property>
-        <property name="enabled">
-            <bool>false</bool>
-        </property>
-        </widget>
-        </item>
-        </layout>
-    </item>
-    
-    <!-- Base Selection -->
-    <item>
-        <layout class="QHBoxLayout" name="baseLayout">
-        <item>
-        <widget class="QLabel" name="baseLabel">
-        <property name="text">
-            <string>Select Base:</string>
-        </property>
-        </widget>
-        </item>
-        <item>
-        <widget class="QRadioButton" name="base2">
-        <property name="text">
-            <string>Base 2</string>
-        </property>
-        </widget>
-        </item>
-        <item>
-        <widget class="QRadioButton" name="base10">
-        <property name="text">
-            <string>Base 10</string>
-        </property>
-        </widget>
-        </item>
-        <item>
-        <widget class="QRadioButton" name="base16">
-        <property name="text">
-            <string>Base 16</string>
-        </property>
-        </widget>
-        </item>
-        </layout>
-    </item>
-    
-    <!-- Method Selection -->
-    <item>
-        <layout class="QVBoxLayout" name="methodLayout">
-        <!-- Random by Bit -->
-        <item>
-        <layout class="QHBoxLayout" name="randIntBLayout">
-        <item>
-            <widget class="QRadioButton" name="randIntB">
-            <property name="text">
-            <string>Random by Bit</string>
-            </property>
-            </widget>
-        </item>
-        <item>
-            <widget class="QLineEdit" name="bitsInput">
-            <property name="placeholderText">
-            <string>Bits</string>
-            </property>
-            <property name="enabled">
-            <bool>false</bool>
-            </property>
-            </widget>
-        </item>
-        </layout>
-        </item>
-        <!-- Random by Modulo -->
-        <item>
-        <layout class="QHBoxLayout" name="randIntMLayout">
-        <item>
-            <widget class="QRadioButton" name="randIntM">
-            <property name="text">
-            <string>Random by Modulo</string>
-            </property>
-            </widget>
-        </item>
-        <item>
-            <widget class="QLineEdit" name="moduloInput">
-            <property name="placeholderText">
-            <string>Modulo</string>
-            </property>
-            <property name="enabled">
-            <bool>false</bool>
-            </property>
-            </widget>
-        </item>
-        </layout>
-        </item>
-        </layout>
-    </item>
-    
-    <!-- Generate Button -->
-    <item>
-        <widget class="QPushButton" name="generateButton">
-        <property name="text">
-        <string>Generate</string>
-        </property>
-        <property name="styleSheet">
-        <string>background-color: #007BFF; color: white; padding: 5px 10px; border-radius: 5px;</string>
-        </property>
-        <property name="maximumSize">
-        <size>
-        <width>150</width>
-        <height>30</height>
-        </size>
-        </property>
-        </widget>
-    </item>
-    
-    <!-- Output -->
-    <item>
-        <widget class="QLineEdit" name="outputField">
-        <property name="placeholderText">
-        <string>Generated Output</string>
-        </property>
-        <property name="readOnly">
-        <bool>true</bool>
-        </property>
-        </widget>
-    </item>
-    </layout>
-    </widget>
-   </item>
-
-
-<!-- Primality Test -->   
-    <item>
-        <widget class="QFrame" name="primalityTestFrame">
-        <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-        </property>
-        <layout class="QVBoxLayout" name="primalityTestLayout">
-        <item>
-            <widget class="QLabel" name="primalityTestLabel">
-            <property name="styleSheet">
-            <string>font-size: 18px; font-weight: bold;</string>
-            </property>
-            <property name="text">
-            <string>Primality Test</string>
-            </property>
-            </widget>
-        </item>
-        <item>
-            <widget class="QLineEdit" name="primalityTestInput">
-            <property name="placeholderText">
-            <string>Enter Number to Test</string>
-            </property>
-            </widget>
-        </item>
-        <item>
-            <layout class="QHBoxLayout" name="primalityTestMethodLayout">
-            <item>
-            <widget class="QRadioButton" name="gmpTestRadio">
-            <property name="text">
-                <string>GMP</string>
-            </property>
-            </widget>
-            </item>
-            <item>
-            <widget class="QRadioButton" name="fermatTestRadio">
-            <property name="text">
-                <string>Fermat</string>
-            </property>
-            </widget>
-            </item>
-            <item>
-            <widget class="QRadioButton" name="millerRabinTestRadio">
-            <property name="text">
-                <string>Miller-Rabin</string>
-            </property>
-            </widget>
-            </item>
-            </layout>
-        </item>
-        <item>
-            <widget class="QPushButton" name="primalityTestButton">
-            <property name="text">
-            <string>Test Primality</string>
-            </property>
-            <property name="styleSheet">
-            <string>background-color: #007BFF; color: white; padding: 5px 10px; border-radius: 5px;</string>
-            </property>
-            <property name="maximumSize">
-            <size>
-            <width>150</width>
-            <height>30</height>
-            </size>
-            </property>
-            </widget>
-        </item>
-        <item>
-            <widget class="QLineEdit" name="primalityTestOutput">
-            <property name="placeholderText">
-            <string>Output</string>
-            </property>
-            <property name="readOnly">
-            <bool>true</bool>
-            </property>
-            </widget>
-        </item>
-        </layout>
-        </widget>
-    </item>
-
-
-<!-- Prime Generator -->
-    <item>
-    <widget class="QFrame" name="primeGeneratorFrame">
-    <property name="frameShape">
-    <enum>QFrame::StyledPanel</enum>
-    </property>
-    <layout class="QVBoxLayout" name="primeGeneratorLayout">
-    <item>
-        <widget class="QLabel" name="primeGeneratorLabel">
-        <property name="styleSheet">
-        <string>font-size: 18px; font-weight: bold;</string>
-        </property>
-        <property name="text">
-        <string>Prime Generator</string>
-        </property>
-        </widget>
-    </item>
-    <item>
-        <layout class="QHBoxLayout" name="bitBasedLayout">
-        <item>
-        <widget class="QRadioButton" name="bitBased">
-        <property name="text">
-            <string>Bit-Based</string>
-        </property>
-        </widget>
-        </item>
-        <item>
-        <widget class="QLineEdit" name="bitSizeInput">
-        <property name="placeholderText">
-            <string>Enter Bits</string>
-        </property>
-        <property name="enabled">
-            <bool>false</bool>
-        </property>
-        </widget>
-        </item>
-        </layout>
-    </item>
-    <item>
-        <layout class="QHBoxLayout" name="moduloBasedLayout">
-        <item>
-        <widget class="QRadioButton" name="moduloBased">
-        <property name="text">
-            <string>Modulo-Based</string>
-        </property>
-        </widget>
-        </item>
-        <item>
-        <layout class="QHBoxLayout" name="baseSelectionLayout">
-        <item>
-            <widget class="QRadioButton" name="base2Radio">
-            <property name="text">
-            <string>Base 2</string>
-            </property>
-            </widget>
-        </item>
-        <item>
-            <widget class="QRadioButton" name="base10Radio">
-            <property name="text">
-            <string>Base 10</string>
-            </property>
-            </widget>
-        </item>
-        <item>
-            <widget class="QRadioButton" name="base16Radio">
-            <property name="text">
-            <string>Base 16</string>
-            </property>
-            </widget>
-        </item>
-        </layout>
-        </item>
-        </layout>
-    </item>
-    <item>
-        <widget class="QPushButton" name="generatePrimeButton">
-        <property name="text">
-        <string>Generate Prime</string>
-        </property>
-        <property name="styleSheet">
-        <string>background-color: #007BFF; color: white; padding: 5px 10px; border-radius: 5px;</string>
-        </property>
-        <property name="maximumSize">
-        <size>
-        <width>150</width>
-        <height>30</height>
-        </size>
-        </property>
-        </widget>
-    </item>
-    <item>
-        <widget class="QLineEdit" name="primeGeneratorOutput">
-        <property name="placeholderText">
-        <string>Generated Prime</string>
-        </property>
-        <property name="readOnly">
-        <bool>true</bool>
-        </property>
-        </widget>
-    </item>
-    </layout>
-    </widget>
-    </item>
-
-<!-- Conversion Utilities -->   
-   <item>
-    <widget class="QFrame" name="conversionUtilitiesFrame">
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
-     <layout class="QVBoxLayout" name="conversionUtilitiesLayout">
+     <layout class="QVBoxLayout" name="prngLayout">
       <item>
-       <widget class="QLabel" name="conversionUtilitiesLabel">
+       <widget class="QLabel" name="prngLabel">
         <property name="styleSheet">
          <string>font-size: 18px; font-weight: bold;</string>
         </property>
         <property name="text">
-         <string>Conversion Utilities</string>
+         <string>PRNG</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="conversionUtilitiesInput">
+       <layout class="QHBoxLayout" name="seedLayout">
+        <item>
+         <widget class="QCheckBox" name="enableSeed">
+          <property name="text">
+           <string>Enter Seed: </string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="seedInput">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="placeholderText">
+           <string>Seed Value</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="baseLayout">
+        <item>
+         <widget class="QLabel" name="baseLabel">
+          <property name="text">
+           <string>Select Base:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="base2">
+          <property name="text">
+           <string>Base 2</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="base10">
+          <property name="text">
+           <string>Base 10</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="base16">
+          <property name="text">
+           <string>Base 16</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="methodLayout">
+        <item>
+         <layout class="QHBoxLayout" name="randIntBLayout">
+          <item>
+           <widget class="QRadioButton" name="randIntB">
+            <property name="text">
+             <string>Random by Bit: </string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="bitsInput">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="placeholderText">
+             <string>Bits</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="randIntMLayout">
+          <item>
+           <widget class="QRadioButton" name="randIntM">
+            <property name="text">
+             <string>Random by Modulo: </string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="moduloInput">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="placeholderText">
+             <string>Modulo</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QPushButton" name="generateButton">
+        <property name="maximumSize">
+         <size>
+          <width>150</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string>background-color: #007BFF; color: white; padding: 5px 10px; border-radius: 5px;</string>
+        </property>
+        <property name="text">
+         <string>Generate</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="outputField">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
         <property name="placeholderText">
-         <string>Input</string>
+         <string>Generated Output</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QFrame" name="primalityTestFrame">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <layout class="QVBoxLayout" name="primalityTestLayout">
+      <item>
+       <widget class="QLabel" name="primalityTestLabel">
+        <property name="styleSheet">
+         <string>font-size: 18px; font-weight: bold;</string>
+        </property>
+        <property name="text">
+         <string>Primality Test</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="conversionUtilitiesOptions"/>
+       <widget class="QLineEdit" name="primalityTestInput">
+        <property name="placeholderText">
+         <string>Enter Number to Test</string>
+        </property>
+       </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="conversionUtilitiesOutput">
+       <layout class="QHBoxLayout" name="primalityTestMethodLayout">
+        <item>
+         <widget class="QLabel" name="baseLabel">
+          <property name="text">
+           <string>Select Test:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="gmpTestRadio">
+          <property name="text">
+           <string>GMP</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="fermatTestRadio">
+          <property name="text">
+           <string>Fermat</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="millerRabinTestRadio">
+          <property name="text">
+           <string>Miller-Rabin</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QPushButton" name="primalityTestButton">
+        <property name="maximumSize">
+         <size>
+          <width>150</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string>background-color: #007BFF; color: white; padding: 5px 10px; border-radius: 5px;</string>
+        </property>
+        <property name="text">
+         <string>Test Primality</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="primalityTestOutput">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
         <property name="placeholderText">
          <string>Output</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QFrame" name="primeGeneratorFrame">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <layout class="QVBoxLayout" name="primeGeneratorLayout">
+      <item>
+       <widget class="QLabel" name="primeGeneratorLabel">
+        <property name="styleSheet">
+         <string>font-size: 18px; font-weight: bold;</string>
+        </property>
+        <property name="text">
+         <string>Prime Generator</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="methodLayout">
+        <item>
+         <layout class="QHBoxLayout" name="randIntBLayout">
+          <item>
+           <widget class="QRadioButton" name="randIntB">
+            <property name="text">
+             <string>Random by Bit:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="bitsInput">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="placeholderText">
+             <string>Bits</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="randIntMLayout">
+          <item>
+           <widget class="QRadioButton" name="randIntM">
+            <property name="text">
+             <string>Random by Modulo:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="moduloInput">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="placeholderText">
+             <string>Modulo</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QPushButton" name="generatePrimeButton">
+        <property name="maximumSize">
+         <size>
+          <width>150</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string>background-color: #007BFF; color: white; padding: 5px 10px; border-radius: 5px;</string>
+        </property>
+        <property name="text">
+         <string>Generate Prime</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="primeGeneratorOutput">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+        <property name="placeholderText">
+         <string>Generated Prime</string>
         </property>
        </widget>
       </item>

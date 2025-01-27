@@ -14,8 +14,6 @@
    <string>Hash Functions</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   
-   <!-- Main Title: Hash Functions -->
    <item>
     <widget class="QLabel" name="mainTitle">
      <property name="styleSheet">
@@ -24,13 +22,11 @@
      <property name="text">
       <string>Hash Functions</string>
      </property>
-     <property name="alignment"> 
+     <property name="alignment">
       <set>Qt::AlignCenter</set>
      </property>
     </widget>
    </item>
-
-   <!-- First Part: MD5, SHA1, SHA2, SHA3 -->
    <item>
     <widget class="QLabel" name="firstPartTitle">
      <property name="styleSheet">
@@ -41,17 +37,15 @@
      </property>
     </widget>
    </item>
-   
    <item>
     <layout class="QHBoxLayout" name="hashAlgorithmLayout">
      <item>
       <widget class="QLabel" name="hashAlgorithmLabel">
        <property name="text">
-        <string>Choose Hash Algorithm:</string>
+        <string>Hash Algorithm:</string>
        </property>
       </widget>
      </item>
-     <!-- Hash Algorithm Radio Buttons in 1 Line -->
      <item>
       <widget class="QRadioButton" name="md5RadioButton">
        <property name="text">
@@ -82,8 +76,6 @@
      </item>
     </layout>
    </item>
-
-   <!-- Security Level Selection (Only for SHA-2) -->
    <item>
     <layout class="QHBoxLayout" name="securityLevelLayout">
      <item>
@@ -123,8 +115,6 @@
      </item>
     </layout>
    </item>
-
-   <!-- Input Text Box (3 Lines) -->
    <item>
     <layout class="QHBoxLayout" name="inputTextLayout">
      <item>
@@ -143,8 +133,6 @@
      </item>
     </layout>
    </item>
-
-   <!-- Generate Button -->
    <item>
     <widget class="QPushButton" name="generateHashButton">
      <property name="maximumSize">
@@ -161,8 +149,6 @@
      </property>
     </widget>
    </item>
-
-   <!-- Output Hash Box (3 Lines) -->
    <item>
     <widget class="QTextEdit" name="outputHash">
      <property name="readOnly">
@@ -173,8 +159,6 @@
      </property>
     </widget>
    </item>
-
-   <!-- Second Part: SHAKE (SHA3 XOFs) -->
    <item>
     <widget class="QLabel" name="secondPartTitle">
      <property name="styleSheet">
@@ -185,7 +169,6 @@
      </property>
     </widget>
    </item>
-
    <item>
     <layout class="QHBoxLayout" name="securityLevelShakeLayout">
      <item>
@@ -211,8 +194,13 @@
      </item>
     </layout>
    </item>
-
-   <!-- Input Text Box (3 Lines) -->
+   <item>
+       <widget class="QLineEdit" name="primalityTestInput">
+        <property name="placeholderText">
+         <string>Enter digest length</string>
+        </property>
+       </widget>
+      </item>
    <item>
     <layout class="QHBoxLayout" name="inputTextShakeLayout">
      <item>
@@ -231,8 +219,6 @@
      </item>
     </layout>
    </item>
-
-   <!-- Generate Button -->
    <item>
     <widget class="QPushButton" name="generateHashShakeButton">
      <property name="maximumSize">
@@ -249,8 +235,6 @@
      </property>
     </widget>
    </item>
-
-   <!-- Output Hash Box (3 Lines) -->
    <item>
     <widget class="QTextEdit" name="outputHashShake">
      <property name="readOnly">
@@ -261,7 +245,6 @@
      </property>
     </widget>
    </item>
-
   </layout>
  </widget>
  <resources/>
