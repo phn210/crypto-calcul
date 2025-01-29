@@ -73,6 +73,12 @@ void gen_prime_m(mpz_t n, gmp_randstate_t state, mpz_t m, int k, int t, prime_te
     mpz_t q, tmp;
     mpz_inits(q, tmp, NULL);
     rand_int_m(q, state, m);
+    if (mpz_cmp_ui(q, 2) == 0)
+    {
+        mpz_set(n, q);
+        mpz_clears(q, tmp, NULL);
+        return;
+    }
     if (mpz_divisible_ui_p(q, 2))
         mpz_add_ui(q, q, 1);
 
@@ -87,6 +93,17 @@ void gen_prime_m(mpz_t n, gmp_randstate_t state, mpz_t m, int k, int t, prime_te
     int j = 1;
     while (j < k)
     {
+        if (mpz_cmp(q, m) >= 0)
+        {
+            fprintf(stderr, "Generated number is greater than m\n");
+            mpz_clears(q, tmp, NULL);
+            for (int i = 0; i < k; i++)
+            {
+                mpz_clear(small_primes[i]);
+            }
+            free(small_primes);
+            exit(EXIT_FAILURE);
+        }
         if (mpz_divisible_p(q, small_primes[j]))
         {
             mpz_add_ui(q, q, 2);

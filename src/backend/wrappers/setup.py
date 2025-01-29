@@ -62,7 +62,7 @@ def wrap_c_lib():
             extra_objects=objects,
             include_dirs=include_dirs,
             extra_compile_args=CFLAGS,
-            extra_link_args=LDFLAGS
+            extra_link_args=LDFLAGS,
         )
 
     cython_directives = {

@@ -9,8 +9,8 @@ cdef extern from "prime_test.h":
     int primality_test(mpz_t, gmp_randstate_t, int, prime_test_t)
 
 cdef extern from "prime_gen.h":
-    void gen_prime_b(mpz_t, gmp_randstate_t, int, int, int, prime_test_t);
-    void gen_prime_m(mpz_t, gmp_randstate_t, mpz_t, int, int, prime_test_t);
+    void gen_prime_b(mpz_t, gmp_randstate_t, int, int, int, prime_test_t)
+    void gen_prime_m(mpz_t, gmp_randstate_t, mpz_t, int, int, prime_test_t)
 
 cdef class Prime:
     cpdef test(self, GMPInteger n, GMPState state, int reps, test)
