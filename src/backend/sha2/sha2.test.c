@@ -2,7 +2,7 @@
 
 #include "sha2.h"
 
-char test(const char *vector, uint8 *digest, uint32 digest_size)
+int test(const char *vector, uint8 *digest, uint32 digest_size)
 {
     char output[2 * SHA512_DIGEST_SIZE + 1];
     int i;
