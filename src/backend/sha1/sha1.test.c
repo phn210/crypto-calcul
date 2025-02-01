@@ -134,30 +134,30 @@ void testvec5()
 
 void testvec6()
 {
-     unsigned char const string[] = "abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmno";
-     unsigned char const expect[] = "7789f0c9ef7bfc40d93311143dfbe69e2017f592";
-     unsigned char result[HASH_SIZE];
-     char hexresult[HASH_SIZE * 2 + 1];
-     sha1_ctx ctx;
+    unsigned char const string[] = "abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmno";
+    unsigned char const expect[] = "7789f0c9ef7bfc40d93311143dfbe69e2017f592";
+    unsigned char result[HASH_SIZE];
+    char hexresult[HASH_SIZE * 2 + 1];
+    sha1_ctx ctx;
 
-     sha1_init(&ctx);
-     for (int i = 0; i < 16777216; i++)
-     {
-         sha1_update(&ctx, string, strlen((char const*)string));
-     }
-     sha1_final(&ctx, result);
-     hash_to_string(result, hexresult);
+    sha1_init(&ctx);
+    for (int i = 0; i < 16777216; i++)
+    {
+        sha1_update(&ctx, string, strlen((char const *)string));
+    }
+    sha1_final(&ctx, result);
+    hash_to_string(result, hexresult);
 
-     if (strncmp(hexresult, (char const*)expect, HASH_SIZE * 2) == 0)
-     {
-         printf("Test Vector 6: PASSED\n");
-     }
-     else
-     {
-         printf("Test Vector 6: FAILURE\n");
-         printf("Expected: %s\n", expect);
-         printf("Got:      %s\n", hexresult);
-     }
+    if (strncmp(hexresult, (char const *)expect, HASH_SIZE * 2) == 0)
+    {
+        printf("Test Vector 6: PASSED\n");
+    }
+    else
+    {
+        printf("Test Vector 6: FAILURE\n");
+        printf("Expected: %s\n", expect);
+        printf("Got:      %s\n", hexresult);
+    }
 }
 
 int main()
