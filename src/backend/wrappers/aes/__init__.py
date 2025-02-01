@@ -43,7 +43,7 @@ class AES:
         in_ptr = cython.cast(cython.p_uchar, data)
         out_ptr = cython.cast(cython.p_uchar, malloc(data_len))
 
-        key = key[:_AES_BLOCK_SIZE].ljust(_AES_BLOCK_SIZE, b'\0')
+        key = key[:self.key_size].ljust(self.key_size, b'\0')
         iv = iv[:_AES_BLOCK_SIZE].ljust(_AES_BLOCK_SIZE, b'\0')
         nonce = nonce[:_AES_BLOCK_SIZE].ljust(_AES_BLOCK_SIZE, b'\0')
         
@@ -100,7 +100,7 @@ class AES:
         in_ptr = cython.cast(cython.p_char, infile)
         out_ptr = cython.cast(cython.p_char, outfile)
 
-        key = key[:_AES_BLOCK_SIZE].ljust(_AES_BLOCK_SIZE, b'\0')
+        key = key[:self.key_size].ljust(self.key_size, b'\0')
         iv = iv[:_AES_BLOCK_SIZE].ljust(_AES_BLOCK_SIZE, b'\0')
         
         key_ptr = cython.cast(cython.p_uchar, key)
@@ -115,7 +115,7 @@ class AES:
         in_ptr = cython.cast(cython.p_char, infile)
         out_ptr = cython.cast(cython.p_char, outfile)
 
-        key = key[:_AES_BLOCK_SIZE].ljust(_AES_BLOCK_SIZE, b'\0')
+        key = key[:self.key_size].ljust(self.key_size, b'\0')
         iv = iv[:_AES_BLOCK_SIZE].ljust(_AES_BLOCK_SIZE, b'\0')
         
         key_ptr = cython.cast(cython.p_uchar, key)
