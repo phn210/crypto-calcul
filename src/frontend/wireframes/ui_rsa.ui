@@ -23,16 +23,16 @@
       <string>RSA Cryptosystem</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignmentFlag::AlignCenter</set>
+      <set>Qt::AlignCenter</set>
      </property>
     </widget>
    </item>
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
-     <widget class="QWidget" name="tab">
+     <widget class="QWidget" name="tabEnc">
       <attribute name="title">
        <string>Encryption</string>
       </attribute>
@@ -41,8 +41,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>974</width>
-         <height>821</height>
+         <width>971</width>
+         <height>663</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="rsaLayout">
@@ -61,7 +61,7 @@
              <string>STANDARD</string>
             </property>
             <attribute name="buttonGroup">
-             <string notr="true">selRsaAlgoEnc</string>
+             <string notr="true">selAlgoEnc</string>
             </attribute>
            </widget>
           </item>
@@ -71,7 +71,7 @@
              <string>CRT</string>
             </property>
             <attribute name="buttonGroup">
-             <string notr="true">selRsaAlgoEnc</string>
+             <string notr="true">selAlgoEnc</string>
             </attribute>
            </widget>
           </item>
@@ -174,10 +174,10 @@
           <item>
            <spacer name="leftSpacer">
             <property name="orientation">
-             <enum>Qt::Orientation::Horizontal</enum>
+             <enum>Qt::Horizontal</enum>
             </property>
             <property name="sizeType">
-             <enum>QSizePolicy::Policy::Expanding</enum>
+             <enum>QSizePolicy::Expanding</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
@@ -188,7 +188,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="generateRsaKeyButton">
+           <widget class="QPushButton" name="btnKeyGenEnc">
             <property name="styleSheet">
              <string notr="true">background-color: #007BFF; color: white; padding: 5px 10px; border-radius: 5px;</string>
             </property>
@@ -200,10 +200,10 @@
           <item>
            <spacer name="rightSpacer">
             <property name="orientation">
-             <enum>Qt::Orientation::Horizontal</enum>
+             <enum>Qt::Horizontal</enum>
             </property>
             <property name="sizeType">
-             <enum>QSizePolicy::Policy::Expanding</enum>
+             <enum>QSizePolicy::Expanding</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
@@ -216,16 +216,20 @@
          </layout>
         </item>
         <item>
-         <layout class="QFormLayout" name="rsaParametersLayout">
-          <item row="0" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
            <widget class="QLabel" name="rsaExponentLabel">
             <property name="text">
              <string>Public key: </string>
             </property>
            </widget>
           </item>
-          <item row="0" column="1">
-           <widget class="QLineEdit" name="rsaExponentInput"/>
+          <item>
+           <widget class="QLineEdit" name="outputPubKeyEnc">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -239,12 +243,16 @@
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="lineEdit"/>
+           <widget class="QLineEdit" name="outputPrivKeyEnc">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
         <item>
-         <widget class="QTextEdit" name="inputText">
+         <widget class="QTextEdit" name="inputTextEnc">
           <property name="placeholderText">
            <string>Enter message to encrypt/decrypt</string>
           </property>
@@ -253,7 +261,7 @@
         <item>
          <layout class="QHBoxLayout" name="encryptDecryptButtonsLayout">
           <item>
-           <widget class="QPushButton" name="encryptButton">
+           <widget class="QPushButton" name="btnEncrypt">
             <property name="maximumSize">
              <size>
               <width>150</width>
@@ -269,7 +277,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="decryptButton">
+           <widget class="QPushButton" name="btnDecrypt">
             <property name="maximumSize">
              <size>
               <width>150</width>
@@ -287,7 +295,7 @@
          </layout>
         </item>
         <item>
-         <widget class="QTextEdit" name="outputText">
+         <widget class="QTextEdit" name="outputTextEnc">
           <property name="readOnly">
            <bool>true</bool>
           </property>
@@ -299,7 +307,7 @@
        </layout>
       </widget>
      </widget>
-     <widget class="QWidget" name="tab_2">
+     <widget class="QWidget" name="tabSig">
       <attribute name="title">
        <string>Signature</string>
       </attribute>
@@ -308,8 +316,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>974</width>
-         <height>821</height>
+         <width>971</width>
+         <height>865</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="rsaLayout">
@@ -441,10 +449,10 @@
           <item>
            <spacer name="leftSpacer">
             <property name="orientation">
-             <enum>Qt::Orientation::Horizontal</enum>
+             <enum>Qt::Horizontal</enum>
             </property>
             <property name="sizeType">
-             <enum>QSizePolicy::Policy::Expanding</enum>
+             <enum>QSizePolicy::Expanding</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
@@ -455,7 +463,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="generateRsaKeyButton">
+           <widget class="QPushButton" name="btnKeyGenSig">
             <property name="styleSheet">
              <string notr="true">background-color: #007BFF; color: white; padding: 5px 10px; border-radius: 5px;</string>
             </property>
@@ -467,10 +475,10 @@
           <item>
            <spacer name="rightSpacer">
             <property name="orientation">
-             <enum>Qt::Orientation::Horizontal</enum>
+             <enum>Qt::Horizontal</enum>
             </property>
             <property name="sizeType">
-             <enum>QSizePolicy::Policy::Expanding</enum>
+             <enum>QSizePolicy::Expanding</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
@@ -483,12 +491,12 @@
          </layout>
         </item>
         <item>
-         <layout class="QFormLayout" name="rsaParametersLayout">
-          <item row="0" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
            <widget class="QLabel" name="rsaExponentLabel">
             <property name="minimumSize">
              <size>
-              <width>150</width>
+              <width>0</width>
               <height>0</height>
              </size>
             </property>
@@ -497,8 +505,12 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="1">
-           <widget class="QLineEdit" name="rsaExponentInput"/>
+          <item>
+           <widget class="QLineEdit" name="outputPubKeySig">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -508,7 +520,7 @@
            <widget class="QLabel" name="label">
             <property name="minimumSize">
              <size>
-              <width>150</width>
+              <width>0</width>
               <height>0</height>
              </size>
             </property>
@@ -518,19 +530,23 @@
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="lineEdit"/>
+           <widget class="QLineEdit" name="outputPrivKeySig">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
         <item>
-         <widget class="QTextEdit" name="inputText">
+         <widget class="QTextEdit" name="inputTextSig">
           <property name="placeholderText">
            <string>Enter message to sign/verify</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QTextEdit" name="inputText">
+         <widget class="QTextEdit" name="inputSig">
           <property name="placeholderText">
            <string>Enter signature (for verification only)</string>
           </property>
@@ -539,7 +555,7 @@
         <item>
          <layout class="QHBoxLayout" name="encryptDecryptButtonsLayout">
           <item>
-           <widget class="QPushButton" name="encryptButton">
+           <widget class="QPushButton" name="btnSign">
             <property name="maximumSize">
              <size>
               <width>150</width>
@@ -555,7 +571,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="decryptButton">
+           <widget class="QPushButton" name="btnVerify">
             <property name="maximumSize">
              <size>
               <width>150</width>
@@ -573,7 +589,7 @@
          </layout>
         </item>
         <item>
-         <widget class="QTextEdit" name="outputText">
+         <widget class="QTextEdit" name="outputTextSig">
           <property name="readOnly">
            <bool>true</bool>
           </property>
@@ -592,11 +608,11 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="selRsaAlgoEnc"/>
-  <buttongroup name="selVarEnc"/>
+  <buttongroup name="selSecLevSig"/>
+  <buttongroup name="selSecLevEnc"/>
   <buttongroup name="selVarSig"/>
   <buttongroup name="selAlgoSig"/>
-  <buttongroup name="selSecLevEnc"/>
-  <buttongroup name="selSecLevSig"/>
+  <buttongroup name="selAlgoEnc"/>
+  <buttongroup name="selVarEnc"/>
  </buttongroups>
 </ui>
