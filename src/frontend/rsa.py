@@ -80,13 +80,6 @@ class RsaUI(QtWidgets.QWidget):
         try:
             self.selectedTab = self.tabWidget.currentIndex()
             self.rsa = None
-            # if self.selectedTab == 0:
-            #     for btn in self.selAlgoSig.buttons() + self.selVarSig.buttons() + self.selSecLevSig.buttons():
-            #         btn.setChecked(False)
-            # else:
-            #     for btn in self.selAlgoEnc.buttons() + self.selVarEnc.buttons() + self.selSecLevEnc.buttons():
-            #         btn.setChecked(False)
-
         except Exception as e:
             show_error_dialog(str(e))
 
@@ -112,7 +105,6 @@ class RsaUI(QtWidgets.QWidget):
         try:
             input = bytes(self.inputTextEnc.toPlainText(), 'utf-8')
             encrypted = self.rsa.encrypt(input)
-            print(encrypted)
             self.outputTextEnc.setText(str(base64.b64encode(encrypted))[2:-1])
         except Exception as e:
             show_error_dialog(str(e))
@@ -120,9 +112,7 @@ class RsaUI(QtWidgets.QWidget):
     def decrypt(self):
         try:
             input = base64.b64decode(self.inputTextEnc.toPlainText())
-            print(input)
             decrypted = self.rsa.decrypt(input, self.selectedAlgo)
-            print(decrypted)
             self.outputTextEnc.setText(decrypted.decode('utf-8'))
         except Exception as e:
             show_error_dialog(str(e))

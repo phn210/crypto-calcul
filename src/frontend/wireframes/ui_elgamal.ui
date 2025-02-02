@@ -23,7 +23,7 @@
       <string>ElGamal Cryptosystem</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignmentFlag::AlignCenter</set>
+      <set>Qt::AlignCenter</set>
      </property>
     </widget>
    </item>
@@ -32,7 +32,7 @@
      <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="tab">
+     <widget class="QWidget" name="tabEnc">
       <attribute name="title">
        <string>Encryption</string>
       </attribute>
@@ -41,8 +41,8 @@
         <rect>
          <x>0</x>
          <y>10</y>
-         <width>974</width>
-         <height>821</height>
+         <width>971</width>
+         <height>599</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="rsaLayout">
@@ -75,26 +75,6 @@
             </attribute>
            </widget>
           </item>
-          <item>
-           <widget class="QRadioButton" name="rsaL2RadioButton">
-            <property name="text">
-             <string>L2</string>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">selSecLevEnc</string>
-            </attribute>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="rsaL3RadioButton">
-            <property name="text">
-             <string>L3</string>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">selSecLevEnc</string>
-            </attribute>
-           </widget>
-          </item>
          </layout>
         </item>
         <item>
@@ -102,10 +82,10 @@
           <item>
            <spacer name="leftSpacer">
             <property name="orientation">
-             <enum>Qt::Orientation::Horizontal</enum>
+             <enum>Qt::Horizontal</enum>
             </property>
             <property name="sizeType">
-             <enum>QSizePolicy::Policy::Expanding</enum>
+             <enum>QSizePolicy::Expanding</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
@@ -116,7 +96,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="generateRsaKeyButton">
+           <widget class="QPushButton" name="btnKeyGenEnc">
             <property name="styleSheet">
              <string notr="true">background-color: #007BFF; color: white; padding: 5px 10px; border-radius: 5px;</string>
             </property>
@@ -128,10 +108,10 @@
           <item>
            <spacer name="rightSpacer">
             <property name="orientation">
-             <enum>Qt::Orientation::Horizontal</enum>
+             <enum>Qt::Horizontal</enum>
             </property>
             <property name="sizeType">
-             <enum>QSizePolicy::Policy::Expanding</enum>
+             <enum>QSizePolicy::Expanding</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
@@ -144,16 +124,20 @@
          </layout>
         </item>
         <item>
-         <layout class="QFormLayout" name="rsaParametersLayout">
-          <item row="0" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
            <widget class="QLabel" name="rsaExponentLabel">
             <property name="text">
              <string>Public key: </string>
             </property>
            </widget>
           </item>
-          <item row="0" column="1">
-           <widget class="QLineEdit" name="rsaExponentInput"/>
+          <item>
+           <widget class="QLineEdit" name="outputPubKeyEnc">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -167,12 +151,16 @@
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="lineEdit"/>
+           <widget class="QLineEdit" name="outputPrivKeyEnc">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
         <item>
-         <widget class="QTextEdit" name="inputText">
+         <widget class="QTextEdit" name="inputTextEnc">
           <property name="placeholderText">
            <string>Enter message to encrypt/decrypt</string>
           </property>
@@ -181,7 +169,7 @@
         <item>
          <layout class="QHBoxLayout" name="encryptDecryptButtonsLayout">
           <item>
-           <widget class="QPushButton" name="encryptButton">
+           <widget class="QPushButton" name="btnEncrypt">
             <property name="maximumSize">
              <size>
               <width>150</width>
@@ -197,7 +185,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="decryptButton">
+           <widget class="QPushButton" name="btnDecrypt">
             <property name="maximumSize">
              <size>
               <width>150</width>
@@ -215,7 +203,7 @@
          </layout>
         </item>
         <item>
-         <widget class="QTextEdit" name="outputText">
+         <widget class="QTextEdit" name="outputTextEnc">
           <property name="readOnly">
            <bool>true</bool>
           </property>
@@ -227,7 +215,7 @@
        </layout>
       </widget>
      </widget>
-     <widget class="QWidget" name="tab_2">
+     <widget class="QWidget" name="tabSig">
       <attribute name="title">
        <string>Signature</string>
       </attribute>
@@ -236,8 +224,8 @@
         <rect>
          <x>0</x>
          <y>10</y>
-         <width>974</width>
-         <height>821</height>
+         <width>971</width>
+         <height>801</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="rsaLayout">
@@ -270,26 +258,6 @@
             </attribute>
            </widget>
           </item>
-          <item>
-           <widget class="QRadioButton" name="rsaL2RadioButton">
-            <property name="text">
-             <string>L2</string>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">selSecLevSig</string>
-            </attribute>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="rsaL3RadioButton">
-            <property name="text">
-             <string>L3</string>
-            </property>
-            <attribute name="buttonGroup">
-             <string notr="true">selSecLevSig</string>
-            </attribute>
-           </widget>
-          </item>
          </layout>
         </item>
         <item>
@@ -297,10 +265,10 @@
           <item>
            <spacer name="leftSpacer">
             <property name="orientation">
-             <enum>Qt::Orientation::Horizontal</enum>
+             <enum>Qt::Horizontal</enum>
             </property>
             <property name="sizeType">
-             <enum>QSizePolicy::Policy::Expanding</enum>
+             <enum>QSizePolicy::Expanding</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
@@ -311,7 +279,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QPushButton" name="generateRsaKeyButton">
+           <widget class="QPushButton" name="btnKeyGenSig">
             <property name="styleSheet">
              <string notr="true">background-color: #007BFF; color: white; padding: 5px 10px; border-radius: 5px;</string>
             </property>
@@ -323,10 +291,10 @@
           <item>
            <spacer name="rightSpacer">
             <property name="orientation">
-             <enum>Qt::Orientation::Horizontal</enum>
+             <enum>Qt::Horizontal</enum>
             </property>
             <property name="sizeType">
-             <enum>QSizePolicy::Policy::Expanding</enum>
+             <enum>QSizePolicy::Expanding</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
@@ -339,16 +307,16 @@
          </layout>
         </item>
         <item>
-         <layout class="QFormLayout" name="rsaParametersLayout">
-          <item row="0" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
            <widget class="QLabel" name="rsaExponentLabel">
             <property name="text">
              <string>Public key: </string>
             </property>
            </widget>
           </item>
-          <item row="0" column="1">
-           <widget class="QLineEdit" name="rsaExponentInput"/>
+          <item>
+           <widget class="QLineEdit" name="outputPubKeySig"/>
           </item>
          </layout>
         </item>
@@ -362,19 +330,19 @@
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="lineEdit"/>
+           <widget class="QLineEdit" name="outputPrivKeySig"/>
           </item>
          </layout>
         </item>
         <item>
-         <widget class="QTextEdit" name="inputText">
+         <widget class="QTextEdit" name="inputTextSig">
           <property name="placeholderText">
            <string>Enter message to sign/verify</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QTextEdit" name="inputText">
+         <widget class="QTextEdit" name="inputSig">
           <property name="placeholderText">
            <string>Enter signature (for verification only)</string>
           </property>
@@ -383,7 +351,7 @@
         <item>
          <layout class="QHBoxLayout" name="encryptDecryptButtonsLayout">
           <item>
-           <widget class="QPushButton" name="encryptButton">
+           <widget class="QPushButton" name="btnSign">
             <property name="maximumSize">
              <size>
               <width>150</width>
@@ -399,7 +367,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="decryptButton">
+           <widget class="QPushButton" name="btnVerify">
             <property name="maximumSize">
              <size>
               <width>150</width>
@@ -417,7 +385,7 @@
          </layout>
         </item>
         <item>
-         <widget class="QTextEdit" name="outputText">
+         <widget class="QTextEdit" name="outputTextSig">
           <property name="readOnly">
            <bool>true</bool>
           </property>
@@ -436,7 +404,7 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="selSecLevEnc"/>
   <buttongroup name="selSecLevSig"/>
+  <buttongroup name="selSecLevEnc"/>
  </buttongroups>
 </ui>
