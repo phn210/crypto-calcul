@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+    <class>PKC_Encryption_Schemes</class>
+    <widget class="QWidget" name="PKC_Encryption_Schemes">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>1000</width>
+                <height>935</height>
+            </rect>
+        </property>
+        <property name="windowTitle">
+            <string>PKC: Encryption Schemes</string>
+        </property>
+        <layout class="QVBoxLayout" name="mainLayout">
+            <item>
+                <widget class="QLabel" name="mainTitle">
+                    <property name="styleSheet">
+                        <string>font-size: 35px; font-weight: bold; color: #3f4773;</string>
+                    </property>
+                    <property name="text">
+                        <string>DSA (Digital Signature Algorithm)</string>
+                    </property>
+                    <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                    </property>
+                </widget>
+            </item>
+            <item>
+                <widget class="QGroupBox" name="rsaGroup">
+                    <layout class="QVBoxLayout" name="rsaLayout">
+                        <item>
+                            <layout class="QHBoxLayout" name="rsaAlgorithmLayout">
+                                <item>
+                                    <widget class="QLabel" name="rsaAlgorithmLabel">
+                                        <property name="text">
+                                            <string>Hash Function:</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QRadioButton" name="btnRadioMd5">
+                                        <property name="text">
+                                            <string>MD5</string>
+                                        </property>
+                                        <attribute name="buttonGroup">
+                                            <string notr="true">selHashAlgo</string>
+                                        </attribute>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QRadioButton" name="btnRadioSha1">
+                                        <property name="text">
+                                            <string>SHA1</string>
+                                        </property>
+                                        <attribute name="buttonGroup">
+                                            <string notr="true">selHashAlgo</string>
+                                        </attribute>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QRadioButton" name="btnRadioSha2">
+                                        <property name="text">
+                                            <string>SHA2</string>
+                                        </property>
+                                        <attribute name="buttonGroup">
+                                            <string notr="true">selHashAlgo</string>
+                                        </attribute>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QRadioButton" name="btnRadioSha3">
+                                        <property name="text">
+                                            <string>SHA3</string>
+                                        </property>
+                                        <attribute name="buttonGroup">
+                                            <string notr="true">selHashAlgo</string>
+                                        </attribute>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </item>
+                        <item>
+                            <layout class="QHBoxLayout" name="rsaSecurityLevelLayout">
+                                <item>
+                                    <widget class="QLabel" name="rsaSecurityLevelLabel">
+                                        <property name="text">
+                                            <string>Security Level:</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QRadioButton" name="rsaL0RadioButton">
+                                        <property name="text">
+                                            <string>L0</string>
+                                        </property>
+                                        <attribute name="buttonGroup">
+                                            <string notr="true">selSecLevel</string>
+                                        </attribute>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QRadioButton" name="rsaL1RadioButton">
+                                        <property name="text">
+                                            <string>L1</string>
+                                        </property>
+                                        <attribute name="buttonGroup">
+                                            <string notr="true">selSecLevel</string>
+                                        </attribute>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </item>
+                        <item>
+                            <layout class="QHBoxLayout" name="generateRsaKeyLayout">
+                                <item>
+                                    <spacer name="leftSpacer">
+                                        <property name="orientation">
+                                            <enum>Qt::Horizontal</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>QSizePolicy::Expanding</enum>
+                                        </property>
+                                        <property name="sizeHint" stdset="0">
+                                            <size>
+                                                <width>0</width>
+                                                <height>0</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                </item>
+                                <item>
+                                    <widget class="QPushButton" name="btnKeyGen">
+                                        <property name="styleSheet">
+                                            <string notr="true">background-color: #007BFF; color: white; padding: 5px 10px; border-radius: 5px;</string>
+                                        </property>
+                                        <property name="text">
+                                            <string>Generate Key</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <spacer name="rightSpacer">
+                                        <property name="orientation">
+                                            <enum>Qt::Horizontal</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>QSizePolicy::Expanding</enum>
+                                        </property>
+                                        <property name="sizeHint" stdset="0">
+                                            <size>
+                                                <width>0</width>
+                                                <height>0</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                </item>
+                            </layout>
+                        </item>
+                        <item>
+                            <layout class="QHBoxLayout" name="horizontalLayout_2">
+                                <item>
+                                    <widget class="QLabel" name="rsaExponentLabel">
+                                        <property name="text">
+                                            <string>Public key: </string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QLineEdit" name="outputPubKey">
+                                        <property name="readOnly">
+                                            <bool>true</bool>
+                                        </property>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </item>
+                        <item>
+                            <layout class="QHBoxLayout" name="horizontalLayout">
+                                <item>
+                                    <widget class="QLabel" name="label">
+                                        <property name="text">
+                                            <string>Private key:</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QLineEdit" name="outputPrivKey">
+                                        <property name="readOnly">
+                                            <bool>true</bool>
+                                        </property>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </item>
+                        <item>
+                            <widget class="QTextEdit" name="inputText">
+                                <property name="placeholderText">
+                                    <string>Enter message to sign/verify</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
+                            <widget class="QTextEdit" name="inputSig">
+                                <property name="placeholderText">
+                                    <string>Enter signature (for verification only)</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
+                            <layout class="QHBoxLayout" name="encryptDecryptButtonsLayout">
+                                <item>
+                                    <widget class="QPushButton" name="btnSign">
+                                        <property name="maximumSize">
+                                            <size>
+                                                <width>150</width>
+                                                <height>30</height>
+                                            </size>
+                                        </property>
+                                        <property name="styleSheet">
+                                            <string>background-color: #007BFF; color: white; padding: 5px 10px; border-radius: 5px;</string>
+                                        </property>
+                                        <property name="text">
+                                            <string>Sign</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QPushButton" name="btnVerify">
+                                        <property name="maximumSize">
+                                            <size>
+                                                <width>150</width>
+                                                <height>30</height>
+                                            </size>
+                                        </property>
+                                        <property name="styleSheet">
+                                            <string>background-color: #FF5733; color: white; padding: 5px 10px; border-radius: 5px;</string>
+                                        </property>
+                                        <property name="text">
+                                            <string>Verify</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </item>
+                        <item>
+                            <widget class="QTextEdit" name="outputText">
+                                <property name="readOnly">
+                                    <bool>true</bool>
+                                </property>
+                                <property name="placeholderText">
+                                    <string>Generated signature/verification result</string>
+                                </property>
+                            </widget>
+                        </item>
+                    </layout>
+                </widget>
+            </item>
+        </layout>
+    </widget>
+    <resources/>
+    <connections/>
+    <buttongroups>
+        <buttongroup name="selHashAlgo"/>
+        <buttongroup name="selSecLevel"/>
+    </buttongroups>
+</ui>
