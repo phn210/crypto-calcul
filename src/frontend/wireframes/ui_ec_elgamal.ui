@@ -1,0 +1,631 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+    <class>PKC_Encryption_Schemes</class>
+    <widget class="QWidget" name="PKC_Encryption_Schemes">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>1000</width>
+                <height>935</height>
+            </rect>
+        </property>
+        <property name="windowTitle">
+            <string>PKC: Encryption Schemes</string>
+        </property>
+        <layout class="QVBoxLayout" name="mainLayout">
+            <item>
+                <widget class="QLabel" name="mainTitle">
+                    <property name="styleSheet">
+                        <string>font-size: 35px; font-weight: bold; color: #3f4773;</string>
+                    </property>
+                    <property name="text">
+                        <string>EC-ElGamal Cryptosystem</string>
+                    </property>
+                    <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                    </property>
+                </widget>
+            </item>
+            <item>
+                <widget class="QTabWidget" name="tabWidget">
+                    <property name="currentIndex">
+                        <number>0</number>
+                    </property>
+                    <widget class="QWidget" name="tab">
+                        <attribute name="title">
+                            <string>Encryption</string>
+                        </attribute>
+                        <widget class="QGroupBox" name="rsaGroup">
+                            <property name="geometry">
+                                <rect>
+                                    <x>10</x>
+                                    <y>10</y>
+                                    <width>941</width>
+                                    <height>717</height>
+                                </rect>
+                            </property>
+                            <layout class="QVBoxLayout" name="rsaLayout">
+                                <item>
+                                    <widget class="QLabel" name="label_2">
+                                        <property name="text">
+                                            <string>Curve Type:</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <layout class="QHBoxLayout" name="horizontalLayout_2">
+                                        <item>
+                                            <widget class="QRadioButton" name="btnWeierEnc">
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>200</width>
+                                                        <height>0</height>
+                                                    </size>
+                                                </property>
+                                                <property name="text">
+                                                    <string>WEIERSTRASS</string>
+                                                </property>
+                                                <attribute name="buttonGroup">
+                                                    <string notr="true">selCurveEnc</string>
+                                                </attribute>
+                                            </widget>
+                                        </item>
+                                        <item>
+                                            <widget class="QComboBox" name="selWeierEnc">
+                                                <property name="maximumSize">
+                                                    <size>
+                                                        <width>840</width>
+                                                        <height>16777215</height>
+                                                    </size>
+                                                </property>
+                                                <item>
+                                                    <property name="text">
+                                                        <string>P224</string>
+                                                    </property>
+                                                </item>
+                                                <item>
+                                                    <property name="text">
+                                                        <string>P256</string>
+                                                    </property>
+                                                </item>
+                                                <item>
+                                                    <property name="text">
+                                                        <string>P384</string>
+                                                    </property>
+                                                </item>
+                                                <item>
+                                                    <property name="text">
+                                                        <string>P521</string>
+                                                    </property>
+                                                </item>
+                                                <item>
+                                                    <property name="text">
+                                                        <string>P256K1</string>
+                                                    </property>
+                                                </item>
+                                                <item>
+                                                    <property name="text">
+                                                        <string>W25519</string>
+                                                    </property>
+                                                </item>
+                                                <item>
+                                                    <property name="text">
+                                                        <string>W448</string>
+                                                    </property>
+                                                </item>
+                                            </widget>
+                                        </item>
+                                    </layout>
+                                </item>
+                                <item>
+                                    <layout class="QHBoxLayout" name="horizontalLayout_3">
+                                        <item>
+                                            <widget class="QRadioButton" name="btnMontEnc">
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>200</width>
+                                                        <height>0</height>
+                                                    </size>
+                                                </property>
+                                                <property name="text">
+                                                    <string>MONTGOMERY</string>
+                                                </property>
+                                                <attribute name="buttonGroup">
+                                                    <string notr="true">selCurveEnc</string>
+                                                </attribute>
+                                            </widget>
+                                        </item>
+                                        <item>
+                                            <widget class="QComboBox" name="selMontEnc">
+                                                <item>
+                                                    <property name="text">
+                                                        <string>C25519 </string>
+                                                    </property>
+                                                </item>
+                                                <item>
+                                                    <property name="text">
+                                                        <string>C448</string>
+                                                    </property>
+                                                </item>
+                                            </widget>
+                                        </item>
+                                    </layout>
+                                </item>
+                                <item>
+                                    <layout class="QHBoxLayout" name="horizontalLayout_4">
+                                        <item>
+                                            <widget class="QRadioButton" name="btnEdwEnc">
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>200</width>
+                                                        <height>0</height>
+                                                    </size>
+                                                </property>
+                                                <property name="text">
+                                                    <string>EDWARDS</string>
+                                                </property>
+                                                <attribute name="buttonGroup">
+                                                    <string notr="true">selCurveEnc</string>
+                                                </attribute>
+                                            </widget>
+                                        </item>
+                                        <item>
+                                            <widget class="QComboBox" name="selEdwEnc">
+                                                <item>
+                                                    <property name="text">
+                                                        <string>ED25519 </string>
+                                                    </property>
+                                                </item>
+                                                <item>
+                                                    <property name="text">
+                                                        <string>ED448 </string>
+                                                    </property>
+                                                </item>
+                                                <item>
+                                                    <property name="text">
+                                                        <string>E448</string>
+                                                    </property>
+                                                </item>
+                                            </widget>
+                                        </item>
+                                    </layout>
+                                </item>
+                                <item>
+                                    <layout class="QHBoxLayout" name="generateRsaKeyLayout">
+                                        <item>
+                                            <spacer name="leftSpacer">
+                                                <property name="orientation">
+                                                    <enum>Qt::Horizontal</enum>
+                                                </property>
+                                                <property name="sizeType">
+                                                    <enum>QSizePolicy::Expanding</enum>
+                                                </property>
+                                                <property name="sizeHint" stdset="0">
+                                                    <size>
+                                                        <width>0</width>
+                                                        <height>0</height>
+                                                    </size>
+                                                </property>
+                                            </spacer>
+                                        </item>
+                                        <item>
+                                            <widget class="QPushButton" name="btnKeyGenEnc">
+                                                <property name="styleSheet">
+                                                    <string notr="true">background-color: #007BFF; color: white; padding: 5px 10px; border-radius: 5px;</string>
+                                                </property>
+                                                <property name="text">
+                                                    <string>Generate Key</string>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item>
+                                            <spacer name="rightSpacer">
+                                                <property name="orientation">
+                                                    <enum>Qt::Horizontal</enum>
+                                                </property>
+                                                <property name="sizeType">
+                                                    <enum>QSizePolicy::Expanding</enum>
+                                                </property>
+                                                <property name="sizeHint" stdset="0">
+                                                    <size>
+                                                        <width>0</width>
+                                                        <height>0</height>
+                                                    </size>
+                                                </property>
+                                            </spacer>
+                                        </item>
+                                    </layout>
+                                </item>
+                                <item>
+                                    <layout class="QHBoxLayout" name="horizontalLayout_5">
+                                        <item>
+                                            <widget class="QLabel" name="rsaExponentLabel">
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>150</width>
+                                                        <height>0</height>
+                                                    </size>
+                                                </property>
+                                                <property name="text">
+                                                    <string>Public key: </string>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item>
+                                            <widget class="QLineEdit" name="outputPubKeyEnc"/>
+                                        </item>
+                                    </layout>
+                                </item>
+                                <item>
+                                    <layout class="QHBoxLayout" name="horizontalLayout">
+                                        <item>
+                                            <widget class="QLabel" name="label">
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>150</width>
+                                                        <height>0</height>
+                                                    </size>
+                                                </property>
+                                                <property name="text">
+                                                    <string>Private key:</string>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item>
+                                            <widget class="QLineEdit" name="outputPrivKeyEnc"/>
+                                        </item>
+                                    </layout>
+                                </item>
+                                <item>
+                                    <widget class="QTextEdit" name="inputTextEnc">
+                                        <property name="placeholderText">
+                                            <string>Enter message to encrypt/decrypt</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <layout class="QHBoxLayout" name="encryptDecryptButtonsLayout">
+                                        <item>
+                                            <widget class="QPushButton" name="btnEncrypt">
+                                                <property name="maximumSize">
+                                                    <size>
+                                                        <width>150</width>
+                                                        <height>30</height>
+                                                    </size>
+                                                </property>
+                                                <property name="styleSheet">
+                                                    <string>background-color: #007BFF; color: white; padding: 5px 10px; border-radius: 5px;</string>
+                                                </property>
+                                                <property name="text">
+                                                    <string>Encrypt</string>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item>
+                                            <widget class="QPushButton" name="btnDecrypt">
+                                                <property name="maximumSize">
+                                                    <size>
+                                                        <width>150</width>
+                                                        <height>30</height>
+                                                    </size>
+                                                </property>
+                                                <property name="styleSheet">
+                                                    <string>background-color: #FF5733; color: white; padding: 5px 10px; border-radius: 5px;</string>
+                                                </property>
+                                                <property name="text">
+                                                    <string>Decrypt</string>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                    </layout>
+                                </item>
+                                <item>
+                                    <widget class="QTextEdit" name="outputTextEnc">
+                                        <property name="readOnly">
+                                            <bool>true</bool>
+                                        </property>
+                                        <property name="placeholderText">
+                                            <string>Generated encrypted/decrypted message</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </widget>
+                    </widget>
+                    <widget class="QWidget" name="tab_2">
+                        <attribute name="title">
+                            <string>Signature</string>
+                        </attribute>
+                        <widget class="QGroupBox" name="rsaGroup">
+                            <property name="geometry">
+                                <rect>
+                                    <x>13</x>
+                                    <y>10</y>
+                                    <width>941</width>
+                                    <height>919</height>
+                                </rect>
+                            </property>
+                            <layout class="QVBoxLayout" name="rsaLayout">
+                                <item>
+                                    <widget class="QLabel" name="label_2">
+                                        <property name="text">
+                                            <string>Curve Type:</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <layout class="QHBoxLayout" name="horizontalLayout_6">
+                                        <item>
+                                            <widget class="QRadioButton" name="btnWeierSig">
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>200</width>
+                                                        <height>0</height>
+                                                    </size>
+                                                </property>
+                                                <property name="text">
+                                                    <string>WEIERSTRASS</string>
+                                                </property>
+                                                <attribute name="buttonGroup">
+                                                    <string notr="true">selCurveSig</string>
+                                                </attribute>
+                                            </widget>
+                                        </item>
+                                        <item>
+                                            <widget class="QComboBox" name="selWeierSig">
+                                                <property name="maximumSize">
+                                                    <size>
+                                                        <width>840</width>
+                                                        <height>16777215</height>
+                                                    </size>
+                                                </property>
+                                                <item>
+                                                    <property name="text">
+                                                        <string>P224</string>
+                                                    </property>
+                                                </item>
+                                                <item>
+                                                    <property name="text">
+                                                        <string>P256</string>
+                                                    </property>
+                                                </item>
+                                                <item>
+                                                    <property name="text">
+                                                        <string>P384</string>
+                                                    </property>
+                                                </item>
+                                                <item>
+                                                    <property name="text">
+                                                        <string>P521</string>
+                                                    </property>
+                                                </item>
+                                                <item>
+                                                    <property name="text">
+                                                        <string>P256K1</string>
+                                                    </property>
+                                                </item>
+                                                <item>
+                                                    <property name="text">
+                                                        <string>W25519</string>
+                                                    </property>
+                                                </item>
+                                                <item>
+                                                    <property name="text">
+                                                        <string>W448</string>
+                                                    </property>
+                                                </item>
+                                            </widget>
+                                        </item>
+                                    </layout>
+                                </item>
+                                <item>
+                                    <layout class="QHBoxLayout" name="horizontalLayout_7"/>
+                                </item>
+                                <item>
+                                    <layout class="QHBoxLayout" name="horizontalLayout_8">
+                                        <item>
+                                            <widget class="QRadioButton" name="btnEdwSig">
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>200</width>
+                                                        <height>0</height>
+                                                    </size>
+                                                </property>
+                                                <property name="text">
+                                                    <string>EDWARDS</string>
+                                                </property>
+                                                <attribute name="buttonGroup">
+                                                    <string notr="true">selCurveSig</string>
+                                                </attribute>
+                                            </widget>
+                                        </item>
+                                        <item>
+                                            <widget class="QComboBox" name="selEdwSig">
+                                                <item>
+                                                    <property name="text">
+                                                        <string>ED25519 </string>
+                                                    </property>
+                                                </item>
+                                                <item>
+                                                    <property name="text">
+                                                        <string>ED448 </string>
+                                                    </property>
+                                                </item>
+                                                <item>
+                                                    <property name="text">
+                                                        <string>E448</string>
+                                                    </property>
+                                                </item>
+                                            </widget>
+                                        </item>
+                                    </layout>
+                                </item>
+                                <item>
+                                    <layout class="QHBoxLayout" name="generateRsaKeyLayout">
+                                        <item>
+                                            <spacer name="leftSpacer">
+                                                <property name="orientation">
+                                                    <enum>Qt::Horizontal</enum>
+                                                </property>
+                                                <property name="sizeType">
+                                                    <enum>QSizePolicy::Expanding</enum>
+                                                </property>
+                                                <property name="sizeHint" stdset="0">
+                                                    <size>
+                                                        <width>0</width>
+                                                        <height>0</height>
+                                                    </size>
+                                                </property>
+                                            </spacer>
+                                        </item>
+                                        <item>
+                                            <widget class="QPushButton" name="btnKeyGenSig">
+                                                <property name="styleSheet">
+                                                    <string notr="true">background-color: #007BFF; color: white; padding: 5px 10px; border-radius: 5px;</string>
+                                                </property>
+                                                <property name="text">
+                                                    <string>Generate Key</string>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item>
+                                            <spacer name="rightSpacer">
+                                                <property name="orientation">
+                                                    <enum>Qt::Horizontal</enum>
+                                                </property>
+                                                <property name="sizeType">
+                                                    <enum>QSizePolicy::Expanding</enum>
+                                                </property>
+                                                <property name="sizeHint" stdset="0">
+                                                    <size>
+                                                        <width>0</width>
+                                                        <height>0</height>
+                                                    </size>
+                                                </property>
+                                            </spacer>
+                                        </item>
+                                    </layout>
+                                </item>
+                                <item>
+                                    <layout class="QHBoxLayout" name="horizontalLayout_9">
+                                        <item>
+                                            <widget class="QLabel" name="rsaExponentLabel">
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>150</width>
+                                                        <height>0</height>
+                                                    </size>
+                                                </property>
+                                                <property name="text">
+                                                    <string>Public key: </string>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item>
+                                            <widget class="QLineEdit" name="outputPubKeySig">
+                                                <property name="readOnly">
+                                                    <bool>true</bool>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                    </layout>
+                                </item>
+                                <item>
+                                    <layout class="QHBoxLayout" name="horizontalLayout">
+                                        <item>
+                                            <widget class="QLabel" name="label">
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>150</width>
+                                                        <height>0</height>
+                                                    </size>
+                                                </property>
+                                                <property name="text">
+                                                    <string>Private key:</string>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item>
+                                            <widget class="QLineEdit" name="outputPrivKeySig">
+                                                <property name="readOnly">
+                                                    <bool>true</bool>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                    </layout>
+                                </item>
+                                <item>
+                                    <widget class="QTextEdit" name="inputTextSig">
+                                        <property name="placeholderText">
+                                            <string>Enter message to sign/verify</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QTextEdit" name="inputSig">
+                                        <property name="placeholderText">
+                                            <string>Enter signature (for verification only)</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <layout class="QHBoxLayout" name="encryptDecryptButtonsLayout">
+                                        <item>
+                                            <widget class="QPushButton" name="btnSign">
+                                                <property name="maximumSize">
+                                                    <size>
+                                                        <width>150</width>
+                                                        <height>30</height>
+                                                    </size>
+                                                </property>
+                                                <property name="styleSheet">
+                                                    <string>background-color: #007BFF; color: white; padding: 5px 10px; border-radius: 5px;</string>
+                                                </property>
+                                                <property name="text">
+                                                    <string>Sign</string>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item>
+                                            <widget class="QPushButton" name="btnVerify">
+                                                <property name="maximumSize">
+                                                    <size>
+                                                        <width>150</width>
+                                                        <height>30</height>
+                                                    </size>
+                                                </property>
+                                                <property name="styleSheet">
+                                                    <string>background-color: #FF5733; color: white; padding: 5px 10px; border-radius: 5px;</string>
+                                                </property>
+                                                <property name="text">
+                                                    <string>Verify</string>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                    </layout>
+                                </item>
+                                <item>
+                                    <widget class="QTextEdit" name="outputTextSig">
+                                        <property name="readOnly">
+                                            <bool>true</bool>
+                                        </property>
+                                        <property name="placeholderText">
+                                            <string>Generated signature/verification result</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </widget>
+                    </widget>
+                </widget>
+            </item>
+        </layout>
+    </widget>
+    <resources/>
+    <connections/>
+    <buttongroups>
+        <buttongroup name="selCurveSig"/>
+        <buttongroup name="selCurveEnc"/>
+    </buttongroups>
+</ui>
