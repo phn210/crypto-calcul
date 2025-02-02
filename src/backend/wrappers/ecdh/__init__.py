@@ -50,7 +50,7 @@ class ECDH:
         
         shared = cython.cast(cython.p_uchar, malloc(count_bytes(ss.value)))
         shared_len: cython.size_t = 0
-        bigint_to_bytes(secret, cython.address(shared_len), ss.value, BIG)
+        bigint_to_bytes(shared, cython.address(shared_len), ss.value, BIG)
         
         result = cython.declare(bytes, shared[:shared_len])
         del s, p, ss
