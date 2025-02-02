@@ -16,6 +16,7 @@ class ECElGamalUI(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):
         super(ECElGamalUI, self).__init__(*args, **kwargs)
         loadUi(f"{WIREFRAME_PATH}/ui_ec_elgamal.ui", self)
+        self.curveType = None
         self.initTabs()
         self.initButtons()
 
@@ -55,14 +56,14 @@ class ECElGamalUI(QtWidgets.QWidget):
 
     def keygen(self):
         try:
+            if self.curveType is None:
+                raise ValueError("Please select a curve type.")
             if self.curveType == ECType.WEIERSTRASS:
                 self.curveId = WeierstrassCurve(self.selWeierEnc.currentIndex() if self.selectedTab == 0 else self.selWeierSig.currentIndex())
             elif self.curveType == ECType.MONTGOMERY:
                 self.curveId = MontgomeryCurve(self.selMontEnc.currentIndex() if self.selectedTab == 0 else self.selMontSig.currentIndex())
-            elif self.curveType == ECType.EDWARDS:
-                self.curveId = EdwardsCurve(self.selEdwEnc.currentIndex() if self.selectedTab == 0 else self.selEdwSig.currentIndex())
             else:
-                raise ValueError("Please select a curve type.")
+                self.curveId = EdwardsCurve(self.selEdwEnc.currentIndex() if self.selectedTab == 0 else self.selEdwSig.currentIndex())
             ec = EC(self.curveType, self.curveId)
             self.elgamal = ECElGamal(ec)
             self.elgamal.keygen()

@@ -23,7 +23,7 @@
       <string>ECDSA: Elliptic Curve Digital Signature Algorithm</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignmentFlag::AlignCenter</set>
+      <set>Qt::AlignCenter</set>
      </property>
     </widget>
    </item>
@@ -38,9 +38,25 @@
        </widget>
       </item>
       <item>
-       <layout class="QFormLayout" name="formLayout">
-        <item row="1" column="1">
-         <widget class="QComboBox" name="comboBox">
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QRadioButton" name="btnWeier">
+          <property name="minimumSize">
+           <size>
+            <width>200</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>WEIERSTRASS</string>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">selCurve</string>
+          </attribute>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="selWeier">
           <property name="maximumSize">
            <size>
             <width>840</width>
@@ -84,8 +100,12 @@
           </item>
          </widget>
         </item>
-        <item row="1" column="0">
-         <widget class="QRadioButton" name="radioButton">
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QRadioButton" name="btnEdw">
           <property name="minimumSize">
            <size>
             <width>200</width>
@@ -93,53 +113,15 @@
            </size>
           </property>
           <property name="text">
-           <string>WEIERSTRASS</string>
+           <string>EDWARDS</string>
           </property>
           <attribute name="buttonGroup">
            <string notr="true">selCurve</string>
           </attribute>
          </widget>
         </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QFormLayout" name="formLayout">
-        <item row="1" column="1">
-         <widget class="QComboBox" name="comboBox">
-          <item>
-           <property name="text">
-            <string>C25519 </string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>C448</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QRadioButton" name="radioButton_1">
-          <property name="minimumSize">
-           <size>
-            <width>200</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>MONTGOMERY</string>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">selCurve</string>
-          </attribute>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QFormLayout" name="formLayout">
-        <item row="1" column="1">
-         <widget class="QComboBox" name="comboBox">
+        <item>
+         <widget class="QComboBox" name="selEdw">
           <item>
            <property name="text">
             <string>ED25519 </string>
@@ -157,22 +139,6 @@
           </item>
          </widget>
         </item>
-        <item row="1" column="0">
-         <widget class="QRadioButton" name="radioButton_2">
-          <property name="minimumSize">
-           <size>
-            <width>200</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>EDWARDS</string>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">selCurve</string>
-          </attribute>
-         </widget>
-        </item>
        </layout>
       </item>
       <item>
@@ -180,10 +146,10 @@
         <item>
          <spacer name="leftSpacer">
           <property name="orientation">
-           <enum>Qt::Orientation::Horizontal</enum>
+           <enum>Qt::Horizontal</enum>
           </property>
           <property name="sizeType">
-           <enum>QSizePolicy::Policy::Expanding</enum>
+           <enum>QSizePolicy::Expanding</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
@@ -194,7 +160,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="QPushButton" name="generateRsaKeyButton">
+         <widget class="QPushButton" name="btnKeyGen">
           <property name="styleSheet">
            <string notr="true">background-color: #007BFF; color: white; padding: 5px 10px; border-radius: 5px;</string>
           </property>
@@ -206,10 +172,10 @@
         <item>
          <spacer name="rightSpacer">
           <property name="orientation">
-           <enum>Qt::Orientation::Horizontal</enum>
+           <enum>Qt::Horizontal</enum>
           </property>
           <property name="sizeType">
-           <enum>QSizePolicy::Policy::Expanding</enum>
+           <enum>QSizePolicy::Expanding</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
@@ -222,8 +188,8 @@
        </layout>
       </item>
       <item>
-       <layout class="QFormLayout" name="rsaParametersLayout">
-        <item row="0" column="0">
+       <layout class="QHBoxLayout" name="horizontalLayout_5">
+        <item>
          <widget class="QLabel" name="rsaExponentLabel">
           <property name="minimumSize">
            <size>
@@ -236,8 +202,8 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="1">
-         <widget class="QLineEdit" name="rsaExponentInput"/>
+        <item>
+         <widget class="QLineEdit" name="outputPubKey"/>
         </item>
        </layout>
       </item>
@@ -257,7 +223,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="lineEdit"/>
+         <widget class="QLineEdit" name="outputPrivKey"/>
         </item>
        </layout>
       </item>
@@ -269,7 +235,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QTextEdit" name="inputText">
+       <widget class="QTextEdit" name="inputSig">
         <property name="placeholderText">
          <string>Enter signature (for verification only)</string>
         </property>
@@ -278,7 +244,7 @@
       <item>
        <layout class="QHBoxLayout" name="encryptDecryptButtonsLayout">
         <item>
-         <widget class="QPushButton" name="encryptButton">
+         <widget class="QPushButton" name="btnSign">
           <property name="maximumSize">
            <size>
             <width>150</width>
@@ -294,7 +260,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="decryptButton">
+         <widget class="QPushButton" name="btnVerify">
           <property name="maximumSize">
            <size>
             <width>150</width>
