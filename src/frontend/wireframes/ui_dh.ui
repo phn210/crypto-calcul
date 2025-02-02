@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+    <class>PKC_Encryption_Schemes</class>
+    <widget class="QWidget" name="PKC_Encryption_Schemes">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>1000</width>
+                <height>935</height>
+            </rect>
+        </property>
+        <property name="windowTitle">
+            <string>PKC: Encryption Schemes</string>
+        </property>
+        <layout class="QVBoxLayout" name="mainLayout">
+            <item>
+                <widget class="QLabel" name="mainTitle">
+                    <property name="styleSheet">
+                        <string>font-size: 35px; font-weight: bold; color: #3f4773;</string>
+                    </property>
+                    <property name="text">
+                        <string>Diffie-Hellman Key Exchange</string>
+                    </property>
+                    <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                    </property>
+                </widget>
+            </item>
+            <item>
+                <widget class="QGroupBox" name="dhGroup">
+                    <layout class="QVBoxLayout" name="dhLayout">
+                        <item>
+                            <layout class="QHBoxLayout" name="dhSecurityLevelLayout">
+                                <item>
+                                    <widget class="QLabel" name="dhSecurityLevelLabel">
+                                        <property name="text">
+                                            <string>Security Level:</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QRadioButton" name="dhL0RadioButton">
+                                        <property name="text">
+                                            <string>L0</string>
+                                        </property>
+                                        <attribute name="buttonGroup">
+                                            <string notr="true">selSecLevel</string>
+                                        </attribute>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QRadioButton" name="dhL1RadioButton">
+                                        <property name="text">
+                                            <string>L1</string>
+                                        </property>
+                                        <attribute name="buttonGroup">
+                                            <string notr="true">selSecLevel</string>
+                                        </attribute>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </item>
+                        <item>
+                            <layout class="QHBoxLayout" name="generatedhKeyLayout">
+                                <item>
+                                    <spacer name="leftSpacer">
+                                        <property name="orientation">
+                                            <enum>Qt::Horizontal</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>QSizePolicy::Expanding</enum>
+                                        </property>
+                                        <property name="sizeHint" stdset="0">
+                                            <size>
+                                                <width>0</width>
+                                                <height>0</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                </item>
+                                <item>
+                                    <widget class="QPushButton" name="btnSecretGen">
+                                        <property name="styleSheet">
+                                            <string notr="true">background-color: #007BFF; color: white; padding: 5px 10px; border-radius: 5px;</string>
+                                        </property>
+                                        <property name="text">
+                                            <string>Generate Secret</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <spacer name="rightSpacer">
+                                        <property name="orientation">
+                                            <enum>Qt::Horizontal</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>QSizePolicy::Expanding</enum>
+                                        </property>
+                                        <property name="sizeHint" stdset="0">
+                                            <size>
+                                                <width>0</width>
+                                                <height>0</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                </item>
+                            </layout>
+                        </item>
+                        <item>
+                            <layout class="QHBoxLayout" name="horizontalLayout_2">
+                                <item>
+                                    <widget class="QLabel" name="dhExponentLabel">
+                                        <property name="text">
+                                            <string>Secret A: </string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QLineEdit" name="outputSecretA">
+                                        <property name="readOnly">
+                                            <bool>true</bool>
+                                        </property>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </item>
+                        <item>
+                            <layout class="QHBoxLayout" name="horizontalLayout">
+                                <item>
+                                    <widget class="QLabel" name="label">
+                                        <property name="text">
+                                            <string>Secret B: </string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QLineEdit" name="outputSecretB">
+                                        <property name="readOnly">
+                                            <bool>true</bool>
+                                        </property>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </item>
+                        <item>
+                            <layout class="QHBoxLayout" name="encryptDecryptButtonsLayout">
+                                <item>
+                                    <widget class="QPushButton" name="btnKeyEx">
+                                        <property name="maximumSize">
+                                            <size>
+                                                <width>200</width>
+                                                <height>30</height>
+                                            </size>
+                                        </property>
+                                        <property name="styleSheet">
+                                            <string>background-color: #007BFF; color: white; padding: 5px 10px; border-radius: 5px;</string>
+                                        </property>
+                                        <property name="text">
+                                            <string>Generate Shared Secret</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </item>
+                        <item>
+                            <widget class="QTextEdit" name="outputText">
+                                <property name="readOnly">
+                                    <bool>true</bool>
+                                </property>
+                                <property name="placeholderText">
+                                    <string>Generated shared key</string>
+                                </property>
+                            </widget>
+                        </item>
+                    </layout>
+                </widget>
+            </item>
+        </layout>
+    </widget>
+    <resources/>
+    <connections/>
+    <buttongroups>
+        <buttongroup name="selSecLevel"/>
+    </buttongroups>
+</ui>
