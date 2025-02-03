@@ -5,16 +5,17 @@ from PyQt5 import QtWidgets
 from PyQt5.uic import loadUi
 from error_handling import show_error_dialog
 
-class NavBar(QtWidgets.QWidget):
+class NavBarUI(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):
-        super(NavBar, self).__init__(*args, **kwargs)
-        loadUi("wireframes/ui_navbar.ui", self)
+        super(NavBarUI, self).__init__(*args, **kwargs)
+        loadUi("src/frontend/wireframes/ui_navbar.ui", self)
         # self.setWindowTitle("Navbar")
         self.setButtonsHover()
 
     def setButtonsHover(self):
         for button in self.findChildren(QtWidgets.QPushButton):
-            button.setStyleSheet("""QPushButton
+            if button.isEnabled():
+                button.setStyleSheet("""QPushButton
 {
   	border-style: none;
 	color: white;
@@ -33,6 +34,6 @@ QPushButton:hover
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    widget = NavBar()
+    widget = NavBarUI()
     widget.show()
     sys.exit(app.exec_())
