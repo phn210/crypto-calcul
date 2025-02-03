@@ -5,9 +5,9 @@ from PyQt5 import QtWidgets
 from PyQt5.uic import loadUi
 from error_handling import show_error_dialog
 
-CONTENT_WIDTH=1080
-WINDOW_HEIGHT=930
-NAVBAR_WIDTH=300
+CONTENT_WIDTH=1000
+WINDOW_HEIGHT=935
+NAVBAR_WIDTH=350
 
 from navbar import NavBarUI
 from primitives import PrimitivesUI
@@ -44,7 +44,8 @@ class MainWindow(QtWidgets.QWidget):
 
     def initNavBar(self):
         self.navbar = NavBarUI()
-    
+        self.navbar.setFixedWidth(NAVBAR_WIDTH)
+
     def initNavBarBtns(self):
         for i, btn in enumerate(self.navbar.findChildren(QtWidgets.QPushButton)):
             text = btn.objectName().lower()
@@ -76,7 +77,6 @@ class MainWindow(QtWidgets.QWidget):
                 btn.clicked.connect(lambda t, i=id: self.loadPage(i))
 
     def loadPage(self, pageIndex):
-        print(pageIndex)
         self.stackedWidget.setCurrentIndex(pageIndex)
 
     def initStackedWidget(self):
