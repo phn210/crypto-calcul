@@ -32,9 +32,10 @@ wrap: all
 	@python3 src/backend/wrappers/setup.py build_ext
 	@python3 src/backend/wrappers/setup.py clean
 
-wrap_fast:
-	.\.venv\Scripts\activate && <#\
-	#>python src/backend/wrappers/setup.py build_ext -j $(NUM_CORES) && <#\
-	#>python src/backend/wrappers/setup.py clean
+gui:
+	@python3 src/frontend/main.py
 
-.PHONY : all test test_% clean build_fast prepare clean_make wrap wrap_fast clean_wrapper setup
+gui_%:
+	@python3 src/frontend/$*.py
+
+.PHONY : all test test_% clean build_fast prepare clean_make wrap clean_wrapper setup gui gui_%

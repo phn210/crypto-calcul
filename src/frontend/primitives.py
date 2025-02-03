@@ -8,7 +8,7 @@ from PyQt5 import QtWidgets
 from PyQt5.uic import loadUi
 from utils import WIREFRAME_PATH, show_error_dialog
 
-NB_SPRIMES = 1
+NB_SPRIMES = 5
 NB_TESTS = 25
 
 class PrimitivesUI(QtWidgets.QWidget):

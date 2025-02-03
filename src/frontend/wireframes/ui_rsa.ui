@@ -99,7 +99,7 @@
                                         <item>
                                             <widget class="QRadioButton" name="rsaPKCS1RadioButton">
                                                 <property name="text">
-                                                    <string>PKCS1</string>
+                                                    <string>PKCS#1 v1.5</string>
                                                 </property>
                                                 <attribute name="buttonGroup">
                                                     <string notr="true">selVarEnc</string>
@@ -109,7 +109,7 @@
                                         <item>
                                             <widget class="QRadioButton" name="rsaSecureRadioButton">
                                                 <property name="text">
-                                                    <string>SECURE</string>
+                                                    <string>OAEP</string>
                                                 </property>
                                                 <attribute name="buttonGroup">
                                                     <string notr="true">selVarEnc</string>
@@ -374,7 +374,7 @@
                                         <item>
                                             <widget class="QRadioButton" name="rsaPKCS1RadioButton">
                                                 <property name="text">
-                                                    <string>PKCS1</string>
+                                                    <string>PKCS#1 v1.5</string>
                                                 </property>
                                                 <attribute name="buttonGroup">
                                                     <string notr="true">selVarSig</string>
@@ -384,7 +384,7 @@
                                         <item>
                                             <widget class="QRadioButton" name="rsaSecureRadioButton">
                                                 <property name="text">
-                                                    <string>SECURE</string>
+                                                    <string>PSS</string>
                                                 </property>
                                                 <attribute name="buttonGroup">
                                                     <string notr="true">selVarSig</string>
@@ -608,11 +608,11 @@
     <resources/>
     <connections/>
     <buttongroups>
-        <buttongroup name="selSecLevSig"/>
+        <buttongroup name="selAlgoSig"/>
         <buttongroup name="selSecLevEnc"/>
         <buttongroup name="selVarSig"/>
-        <buttongroup name="selAlgoSig"/>
-        <buttongroup name="selAlgoEnc"/>
         <buttongroup name="selVarEnc"/>
+        <buttongroup name="selSecLevSig"/>
+        <buttongroup name="selAlgoEnc"/>
     </buttongroups>
 </ui>

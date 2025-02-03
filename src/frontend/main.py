@@ -36,39 +36,18 @@ class MainWindow(QtWidgets.QWidget):
         self.mainLayout.addWidget(self.navbar, 0, 0, 1, 2)
         self.mainLayout.addWidget(self.stackedWidget, 0, 1, 1, 2)
 
+
     def initNavBar(self):
         self.navbar = NavBarUI()
         self.navbar.setFixedWidth(NAVBAR_WIDTH)
+        self.navbar.setStyleSheet("background-color: transparent;")
 
     def initNavBarBtns(self):
-        for i, btn in enumerate(self.navbar.findChildren(QtWidgets.QPushButton)):
+        for _, btn in enumerate(self.navbar.findChildren(QtWidgets.QPushButton)):
             text = btn.objectName().lower()
             if btn.isEnabled():
-                if text == "primitives":
-                    id = 0
-                elif text == "hash":
-                    id = 1
-                elif text == "enc":
-                    id = 2
-                elif text == "mac":
-                    id = 3
-                elif text == "rsa":
-                    id = 4
-                elif text == "elgamal":
-                    id = 5
-                elif text == "dsa":
-                    id = 6
-                elif text == "dh":
-                    id = 7
-                elif text == "ecelgamal":
-                    id = 8
-                elif text == "ecdsa":
-                    id = 9
-                elif text == "ecdh":
-                    id = 10
-                else:
-                    raise ValueError("Invalid button name")
-                btn.clicked.connect(lambda t, i=id: self.loadPage(i))
+                id = self.pages.index(text)
+                btn.clicked.connect(lambda _, i=id: self.loadPage(i))
 
     def loadPage(self, pageIndex):
         self.stackedWidget.setCurrentIndex(pageIndex)
@@ -76,72 +55,10 @@ class MainWindow(QtWidgets.QWidget):
     def initStackedWidget(self):
         self.stackedWidget = QtWidgets.QStackedWidget(self)
         self.stackedWidget.setObjectName("stackedWidget")
-
-        self.initPrimitives()
-        self.stackedWidget.addWidget(self.primitives)
-        
-        self.initHash()
-        self.stackedWidget.addWidget(self.hash)
-
-        self.initSKEnc()
-        self.stackedWidget.addWidget(self.ske)
-
-        self.initMac()
-        self.stackedWidget.addWidget(self.mac)
-
-        self.initRsa()
-        self.stackedWidget.addWidget(self.rsa)
-
-        self.initElGamal()
-        self.stackedWidget.addWidget(self.elgamal)
-
-        self.initDsa()
-        self.stackedWidget.addWidget(self.dsa)
-
-        self.initDH()
-        self.stackedWidget.addWidget(self.dh)
-
-        self.initECElGamal()
-        self.stackedWidget.addWidget(self.ecelgamal)
-
-        self.initECDSA()
-        self.stackedWidget.addWidget(self.ecdsa)
-
-        self.initECDH()
-        self.stackedWidget.addWidget(self.ecdh)
-    
-    def initPrimitives(self):
-        self.primitives = PrimitivesUI()
-    
-    def initHash(self):
-        self.hash = HashUI()
-    
-    def initSKEnc(self):
-        self.ske = SKEncUI()    
-
-    def initMac(self):
-        self.mac = MacUI()
-    
-    def initRsa(self):
-        self.rsa = RsaUI()
-
-    def initElGamal(self):
-        self.elgamal = ElGamalUI()
-    
-    def initDsa(self):
-        self.dsa = DsaUI()
-
-    def initDH(self):
-        self.dh = DHUI()
-    
-    def initECElGamal(self):
-        self.ecelgamal = ECElGamalUI()
-
-    def initECDSA(self):
-        self.ecdsa = ECDSAUI()
-    
-    def initECDH(self):
-        self.ecdh = ECDHUI()
+        self.pages = ['primitives', 'hash', 'enc', 'mac', 'rsa', 'elgamal', 'dsa', 'dh', 'ecelgamal', 'ecdsa', 'ecdh']
+        self.widgets = [PrimitivesUI(), HashUI(), SKEncUI(), MacUI(), RsaUI(), ElGamalUI(), DsaUI(), DHUI(), ECElGamalUI(), ECDSAUI(), ECDHUI()]
+        for widget in self.widgets:
+            self.stackedWidget.addWidget(widget)
 
 if __name__ == "__main__":
     import sys

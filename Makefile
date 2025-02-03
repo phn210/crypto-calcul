@@ -31,10 +31,10 @@ wrap: all
 	@python3 src/backend/wrappers/setup.py build_ext
 	@python3 src/backend/wrappers/setup.py clean
 
-gui:
+gui: wrap
 	@python3 src/frontend/main.py
 
 gui_%:
 	@python3 src/frontend/$*.py
 
-.PHONY : all test test_% clean build_fast prepare clean_make wrap wrap_fast clean_wrapper setup gui
+.PHONY : all test test_% clean build_fast prepare clean_make wrap clean_wrapper setup gui gui_%

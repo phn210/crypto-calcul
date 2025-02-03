@@ -143,5 +143,3 @@ To clean up the build artifacts, run:
 ```sh
 make clean # -f Makefile.win
 ```
-
-
