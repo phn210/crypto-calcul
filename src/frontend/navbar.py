@@ -1,15 +1,11 @@
-from utils import add_build_to_path
-add_build_to_path()
-
 from PyQt5 import QtWidgets
 from PyQt5.uic import loadUi
-from error_handling import show_error_dialog
+from utils import WIREFRAME_PATH
 
 class NavBarUI(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):
         super(NavBarUI, self).__init__(*args, **kwargs)
-        loadUi("src/frontend/wireframes/ui_navbar.ui", self)
-        # self.setWindowTitle("Navbar")
+        loadUi(f"{WIREFRAME_PATH}/ui_navbar.ui", self)
         self.setButtonsHover()
 
     def setButtonsHover(self):

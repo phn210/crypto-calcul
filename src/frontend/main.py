@@ -1,14 +1,4 @@
-from utils import add_build_to_path
-add_build_to_path()
-
 from PyQt5 import QtWidgets
-from PyQt5.uic import loadUi
-from error_handling import show_error_dialog
-
-CONTENT_WIDTH=1000
-WINDOW_HEIGHT=935
-NAVBAR_WIDTH=350
-
 from navbar import NavBarUI
 from primitives import PrimitivesUI
 from hash import HashUI
@@ -21,6 +11,10 @@ from dh import DHUI
 from ecelgamal import ECElGamalUI
 from ecdsa import ECDSAUI
 from ecdh import ECDHUI
+
+NAVBAR_WIDTH=350
+CONTENT_WIDTH=1000
+WINDOW_HEIGHT=935
 
 class MainWindow(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):
@@ -115,24 +109,6 @@ class MainWindow(QtWidgets.QWidget):
 
         self.initECDH()
         self.stackedWidget.addWidget(self.ecdh)
-    
-        # self.stackedWidget.currentChanged.connect(self.changeWidget)
-
-    # def changeWidget(self):
-    #     currIndex = self.stackedWidget.currentIndex()
-    #     if currIndex == 0:
-    #         self.primitives.reload()
-    #     elif currIndex == 2:
-    #         self.checkin.dateEdit.setDateTime(QtCore.QDateTime.currentDateTime())
-    #         self.checkin.reloadTable()
-    #     elif currIndex == 3:
-    #         self.checkout.dateEdit.setDateTime(QtCore.QDateTime.currentDateTime())
-    #         self.checkout.reloadTable()
-    #     elif currIndex == 4:
-    #         self.revenue.calendarWidget.setSelectedDate(QtCore.QDate.currentDate())
-    #         self.revenue.reloadData()
-    #     elif currIndex == 5:
-    #         self.services.tabWidget.setCurrentIndex(0)
     
     def initPrimitives(self):
         self.primitives = PrimitivesUI()

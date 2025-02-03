@@ -1,15 +1,12 @@
-from utils import add_build_to_path
-add_build_to_path()
 
-import base64
+from utils import WIREFRAME_PATH, add_build_to_path, show_error_dialog
+add_build_to_path()
 from wrappers.dsa import DSA
 from wrappers.enums import HashFunction, SecurityLevel
 
+import base64
 from PyQt5 import QtWidgets
 from PyQt5.uic import loadUi
-from error_handling import show_error_dialog
-
-WIREFRAME_PATH = "src/frontend/wireframes"
 
 class DsaUI(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):

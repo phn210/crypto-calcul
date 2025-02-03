@@ -1,14 +1,11 @@
-from utils import add_build_to_path
+from utils import WIREFRAME_PATH, add_build_to_path, show_error_dialog
 add_build_to_path()
-
 from wrappers.mac import CBCMAC, HMAC
 from wrappers.enums import HashFunction, SecurityLevel
 
 from PyQt5 import QtWidgets
 from PyQt5.uic import loadUi
-from error_handling import show_error_dialog
-
-WIREFRAME_PATH = "src/frontend/wireframes"
+from utils import WIREFRAME_PATH, show_error_dialog
 
 class MacUI(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):

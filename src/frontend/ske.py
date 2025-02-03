@@ -1,15 +1,12 @@
-from utils import add_build_to_path
+from utils import WIREFRAME_PATH, add_build_to_path, show_error_dialog
 add_build_to_path()
-
 from wrappers.aes import AES, AESMode
 from wrappers.des import DES
 from wrappers.enums import SecurityLevel
 
+import base64
 from PyQt5 import QtWidgets
 from PyQt5.uic import loadUi
-from error_handling import show_error_dialog
-
-WIREFRAME_PATH = "src/frontend/wireframes"
 
 class SKEncUI(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):
@@ -36,8 +33,9 @@ class SKEncUI(QtWidgets.QWidget):
                 self.selectedFile = fileDialog.selectedFiles()[0]
                 if 'encrypted' in self.selectedFile.lower():
                     self.inputText.setPlainText(f"Selected file: {self.selectedFile}")
-                    with open(self.selectedFile, "r", encoding="latin-1") as f:
+                    with open(self.selectedFile, "r", encoding="utf-8") as f:
                         self.inputText.append(f.read())
+                        self.inputText.append(str(base64.b64encode(f.read()))[2:-1])
                 else:
                     self.inputText.setPlainText(f"Selected file: {self.selectedFile}")
                     with open(self.selectedFile, "r", encoding="utf-8") as f:
@@ -131,7 +129,7 @@ class SKEncUI(QtWidgets.QWidget):
                     encrypted = des.encrypt(input, key)
             else:
                 raise ValueError("No encryption algorithm selected")
-            self.outputText.append(encrypted.decode("latin-1"))
+            self.outputText.append(str(base64.b64encode(encrypted))[2:-1])
         except Exception as e:
             show_error_dialog(str(e))
 
@@ -141,7 +139,7 @@ class SKEncUI(QtWidgets.QWidget):
             key = bytes(self.inputSecretKey.text(), "utf-8")
             isFile = False
             if self.textInputRadioButton.isChecked():
-                input = bytes(self.inputText.toPlainText(), "latin-1")
+                input = base64.b64decode(self.inputText.toPlainText())
             elif self.fileInputRadioButton.isChecked():
                 isFile = True
                 if self.selectedFile is None:

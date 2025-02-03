@@ -1,6 +1,5 @@
-from utils import add_build_to_path
+from utils import WIREFRAME_PATH, add_build_to_path, show_error_dialog
 add_build_to_path()
-
 from wrappers.md5 import MD5
 from wrappers.sha1 import SHA1
 from wrappers.sha2 import SHA224, SHA256, SHA384, SHA512
@@ -8,9 +7,6 @@ from wrappers.sha3 import SHA3_224, SHA3_256, SHA3_384, SHA3_512, SHAKE128, SHAK
 
 from PyQt5 import QtWidgets
 from PyQt5.uic import loadUi
-from error_handling import show_error_dialog
-
-WIREFRAME_PATH = "src/frontend/wireframes"
 
 class HashUI(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):

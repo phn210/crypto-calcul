@@ -124,6 +124,18 @@ To run the tests, follow these steps:
    python3 src/frontend/test.py
    ```
 
+## Graphical User Interface (GUI)
+
+```
+make gui
+```
+
+or 
+
+```
+make gui_<page_name>
+```
+
 ## Cleaning Up
 
 To clean up the build artifacts, run:
@@ -131,3 +143,5 @@ To clean up the build artifacts, run:
 ```sh
 make clean # -f Makefile.win
 ```
+
+

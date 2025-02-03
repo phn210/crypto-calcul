@@ -1,16 +1,12 @@
-from utils import add_build_to_path
+from utils import WIREFRAME_PATH, add_build_to_path, show_error_dialog
 add_build_to_path()
-
-import base64
 from wrappers.ec import EC, ECType, WeierstrassCurve, MontgomeryCurve, EdwardsCurve
 from wrappers.ecelgamal import ECElGamal
 from wrappers.enums import HashFunction
 
+import base64
 from PyQt5 import QtWidgets
 from PyQt5.uic import loadUi
-from error_handling import show_error_dialog
-
-WIREFRAME_PATH = "src/frontend/wireframes"
 
 class ECDSAUI(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):
