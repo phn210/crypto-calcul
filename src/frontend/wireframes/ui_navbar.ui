@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>NavBar</class>
- <widget class="QWidget" name="NavBar">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>381</width>
-    <height>851</height>
-   </rect>
-  </property>
-  <property name="windowTitle">
-   <string>Form</string>
-  </property>
-  <property name="styleSheet">
-   <string notr="true">background-color: #303657;</string>
-  </property>
-  <widget class="QPushButton" name="primitives">
-   <property name="geometry">
-    <rect>
-     <x>13</x>
-     <y>21</y>
-     <width>320</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="acceptDrops">
-    <bool>false</bool>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">border-style: none;
+      <class>NavBar</class>
+      <widget class="QWidget" name="NavBar">
+            <property name="geometry">
+                  <rect>
+                        <x>0</x>
+                        <y>0</y>
+                        <width>381</width>
+                        <height>851</height>
+                  </rect>
+            </property>
+            <property name="windowTitle">
+                  <string>Form</string>
+            </property>
+            <property name="styleSheet">
+                  <string notr="true">background-color: #303657;</string>
+            </property>
+            <widget class="QPushButton" name="primitives">
+                  <property name="geometry">
+                        <rect>
+                              <x>13</x>
+                              <y>21</y>
+                              <width>320</width>
+                              <height>24</height>
+                        </rect>
+                  </property>
+                  <property name="acceptDrops">
+                        <bool>false</bool>
+                  </property>
+                  <property name="styleSheet">
+                        <string notr="true">border-style: none;
 color: white;
 font-size: 20px;
 font-weight: bold;
@@ -37,28 +37,28 @@ background-color: #3f4773;
 border-radius: 10;
 text-align: left;
 padding-left: 10;</string>
-   </property>
-   <property name="text">
-    <string>Basic primitives</string>
-   </property>
-   <property name="flat">
-    <bool>false</bool>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="hash">
-   <property name="geometry">
-    <rect>
-     <x>13</x>
-     <y>75</y>
-     <width>320</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="acceptDrops">
-    <bool>false</bool>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">border-style: none;
+                  </property>
+                  <property name="text">
+                        <string>Basic primitives</string>
+                  </property>
+                  <property name="flat">
+                        <bool>false</bool>
+                  </property>
+            </widget>
+            <widget class="QPushButton" name="hash">
+                  <property name="geometry">
+                        <rect>
+                              <x>13</x>
+                              <y>75</y>
+                              <width>320</width>
+                              <height>24</height>
+                        </rect>
+                  </property>
+                  <property name="acceptDrops">
+                        <bool>false</bool>
+                  </property>
+                  <property name="styleSheet">
+                        <string notr="true">border-style: none;
 color: white;
 font-size: 20px;
 font-weight: bold;
@@ -66,31 +66,31 @@ background-color: #3f4773;
 border-radius: 10;
 text-align: left;
 padding-left: 10;</string>
-   </property>
-   <property name="text">
-    <string>Hash functions</string>
-   </property>
-   <property name="flat">
-    <bool>false</bool>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="secretkey">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="geometry">
-    <rect>
-     <x>13</x>
-     <y>129</y>
-     <width>320</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="acceptDrops">
-    <bool>false</bool>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">border-style: none;
+                  </property>
+                  <property name="text">
+                        <string>Hash functions</string>
+                  </property>
+                  <property name="flat">
+                        <bool>false</bool>
+                  </property>
+            </widget>
+            <widget class="QPushButton" name="secretkey">
+                  <property name="enabled">
+                        <bool>false</bool>
+                  </property>
+                  <property name="geometry">
+                        <rect>
+                              <x>13</x>
+                              <y>129</y>
+                              <width>320</width>
+                              <height>24</height>
+                        </rect>
+                  </property>
+                  <property name="acceptDrops">
+                        <bool>false</bool>
+                  </property>
+                  <property name="styleSheet">
+                        <string notr="true">border-style: none;
 color: white;
 font-size: 20px;
 font-weight: bold;
@@ -98,31 +98,31 @@ background-color: #3f4773;
 border-radius: 10;
 text-align: left;
 padding-left: 10;</string>
-   </property>
-   <property name="text">
-    <string>Secret Key Cryptography</string>
-   </property>
-   <property name="flat">
-    <bool>false</bool>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="publickey">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="geometry">
-    <rect>
-     <x>13</x>
-     <y>315</y>
-     <width>320</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="acceptDrops">
-    <bool>false</bool>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">border-style: none;
+                  </property>
+                  <property name="text">
+                        <string>Secret Key Cryptography</string>
+                  </property>
+                  <property name="flat">
+                        <bool>false</bool>
+                  </property>
+            </widget>
+            <widget class="QPushButton" name="publickey">
+                  <property name="enabled">
+                        <bool>false</bool>
+                  </property>
+                  <property name="geometry">
+                        <rect>
+                              <x>13</x>
+                              <y>315</y>
+                              <width>320</width>
+                              <height>24</height>
+                        </rect>
+                  </property>
+                  <property name="acceptDrops">
+                        <bool>false</bool>
+                  </property>
+                  <property name="styleSheet">
+                        <string notr="true">border-style: none;
 color: white;
 font-size: 20px;
 font-weight: bold;
@@ -130,31 +130,31 @@ background-color: #3f4773;
 border-radius: 10;
 text-align: left;
 padding-left: 10;</string>
-   </property>
-   <property name="text">
-    <string>Public Key Cryptography</string>
-   </property>
-   <property name="flat">
-    <bool>false</bool>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="ec">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="geometry">
-    <rect>
-     <x>13</x>
-     <y>633</y>
-     <width>320</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="acceptDrops">
-    <bool>false</bool>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">border-style: none;
+                  </property>
+                  <property name="text">
+                        <string>Public Key Cryptography</string>
+                  </property>
+                  <property name="flat">
+                        <bool>false</bool>
+                  </property>
+            </widget>
+            <widget class="QPushButton" name="ec">
+                  <property name="enabled">
+                        <bool>false</bool>
+                  </property>
+                  <property name="geometry">
+                        <rect>
+                              <x>13</x>
+                              <y>633</y>
+                              <width>320</width>
+                              <height>24</height>
+                        </rect>
+                  </property>
+                  <property name="acceptDrops">
+                        <bool>false</bool>
+                  </property>
+                  <property name="styleSheet">
+                        <string notr="true">border-style: none;
 color: white;
 font-size: 20px;
 font-weight: bold;
@@ -162,37 +162,37 @@ background-color: #3f4773;
 border-radius: 10;
 text-align: left;
 padding-left: 10;</string>
-   </property>
-   <property name="text">
-    <string>Elliptic Curves Cryptography</string>
-   </property>
-   <property name="flat">
-    <bool>false</bool>
-   </property>
-  </widget>
-  <widget class="QWidget" name="layoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>50</x>
-     <y>370</y>
-     <width>290</width>
-     <height>140</height>
-    </rect>
-   </property>
-   <layout class="QFormLayout" name="formLayout">
-    <item row="0" column="0">
-     <widget class="QPushButton" name="rsa">
-      <property name="minimumSize">
-       <size>
-        <width>280</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="acceptDrops">
-       <bool>false</bool>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">border-style: none;
+                  </property>
+                  <property name="text">
+                        <string>Elliptic Curves Cryptography</string>
+                  </property>
+                  <property name="flat">
+                        <bool>false</bool>
+                  </property>
+            </widget>
+            <widget class="QWidget" name="layoutWidget">
+                  <property name="geometry">
+                        <rect>
+                              <x>50</x>
+                              <y>370</y>
+                              <width>290</width>
+                              <height>140</height>
+                        </rect>
+                  </property>
+                  <layout class="QFormLayout" name="formLayout">
+                        <item row="0" column="0">
+                              <widget class="QPushButton" name="rsa">
+                                    <property name="minimumSize">
+                                          <size>
+                                                <width>280</width>
+                                                <height>0</height>
+                                          </size>
+                                    </property>
+                                    <property name="acceptDrops">
+                                          <bool>false</bool>
+                                    </property>
+                                    <property name="styleSheet">
+                                          <string notr="true">border-style: none;
 color: white;
 font-size: 20px;
 font-weight: bold;
@@ -200,28 +200,28 @@ background-color: #3f4773;
 border-radius: 10;
 text-align: left;
 padding-left: 10;</string>
-      </property>
-      <property name="text">
-       <string>RSA Cryptosystem</string>
-      </property>
-      <property name="flat">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="QPushButton" name="Elgamal">
-      <property name="minimumSize">
-       <size>
-        <width>280</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="acceptDrops">
-       <bool>false</bool>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">border-style: none;
+                                    </property>
+                                    <property name="text">
+                                          <string>RSA Cryptosystem</string>
+                                    </property>
+                                    <property name="flat">
+                                          <bool>false</bool>
+                                    </property>
+                              </widget>
+                        </item>
+                        <item row="1" column="0">
+                              <widget class="QPushButton" name="elgamal">
+                                    <property name="minimumSize">
+                                          <size>
+                                                <width>280</width>
+                                                <height>0</height>
+                                          </size>
+                                    </property>
+                                    <property name="acceptDrops">
+                                          <bool>false</bool>
+                                    </property>
+                                    <property name="styleSheet">
+                                          <string notr="true">border-style: none;
 color: white;
 font-size: 20px;
 font-weight: bold;
@@ -229,28 +229,28 @@ background-color: #3f4773;
 border-radius: 10;
 text-align: left;
 padding-left: 10;</string>
-      </property>
-      <property name="text">
-       <string>ElGamal Cryptosystem</string>
-      </property>
-      <property name="flat">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="QPushButton" name="dsa">
-      <property name="minimumSize">
-       <size>
-        <width>280</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="acceptDrops">
-       <bool>false</bool>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">border-style: none;
+                                    </property>
+                                    <property name="text">
+                                          <string>ElGamal Cryptosystem</string>
+                                    </property>
+                                    <property name="flat">
+                                          <bool>false</bool>
+                                    </property>
+                              </widget>
+                        </item>
+                        <item row="2" column="0">
+                              <widget class="QPushButton" name="dsa">
+                                    <property name="minimumSize">
+                                          <size>
+                                                <width>280</width>
+                                                <height>0</height>
+                                          </size>
+                                    </property>
+                                    <property name="acceptDrops">
+                                          <bool>false</bool>
+                                    </property>
+                                    <property name="styleSheet">
+                                          <string notr="true">border-style: none;
 color: white;
 font-size: 20px;
 font-weight: bold;
@@ -258,28 +258,28 @@ background-color: #3f4773;
 border-radius: 10;
 text-align: left;
 padding-left: 10;</string>
-      </property>
-      <property name="text">
-       <string>DSA </string>
-      </property>
-      <property name="flat">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0">
-     <widget class="QPushButton" name="dh">
-      <property name="minimumSize">
-       <size>
-        <width>280</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="acceptDrops">
-       <bool>false</bool>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">border-style: none;
+                                    </property>
+                                    <property name="text">
+                                          <string>DSA </string>
+                                    </property>
+                                    <property name="flat">
+                                          <bool>false</bool>
+                                    </property>
+                              </widget>
+                        </item>
+                        <item row="3" column="0">
+                              <widget class="QPushButton" name="dh">
+                                    <property name="minimumSize">
+                                          <size>
+                                                <width>280</width>
+                                                <height>0</height>
+                                          </size>
+                                    </property>
+                                    <property name="acceptDrops">
+                                          <bool>false</bool>
+                                    </property>
+                                    <property name="styleSheet">
+                                          <string notr="true">border-style: none;
 color: white;
 font-size: 20px;
 font-weight: bold;
@@ -287,40 +287,40 @@ background-color: #3f4773;
 border-radius: 10;
 text-align: left;
 padding-left: 10;</string>
-      </property>
-      <property name="text">
-       <string>Diffie-Hellman Key Exchange</string>
-      </property>
-      <property name="flat">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QWidget" name="layoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>50</x>
-     <y>170</y>
-     <width>290</width>
-     <height>64</height>
-    </rect>
-   </property>
-   <layout class="QFormLayout" name="formLayout_2">
-    <item row="0" column="0">
-     <widget class="QPushButton" name="enc">
-      <property name="minimumSize">
-       <size>
-        <width>280</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="acceptDrops">
-       <bool>false</bool>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">border-style: none;
+                                    </property>
+                                    <property name="text">
+                                          <string>Diffie-Hellman Key Exchange</string>
+                                    </property>
+                                    <property name="flat">
+                                          <bool>false</bool>
+                                    </property>
+                              </widget>
+                        </item>
+                  </layout>
+            </widget>
+            <widget class="QWidget" name="layoutWidget">
+                  <property name="geometry">
+                        <rect>
+                              <x>50</x>
+                              <y>170</y>
+                              <width>290</width>
+                              <height>64</height>
+                        </rect>
+                  </property>
+                  <layout class="QFormLayout" name="formLayout_2">
+                        <item row="0" column="0">
+                              <widget class="QPushButton" name="enc">
+                                    <property name="minimumSize">
+                                          <size>
+                                                <width>280</width>
+                                                <height>0</height>
+                                          </size>
+                                    </property>
+                                    <property name="acceptDrops">
+                                          <bool>false</bool>
+                                    </property>
+                                    <property name="styleSheet">
+                                          <string notr="true">border-style: none;
 color: white;
 font-size: 20px;
 font-weight: bold;
@@ -328,28 +328,28 @@ background-color: #3f4773;
 border-radius: 10;
 text-align: left;
 padding-left: 10;</string>
-      </property>
-      <property name="text">
-       <string>Encryption Schemes</string>
-      </property>
-      <property name="flat">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="QPushButton" name="mac">
-      <property name="minimumSize">
-       <size>
-        <width>280</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="acceptDrops">
-       <bool>false</bool>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">border-style: none;
+                                    </property>
+                                    <property name="text">
+                                          <string>Encryption Schemes</string>
+                                    </property>
+                                    <property name="flat">
+                                          <bool>false</bool>
+                                    </property>
+                              </widget>
+                        </item>
+                        <item row="1" column="0">
+                              <widget class="QPushButton" name="mac">
+                                    <property name="minimumSize">
+                                          <size>
+                                                <width>280</width>
+                                                <height>0</height>
+                                          </size>
+                                    </property>
+                                    <property name="acceptDrops">
+                                          <bool>false</bool>
+                                    </property>
+                                    <property name="styleSheet">
+                                          <string notr="true">border-style: none;
 color: white;
 font-size: 20px;
 font-weight: bold;
@@ -357,40 +357,40 @@ background-color: #3f4773;
 border-radius: 10;
 text-align: left;
 padding-left: 10;</string>
-      </property>
-      <property name="text">
-       <string>MAC Schemes</string>
-      </property>
-      <property name="flat">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QWidget" name="layoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>50</x>
-     <y>688</y>
-     <width>290</width>
-     <height>102</height>
-    </rect>
-   </property>
-   <layout class="QFormLayout" name="formLayout_3">
-    <item row="0" column="0">
-     <widget class="QPushButton" name="Ecelgamal">
-      <property name="minimumSize">
-       <size>
-        <width>280</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="acceptDrops">
-       <bool>false</bool>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">border-style: none;
+                                    </property>
+                                    <property name="text">
+                                          <string>MAC Schemes</string>
+                                    </property>
+                                    <property name="flat">
+                                          <bool>false</bool>
+                                    </property>
+                              </widget>
+                        </item>
+                  </layout>
+            </widget>
+            <widget class="QWidget" name="layoutWidget">
+                  <property name="geometry">
+                        <rect>
+                              <x>50</x>
+                              <y>688</y>
+                              <width>290</width>
+                              <height>102</height>
+                        </rect>
+                  </property>
+                  <layout class="QFormLayout" name="formLayout_3">
+                        <item row="0" column="0">
+                              <widget class="QPushButton" name="ecelgamal">
+                                    <property name="minimumSize">
+                                          <size>
+                                                <width>280</width>
+                                                <height>0</height>
+                                          </size>
+                                    </property>
+                                    <property name="acceptDrops">
+                                          <bool>false</bool>
+                                    </property>
+                                    <property name="styleSheet">
+                                          <string notr="true">border-style: none;
 color: white;
 font-size: 20px;
 font-weight: bold;
@@ -398,28 +398,28 @@ background-color: #3f4773;
 border-radius: 10;
 text-align: left;
 padding-left: 10;</string>
-      </property>
-      <property name="text">
-       <string>EC-ElGamal Cryptosystem</string>
-      </property>
-      <property name="flat">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="QPushButton" name="ecdsa">
-      <property name="minimumSize">
-       <size>
-        <width>280</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="acceptDrops">
-       <bool>false</bool>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">border-style: none;
+                                    </property>
+                                    <property name="text">
+                                          <string>EC-ElGamal Cryptosystem</string>
+                                    </property>
+                                    <property name="flat">
+                                          <bool>false</bool>
+                                    </property>
+                              </widget>
+                        </item>
+                        <item row="1" column="0">
+                              <widget class="QPushButton" name="ecdsa">
+                                    <property name="minimumSize">
+                                          <size>
+                                                <width>280</width>
+                                                <height>0</height>
+                                          </size>
+                                    </property>
+                                    <property name="acceptDrops">
+                                          <bool>false</bool>
+                                    </property>
+                                    <property name="styleSheet">
+                                          <string notr="true">border-style: none;
 color: white;
 font-size: 20px;
 font-weight: bold;
@@ -427,28 +427,28 @@ background-color: #3f4773;
 border-radius: 10;
 text-align: left;
 padding-left: 10;</string>
-      </property>
-      <property name="text">
-       <string>ECDSA</string>
-      </property>
-      <property name="flat">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="QPushButton" name="ecdh">
-      <property name="minimumSize">
-       <size>
-        <width>280</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="acceptDrops">
-       <bool>false</bool>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">border-style: none;
+                                    </property>
+                                    <property name="text">
+                                          <string>ECDSA</string>
+                                    </property>
+                                    <property name="flat">
+                                          <bool>false</bool>
+                                    </property>
+                              </widget>
+                        </item>
+                        <item row="2" column="0">
+                              <widget class="QPushButton" name="ecdh">
+                                    <property name="minimumSize">
+                                          <size>
+                                                <width>280</width>
+                                                <height>0</height>
+                                          </size>
+                                    </property>
+                                    <property name="acceptDrops">
+                                          <bool>false</bool>
+                                    </property>
+                                    <property name="styleSheet">
+                                          <string notr="true">border-style: none;
 color: white;
 font-size: 20px;
 font-weight: bold;
@@ -456,18 +456,18 @@ background-color: #3f4773;
 border-radius: 10;
 text-align: left;
 padding-left: 10;</string>
-      </property>
-      <property name="text">
-       <string>ECDH Key Exchange</string>
-      </property>
-      <property name="flat">
-       <bool>false</bool>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
- </widget>
- <resources/>
- <connections/>
+                                    </property>
+                                    <property name="text">
+                                          <string>ECDH Key Exchange</string>
+                                    </property>
+                                    <property name="flat">
+                                          <bool>false</bool>
+                                    </property>
+                              </widget>
+                        </item>
+                  </layout>
+            </widget>
+      </widget>
+      <resources/>
+      <connections/>
 </ui>

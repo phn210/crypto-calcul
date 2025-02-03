@@ -5,9 +5,9 @@ from PyQt5 import QtWidgets
 from PyQt5.uic import loadUi
 from error_handling import show_error_dialog
 
-CONTENT_WIDTH=1480
+CONTENT_WIDTH=1080
 WINDOW_HEIGHT=930
-NAVBAR_WIDTH=260
+NAVBAR_WIDTH=300
 
 from navbar import NavBarUI
 from primitives import PrimitivesUI
@@ -46,12 +46,34 @@ class MainWindow(QtWidgets.QWidget):
         self.navbar = NavBarUI()
     
     def initNavBarBtns(self):
-        count = 0
         for i, btn in enumerate(self.navbar.findChildren(QtWidgets.QPushButton)):
-            btn.clicked.connect(lambda t, i=i: self.loadPage(i))
-            # if btn.isEnabled():
-            #     btn.clicked.connect(lambda i=i: self.loadPage(i))
-            #     count += 1
+            text = btn.objectName().lower()
+            if btn.isEnabled():
+                if text == "primitives":
+                    id = 0
+                elif text == "hash":
+                    id = 1
+                elif text == "enc":
+                    id = 2
+                elif text == "mac":
+                    id = 3
+                elif text == "rsa":
+                    id = 4
+                elif text == "elgamal":
+                    id = 5
+                elif text == "dsa":
+                    id = 6
+                elif text == "dh":
+                    id = 7
+                elif text == "ecelgamal":
+                    id = 8
+                elif text == "ecdsa":
+                    id = 9
+                elif text == "ecdh":
+                    id = 10
+                else:
+                    raise ValueError("Invalid button name")
+                btn.clicked.connect(lambda t, i=id: self.loadPage(i))
 
     def loadPage(self, pageIndex):
         print(pageIndex)
