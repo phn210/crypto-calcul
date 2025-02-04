@@ -31,5 +31,6 @@ if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     widget = NavBarUI()
+    widget.setStyleSheet("background-color: #303657;")
     widget.show()
     sys.exit(app.exec_())

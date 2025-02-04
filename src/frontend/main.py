@@ -40,7 +40,9 @@ class MainWindow(QtWidgets.QWidget):
     def initNavBar(self):
         self.navbar = NavBarUI()
         self.navbar.setFixedWidth(NAVBAR_WIDTH)
-        self.navbar.setStyleSheet("background-color: transparent;")
+        self.navbar.setObjectName("NavBar")
+        self.navbar.setStyleSheet("QWidget#NavBar { background-color: #303657; }")
+
 
     def initNavBarBtns(self):
         for _, btn in enumerate(self.navbar.findChildren(QtWidgets.QPushButton)):
@@ -60,9 +62,76 @@ class MainWindow(QtWidgets.QWidget):
         for widget in self.widgets:
             self.stackedWidget.addWidget(widget)
 
+    #     self.initPrimitives()
+    #     self.stackedWidget.addWidget(self.primitives)
+        
+    #     self.initHash()
+    #     self.stackedWidget.addWidget(self.hash)
+
+    #     self.initSKEnc()
+    #     self.stackedWidget.addWidget(self.ske)
+
+    #     self.initMac()
+    #     self.stackedWidget.addWidget(self.mac)
+
+    #     self.initRsa()
+    #     self.stackedWidget.addWidget(self.rsa)
+
+    #     self.initElGamal()
+    #     self.stackedWidget.addWidget(self.elgamal)
+
+    #     self.initDsa()
+    #     self.stackedWidget.addWidget(self.dsa)
+
+    #     self.initDH()
+    #     self.stackedWidget.addWidget(self.dh)
+
+    #     self.initECElGamal()
+    #     self.stackedWidget.addWidget(self.ecelgamal)
+
+    #     self.initECDSA()
+    #     self.stackedWidget.addWidget(self.ecdsa)
+
+    #     self.initECDH()
+    #     self.stackedWidget.addWidget(self.ecdh)
+        
+    # def initPrimitives(self):
+    #     self.primitives = PrimitivesUI()
+    
+    # def initHash(self):
+    #     self.hash = HashUI()
+    
+    # def initSKEnc(self):
+    #     self.ske = SKEncUI()    
+
+    # def initMac(self):
+    #     self.mac = MacUI()
+    
+    # def initRsa(self):
+    #     self.rsa = RsaUI()
+
+    # def initElGamal(self):
+    #     self.elgamal = ElGamalUI()
+    
+    # def initDsa(self):
+    #     self.dsa = DsaUI()
+
+    # def initDH(self):
+    #     self.dh = DHUI()
+    
+    # def initECElGamal(self):
+    #     self.ecelgamal = ECElGamalUI()
+
+    # def initECDSA(self):
+    #     self.ecdsa = ECDSAUI()
+    
+    # def initECDH(self):
+    #     self.ecdh = ECDHUI()
+
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     mainWindow = MainWindow()
+    # mainWindow.setStyleSheet("background-color: #303657;")
     mainWindow.show()
     sys.exit(app.exec_())

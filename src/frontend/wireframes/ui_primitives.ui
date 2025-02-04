@@ -2,6 +2,9 @@
 <ui version="4.0">
     <class>BasicPrimitives</class>
     <widget class="QWidget" name="BasicPrimitives">
+        <!-- <property name="styleSheet">
+            <string notr="true">background-color: #dfe4fd;</string>
+        </property> -->
         <property name="geometry">
             <rect>
                 <x>0</x>
