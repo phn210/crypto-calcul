@@ -10,6 +10,7 @@
 - [`GMP`](https://gmplib.org/)
 - `python3`
 - `cython`
+- `PyQt`
 
 ### Windows
 
