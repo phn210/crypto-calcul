@@ -26,7 +26,7 @@ pacman -S mingw-w64-x86_64-gcc \
 
 ## Building the Library (Linux/MacOS)
 
-Clone the repository, ensure the prerequisites are installed, and build the library with follow these steps:
+Clone the repository, ensure the prerequisites are installed, and build the library with follow these steps (in the cloned directory):
 
 ### For Linux/MacOS
 
