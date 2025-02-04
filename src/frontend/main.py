@@ -19,7 +19,7 @@ WINDOW_HEIGHT=935
 class MainWindow(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.setWindowTitle("DLC: Group 14A")
+        self.setWindowTitle("DLC: Cryptographic Calculator - Group 14A")
         self.setMinimumSize(CONTENT_WIDTH + NAVBAR_WIDTH, WINDOW_HEIGHT)
         self.initNavBar()
         self.initStackedWidget()
