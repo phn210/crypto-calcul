@@ -34,6 +34,20 @@ class HashUI(QtWidgets.QWidget):
             self.btnGenHash.clicked.connect(self.generateHash)
             self.btnGenShake.clicked.connect(self.generateHashShake)
             self.btnClearShake.clicked.connect(self.clearShakeCtx)
+            for btn in self.selHashAlgo.buttons():
+                btn.clicked.connect(self.toggleHashAlgo)
+        except Exception as e:
+            show_error_dialog(str(e))
+
+    def toggleHashAlgo(self):
+        try:
+            selectedAlgo = self.selHashAlgo.checkedButton().text()
+            if 'md5' in selectedAlgo.lower() or '1' in selectedAlgo.lower():
+                for btn in self.selSecLevel.buttons():
+                    btn.setEnabled(False)
+            else:
+                for btn in self.selSecLevel.buttons():
+                    btn.setEnabled(True)
         except Exception as e:
             show_error_dialog(str(e))
 

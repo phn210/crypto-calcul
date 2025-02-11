@@ -1,3 +1,6 @@
+# PDF
+*.pdf
+
 # Build files
 build
 obj
@@ -12,6 +15,7 @@ __pycache__
 *.autosave
 
 # Environment files
+env
 .venv
 *.DS_Store
 
@@ -22,8 +26,6 @@ __pycache__
 .qtcreator
 .qtc_clangd
 DLC.*
-
-
 
 # Prerequisites
 *.d

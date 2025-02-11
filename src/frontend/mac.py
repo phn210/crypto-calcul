@@ -15,10 +15,15 @@ class MacUI(QtWidgets.QWidget):
         self.initButtons()
     
     def initButtons(self):
-        self.btnChooseFile.clicked.connect(self.chooseFile)
-        self.btnGenTag.clicked.connect(self.generateTag)
-        self.cbcMacRadioButton.clicked.connect(self.toggleMacAlgo)
-        self.hmacRadioButton.clicked.connect(self.toggleMacAlgo)
+        try:
+            self.btnChooseFile.clicked.connect(self.chooseFile)
+            self.btnGenTag.clicked.connect(self.generateTag)
+            self.cbcMacRadioButton.clicked.connect(self.toggleMacAlgo)
+            self.hmacRadioButton.clicked.connect(self.toggleMacAlgo)
+            for btn in self.selHashAlgo.buttons():
+                btn.clicked.connect(self.toggleHashAlgo)
+        except Exception as e:
+            show_error_dialog(str(e))
     
     def chooseFile(self):
         try:
@@ -43,10 +48,25 @@ class MacUI(QtWidgets.QWidget):
     def toggleMacAlgo(self):
         try:
             selectedAlgo = self.selMacAlgo.checkedButton().text()
-            for btn in [self.level0RadioButton] + self.selHashAlgo.buttons():
-                if 'cbc' in selectedAlgo.lower():
+            if 'cbc' in selectedAlgo.lower():
+                for btn in self.selSecLevel.buttons():
+                    btn.setEnabled(True)
+                for btn in [self.level0RadioButton] + self.selHashAlgo.buttons():
                     btn.setEnabled(False)
-                else:
+            else:
+                for btn in self.selSecLevel.buttons() + self.selHashAlgo.buttons():
+                    btn.setEnabled(True)
+        except Exception as e:
+            show_error_dialog(str(e))
+    
+    def toggleHashAlgo(self):
+        try:
+            selectedAlgo = self.selHashAlgo.checkedButton().text()
+            if 'md5' in selectedAlgo.lower() or '1' in selectedAlgo.lower():
+                for btn in self.selSecLevel.buttons():
+                    btn.setEnabled(False)
+            else:
+                for btn in self.selSecLevel.buttons():
                     btn.setEnabled(True)
         except Exception as e:
             show_error_dialog(str(e))
