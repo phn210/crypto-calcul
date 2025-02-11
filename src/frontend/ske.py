@@ -31,10 +31,10 @@ class SKEncUI(QtWidgets.QWidget):
 
             if fileDialog.exec():
                 self.selectedFile = fileDialog.selectedFiles()[0]
+                print(self.selectedFile)
                 if 'encrypted' in self.selectedFile.lower():
                     self.inputText.setPlainText(f"Selected file: {self.selectedFile}")
-                    with open(self.selectedFile, "r", encoding="utf-8") as f:
-                        self.inputText.append(f.read())
+                    with open(self.selectedFile, "rb") as f:
                         self.inputText.append(str(base64.b64encode(f.read()))[2:-1])
                 else:
                     self.inputText.setPlainText(f"Selected file: {self.selectedFile}")
@@ -109,7 +109,7 @@ class SKEncUI(QtWidgets.QWidget):
                         self.outputText.append(f"Encrypted file saved to {folder}/aes_output_encrypted.txt")
                 else:
                     encrypted = aes.encrypt(input, key, iv, nonce)
-                self.outputText.setPlainText(f"AES-{secLevel.value}-{str(mode).split(".")[-1]}:")
+                self.outputText.setPlainText(f"AES-{secLevel.value}-{str(mode).split('.')[-1]}:")
             elif self.desRadioButton.isChecked():
                 des = DES()
                 self.outputText.setPlainText(f"DES:")
@@ -186,7 +186,7 @@ class SKEncUI(QtWidgets.QWidget):
                         self.outputText.append(f"Decrypted file saved to {folder}/aes_output_decrypted.txt")
                 else:
                     decrypted = aes.decrypt(input, key, iv, nonce)
-                self.outputText.setPlainText(f"AES-{secLevel.value}-{str(mode).split(".")[-1]}:")
+                self.outputText.setPlainText(f"AES-{secLevel.value}-{str(mode).split('.')[-1]}:")
             elif self.desRadioButton.isChecked():
                 des = DES()
                 self.outputText.setPlainText(f"DES:")
