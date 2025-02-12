@@ -1,0 +1,31 @@
+-include ../../.env
+
+# List all subdirectories dynamically ` ^
+SHELL := pwsh
+.SHELLFLAGS := -NoProfile -Command
+SUBDIRS := $(shell (Get-ChildItem -Directory | ForEach-Object { $$_.Name }) -join " ")
+EXCLUDE_DIRS = wrappers include ss
+INCLUDE_DIRS = $(filter-out $(EXCLUDE_DIRS), $(SUBDIRS))
+MAKE_FILES = $(INCLUDE_DIRS:%=%/Makefile.win)
+# MAKEFLAGS += --no-print-directory
+
+%/Makefile.win: %/Makefile.env template.win
+	cp template $*/Makefile
+
+prepare: $(MAKE_FILES)
+
+all test: prepare
+	@foreach ($$dir in "$(SUBDIRS)".split(" ")) { <#\
+		#>if (Test-Path "$$dir/Makefile.win") { <#\
+			#>make -C $$dir $@ -f Makefile.win <#\
+		#>} <#\
+	#>}
+
+clean:
+	@foreach ($$dir in "$(SUBDIRS)".split(" ")) { <#\
+		#>if (Test-Path "$$dir/Makefile.win") { <#\
+			#>make -C $$dir $@ -f Makefile.win <#\
+		#>} <#\
+	#>}
+
+.PHONY: all test clean prepare
