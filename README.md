@@ -7,140 +7,135 @@
 ## Prerequisites
 
 - C compiler, e.g. `gcc` or `clang`
+- [`CMake`](https://cmake.org/) ≥ 3.20 and [`Ninja`](https://ninja-build.org/)
 - [`GMP`](https://gmplib.org/)
 - `python3`
 - `cython`
 - `PyQt`
 
+```sh
+# macOS
+brew install cmake ninja gmp
+
+# Debian/Ubuntu
+sudo apt install cmake ninja-build libgmp-dev
+```
+
 ### Windows
 
-It's recommended to install `gcc`, `GMP`, and `python3` with [`MSYS2`](https://www.msys2.org/), and `pwsh` to follow the next steps.
+It's recommended to install the toolchain with [`MSYS2`](https://www.msys2.org/) and run every command below in the MSYS2 MinGW64 terminal.
 
 ```sh
-# Run in MSYS2 terminal
-pacman -S mingw-w64-x86_64-gcc \
+pacman -S make \
+         mingw-w64-x86_64-gcc \
+         mingw-w64-x86_64-cmake \
+         mingw-w64-x86_64-ninja \
          mingw-w64-x86_64-gmp \
          mingw-w64-x86_64-python \
          mingw-w64-x86_64-python-pip
 ```
 
-## Building the Library (Linux/MacOS)
+## Building
 
-Clone the repository, ensure the prerequisites are installed, and build the library with follow these steps (in the cloned directory):
+The build is defined with CMake ([CMakeLists.txt](CMakeLists.txt), [src/backend/CMakeLists.txt](src/backend/CMakeLists.txt)) and runs on Ninja, which builds in parallel and only rebuilds what changed (including after header edits). The `Makefile` provides short aliases for it.
 
-### For Linux/MacOS
-
-#### Single-command
+### Single command
 
 ```sh
 make setup
 ```
 
-This will compile all the C source files, create the executables for testing, and wrap C library into Python library.
+This creates the Python virtual environment in `.venv`, installs the dependencies, compiles the C library and the tests, and wraps the C library into Python modules.
 
-If you want to build the library step-by-step, follow the next instructions.
+### Step by step
 
-**Note.** This command runs in parallel by default, you might want to adjust the NUM_CORES variable to match your system.
+1. Set up the Python virtual environment and install the dependencies:
 
-#### Step-by-step
-
-1. Build the C library:
-
-   ```sh
-   # Basic
-   make all
-
-   # Parallel
-   make build_fast
-   ```
-
-2. Setup Python virtual environment and install dependencies:
-      
    ```sh
    python3 -m venv .venv
-
-   source .venv/bin/activate
-
+   source .venv/bin/activate   # Windows (MSYS2): source .venv/bin/activate or .venv/Scripts/activate
    pip install -r requirements.txt
    ```
 
-3. Wrap C modules into Python modules with Cython:
+2. Build everything (C library, test executables, Python wrappers):
 
    ```sh
-   # Basic
-   make wrap
-
-   # Parallel
-   make wrap_fast
+   make
    ```
 
-### For Windows
+   Or build only the Python wrappers with `make wrap`.
 
-1. Build the C library:
+Outputs go to `build/`: test executables in `build/tests/<module>/`, Python wrappers in `build/wrappers/`.
 
-   ```sh
-   make all -f Makefile.win
-   ```
+### Build options
 
-2. Setup Python virtual environment and install dependencies:
-      
-   ```sh
-   python3 -m venv .venv
+| Option      | Values                                  | Default   |
+|-------------|-----------------------------------------|-----------|
+| `BUILD_TYPE`| `Release`, `Debug`, `RelWithDebInfo`    | `Release` |
+| `SANITIZE`  | `ON`, `OFF`                             | `OFF`     |
+| `SANITIZER` | `address`, `leak`, `thread`, `undefined`| `address` |
+| `WRAPPERS`  | `ON`, `OFF` (skip the Cython wrappers)  | `ON`      |
 
-   .venv\\bin\\activate
-   # or .venv\\Scripts\\Activate.ps1
+```sh
+make test SANITIZE=ON SANITIZER=undefined
+```
 
-   pip install -r requirements.txt
-   ```
+### Building a single target
 
-3. Wrap C modules into Python modules with Cython:
+Each module is a static library that declares only its direct dependencies, so building a target builds exactly what it needs:
 
-   ```sh
-   # Basic
-   make wrap -f Makefile.win
+```sh
+cmake --build build --target rsa             # librsa.a and its dependencies
+cmake --build build --target test_rsa_enc    # one test executable
+cmake --build build --target wrapper_rsa     # one Python wrapper
+```
 
-   # Parallel
-   make wrap_fast -f Makefile.win
-   ```
+### Adding a module
+
+Create `src/backend/<module>/` with its sources and `*.test.c` files, then add one line to [src/backend/CMakeLists.txt](src/backend/CMakeLists.txt):
+
+```cmake
+cc_module(<module> DEPS <direct dependencies>)
+```
+
+For a Python wrapper, add `src/backend/wrappers/<module>/__init__.{py,pxd}` and a `cc_wrapper(<module> <module>)` line to [src/backend/wrappers/CMakeLists.txt](src/backend/wrappers/CMakeLists.txt).
 
 ## Running Tests
 
-To run the tests, follow these steps:
-
-1. Ensure you have built the libraries as described above.
-
-2. Run the tests for C library:
+1. Run the tests of the C library:
 
    ```sh
-   # Run all tests
-   make test # -f Makefile.win
+   # All tests
+   make test
 
-   # Run tests of a module
-   make test_<module_name> # -f Makefile.win
+   # Tests of one module (builds only that module and its dependencies)
+   make test_<module_name>
    ```
 
-   3. Test Python library for UI:
+   Tests are registered with CTest, so `ctest --test-dir build -j8` and `ctest --test-dir build -R rsa` also work.
+
+2. Test the Python library used by the UI:
 
    ```sh
+   make wrap
    python3 src/frontend/test.py
    ```
 
 ## Graphical User Interface (GUI)
 
-```
+```sh
 make gui
 ```
 
-or 
+or
 
-```
+```sh
 make gui_<page_name>
 ```
 
 ## Cleaning Up
 
-To clean up the build artifacts, run:
-
 ```sh
-make clean # -f Makefile.win
+make clean       # remove build outputs
+make distclean   # remove the whole build directory, including the CMake cache
 ```
