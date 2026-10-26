@@ -7,8 +7,6 @@ build-*
 obj
 
 # Generated files
-**/__init__.c*
-**/__init__.html
 **/**output**.txt
 __pycache__
 *.autosave

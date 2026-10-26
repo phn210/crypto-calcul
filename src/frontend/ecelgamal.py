@@ -1,8 +1,5 @@
-from utils import WIREFRAME_PATH, add_build_to_path, show_error_dialog
-add_build_to_path()
-from wrappers.ec import EC, ECType, WeierstrassCurve, MontgomeryCurve, EdwardsCurve
-from wrappers.ecelgamal import ECElGamal
-from wrappers.enums import HashFunction
+from utils import WIREFRAME_PATH, show_error_dialog
+from cryptocalc import EC, ECElGamal, ECType, EdwardsCurve, HashFunction, MontgomeryCurve, WeierstrassCurve
 
 import base64
 from PyQt5 import QtWidgets
@@ -61,7 +58,7 @@ class ECElGamalUI(QtWidgets.QWidget):
             else:
                 self.curveId = EdwardsCurve(self.selEdwEnc.currentIndex() if self.selectedTab == 0 else self.selEdwSig.currentIndex())
             ec = EC(self.curveType, self.curveId)
-            self.elgamal = ECElGamal(ec)
+            self.elgamal = ECElGamal(ec, HashFunction.SHA2)
             self.elgamal.keygen()
             pubKey = self.elgamal.pubKey
             prvKey = self.elgamal.prvKey
@@ -77,7 +74,7 @@ class ECElGamalUI(QtWidgets.QWidget):
     def encrypt(self):
         try:
             input = bytes(self.inputTextEnc.toPlainText(), 'utf-8')
-            encrypted = self.elgamal.encrypt(input, HashFunction.SHA2)
+            encrypted = self.elgamal.encrypt(input)
             encrypted = [str(base64.b64encode(e))[2:-1] for e in encrypted]
             self.outputTextEnc.setText(str(encrypted))
         except Exception as e:
@@ -87,7 +84,7 @@ class ECElGamalUI(QtWidgets.QWidget):
         try:
             input = base64.b64decode(self.inputTextEnc.toPlainText())
             input = [base64.b64decode(e) for e in self.inputTextEnc.toPlainText()[1:-1].replace(' ', '').split(',')]
-            decrypted = self.elgamal.decrypt(input[0], input[1], HashFunction.SHA2)
+            decrypted = self.elgamal.decrypt(input[0], input[1])
             self.outputTextEnc.setText(decrypted.decode('utf-8'))
         except Exception as e:
             show_error_dialog(str(e))
@@ -95,7 +92,7 @@ class ECElGamalUI(QtWidgets.QWidget):
     def sign(self):
         try:
             input = bytes(self.inputTextSig.toPlainText(), 'utf-8')
-            signed = self.elgamal.sign(input, HashFunction.SHA2)
+            signed = self.elgamal.sign(input)
             signed = [str(base64.b64encode(e))[2:-1] for e in signed]
             self.outputTextSig.setText(str(signed))
         except Exception as e:
@@ -105,7 +102,7 @@ class ECElGamalUI(QtWidgets.QWidget):
         try:
             input = bytes(self.inputTextSig.toPlainText(), 'utf-8')
             sig = [base64.b64decode(e) for e in self.inputSig.toPlainText()[1:-1].replace(' ', '').split(',')]
-            verified = self.elgamal.verify(input, sig[0], sig[1], HashFunction.SHA2)
+            verified = self.elgamal.verify(input, sig[0], sig[1])
             self.outputTextSig.setText(str(verified))
         except Exception as e:
             show_error_dialog(str(e))

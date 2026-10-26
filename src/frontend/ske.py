@@ -1,8 +1,5 @@
-from utils import WIREFRAME_PATH, add_build_to_path, show_error_dialog
-add_build_to_path()
-from wrappers.aes import AES, AESMode
-from wrappers.des import DES
-from wrappers.enums import SecurityLevel
+from utils import WIREFRAME_PATH, show_error_dialog
+from cryptocalc import AES, AESMode, DES, SecurityLevel
 
 import base64
 from PyQt5 import QtWidgets

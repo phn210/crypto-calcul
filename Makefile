@@ -4,13 +4,13 @@
 #   BUILD_TYPE  Release | Debug | RelWithDebInfo   (default: Release)
 #   SANITIZE    ON | OFF                           (default: OFF)
 #   SANITIZER   address | leak | thread | undefined (default: address)
-#   WRAPPERS    ON | OFF, build the Cython wrappers (default: ON)
+#   PYTHON_PKG  ON | OFF, build the Python package (default: ON)
 
 BUILD_DIR  ?= build
 BUILD_TYPE ?= Release
 SANITIZE   ?= OFF
 SANITIZER  ?= address
-WRAPPERS   ?= ON
+PYTHON_PKG ?= ON
 PYTHON     ?= $(or $(wildcard .venv/bin/python3),$(wildcard .venv/Scripts/python.exe),python3)
 
 MAKEFLAGS += --no-print-directory
@@ -24,7 +24,7 @@ configure:
 		-DCMAKE_BUILD_TYPE=$(BUILD_TYPE) \
 		-DCC_SANITIZE=$(SANITIZE) \
 		-DCC_SANITIZER=$(SANITIZER) \
-		-DCC_BUILD_WRAPPERS=$(WRAPPERS) \
+		-DCC_BUILD_PYTHON=$(PYTHON_PKG) \
 		-DPython3_EXECUTABLE=$(abspath $(PYTHON))
 
 test: configure
@@ -36,14 +36,15 @@ test_%: configure
 	@cmake --build $(BUILD_DIR) --target tests_$*
 	@ctest --test-dir $(BUILD_DIR) --output-on-failure -L '^$*$$'
 
-wrap: configure
-	@cmake --build $(BUILD_DIR) --target wrappers
+# Python package `cryptocalc`, assembled in $(BUILD_DIR)/python
+python: configure
+	@cmake --build $(BUILD_DIR) --target python
 
-gui: wrap
-	@$(PYTHON) src/frontend/main.py
+gui: python
+	@PYTHONPATH=$(BUILD_DIR)/python $(PYTHON) src/frontend/main.py
 
-gui_%: wrap
-	@$(PYTHON) src/frontend/$*.py
+gui_%: python
+	@PYTHONPATH=$(BUILD_DIR)/python $(PYTHON) src/frontend/$*.py
 
 setup:
 	./setup.sh
@@ -54,4 +55,4 @@ clean:
 distclean:
 	@cmake -E rm -rf $(BUILD_DIR)
 
-.PHONY: all configure test test_% wrap gui gui_% setup clean distclean
+.PHONY: all configure test test_% python gui gui_% setup clean distclean

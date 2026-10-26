@@ -1,9 +1,5 @@
-from utils import WIREFRAME_PATH, add_build_to_path, show_error_dialog
-add_build_to_path()
-from wrappers.md5 import MD5
-from wrappers.sha1 import SHA1
-from wrappers.sha2 import SHA224, SHA256, SHA384, SHA512
-from wrappers.sha3 import SHA3_224, SHA3_256, SHA3_384, SHA3_512, SHAKE128, SHAKE256
+from utils import WIREFRAME_PATH, show_error_dialog
+from cryptocalc import MD5, SHA1, SHA224, SHA256, SHA384, SHA512, SHA3_224, SHA3_256, SHA3_384, SHA3_512, SHAKE128, SHAKE256
 
 from PyQt5 import QtWidgets
 from PyQt5.uic import loadUi

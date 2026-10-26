@@ -1,7 +1,5 @@
-from utils import WIREFRAME_PATH, add_build_to_path, show_error_dialog
-add_build_to_path()
-from wrappers.elgamal import ElGamal
-from wrappers.enums import SecurityLevel
+from utils import WIREFRAME_PATH, show_error_dialog
+from cryptocalc import ElGamal, SecurityLevel
 
 import base64
 from PyQt5 import QtWidgets

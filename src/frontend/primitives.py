@@ -1,8 +1,5 @@
-from utils import WIREFRAME_PATH, add_build_to_path, show_error_dialog
-add_build_to_path()
-from wrappers.gmp import GMPInteger
-from wrappers.rng import RNG
-from wrappers.prime import Prime, PrimalityTest
+from utils import WIREFRAME_PATH, show_error_dialog
+from cryptocalc import RNG, Prime, PrimalityTest
 
 from PyQt5 import QtWidgets
 from PyQt5.uic import loadUi
@@ -20,7 +17,6 @@ class PrimitivesUI(QtWidgets.QWidget):
         self.initButtons()
         
     def initAlgorithms(self):
-        self.rng = RNG()
         self.prime = Prime()
 
     def initButtons(self):
@@ -47,41 +43,35 @@ class PrimitivesUI(QtWidgets.QWidget):
                 raise ValueError("No base selected")
             if self.inputBitRng.isEnabled():
                 bits = int(self.inputBitRng.text())
-                rand = rng.rand_int_b(bits, base)
+                rand = rng.rand_int_b(bits)
             elif self.inputModRng.isEnabled():
-                modulo = GMPInteger()
-                modulo.set_value(self.inputModRng.text(), base)
-                rand = rng.rand_int_m(modulo, base)
+                modulo = int(self.inputModRng.text(), base)
+                rand = rng.rand_int_m(modulo)
             else:
                 raise ValueError("No RNG mode selected")
             self.outputRng.clear()
-            self.outputRng.setText(rand)
+            self.outputRng.setText(format(rand, {2: 'b', 10: 'd', 16: 'x'}[base]))
         except Exception as e:
             show_error_dialog(str(e))
 
     def generatePrime(self):
         try:
-            prime = Prime()
-            rng = RNG()
             if self.inputBitPrimeGen.isEnabled():
                 bits = int(self.inputBitPrimeGen.text())
-                p = prime.gen_prime_b(rng.state, bits, NB_SPRIMES, NB_TESTS, PrimalityTest.GMP)
+                p = self.prime.gen_prime_b(bits, NB_SPRIMES, NB_TESTS, PrimalityTest.GMP)
             elif self.inputModPrimeGen.isEnabled():
-                modulo = GMPInteger()
-                modulo.set_value(str(int(self.inputModPrimeGen.text())), 10)
-                p = self.prime.gen_prime_m(self.rng.state, modulo, NB_SPRIMES, NB_TESTS, PrimalityTest.GMP)
+                modulo = int(self.inputModPrimeGen.text())
+                p = self.prime.gen_prime_m(modulo, NB_SPRIMES, NB_TESTS, PrimalityTest.GMP)
             else:
                 raise ValueError("No prime generation mode selected")
             self.outputPrimeGen.clear()
-            self.outputPrimeGen.setText(p)
-        except (Exception, SystemExit) as e:
+            self.outputPrimeGen.setText(str(p))
+        except Exception as e:
             show_error_dialog(str(e))
 
     def testPrime(self):
         try:
-            input = int(self.inputPrimeTest.text())
-            candidate = GMPInteger()
-            candidate.set_value(str(input), 10)
+            candidate = int(self.inputPrimeTest.text())
             if self.gmpTestRadio.isChecked():
                 test = PrimalityTest.GMP
             elif self.fermatTestRadio.isChecked():
@@ -90,7 +80,7 @@ class PrimitivesUI(QtWidgets.QWidget):
                 test = PrimalityTest.MILLER_RABIN
             else:
                 raise ValueError("No prime test selected")
-            res = self.prime.test(candidate, self.rng.state, NB_TESTS, test)
+            res = self.prime.test(candidate, NB_TESTS, test)
             self.outputPrimeTest.clear()
             self.outputPrimeTest.setText(str(res))
         except Exception as e:

@@ -1,0 +1,23 @@
+[build-system]
+requires = ["scikit-build-core>=0.10", "cffi>=1.17"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "cryptocalc"
+version = "0.1.0"
+description = "Python bindings for the crypto-calcul C cryptography library"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = ["cffi>=1.17"]
+
+[tool.scikit-build]
+cmake.version = ">=3.20"
+ninja.version = ">=1.10"
+# Persistent build directory, so `pip install -e .` rebuilds incrementally
+build-dir = "build-wheel/{wheel_tag}"
+wheel.packages = ["src/python/cryptocalc"]
+sdist.exclude = ["build", "build-*", ".venv"]
+
+[tool.scikit-build.cmake.define]
+CC_BUILD_TESTS = "OFF"
+CC_BUILD_PYTHON = "ON"

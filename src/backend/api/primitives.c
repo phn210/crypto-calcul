@@ -74,47 +74,114 @@ cc_status_t cc_shake(int security_bits, const uint8_t *msg, size_t msg_len, uint
     return CC_OK;
 }
 
-cc_status_t cc_random_bytes(uint8_t *out, size_t len)
+struct cc_rng
+{
+    gmp_randstate_t state;
+};
+
+cc_status_t cc_rng_new(cc_rng_t **rng)
+{
+    if (rng == NULL)
+        return CC_ERR_INVALID_ARG;
+    *rng = malloc(sizeof(cc_rng_t));
+    if (*rng == NULL)
+        return CC_ERR_NOMEM;
+
+    cc_status_t status = rng_init((*rng)->state);
+    if (status != CC_OK)
+    {
+        free(*rng);
+        *rng = NULL;
+    }
+    return status;
+}
+
+cc_status_t cc_rng_new_seeded(cc_rng_t **rng, uint32_t seed)
+{
+    if (rng == NULL)
+        return CC_ERR_INVALID_ARG;
+    *rng = malloc(sizeof(cc_rng_t));
+    if (*rng == NULL)
+        return CC_ERR_NOMEM;
+    rng_init_with_seed((*rng)->state, seed);
+    return CC_OK;
+}
+
+void cc_rng_free(cc_rng_t *rng)
+{
+    if (rng == NULL)
+        return;
+    gmp_randclear(rng->state);
+    free(rng);
+}
+
+// Uses the caller's generator, or a temporary system-seeded one when rng is NULL
+typedef struct rng_ref
+{
+    cc_rng_t *rng;
+    cc_rng_t *owned;
+} rng_ref_t;
+
+static cc_status_t rng_acquire(rng_ref_t *ref, cc_rng_t *rng)
+{
+    ref->owned = NULL;
+    ref->rng = rng;
+    if (rng != NULL)
+        return CC_OK;
+    CC_TRY(cc_rng_new(&ref->owned));
+    ref->rng = ref->owned;
+    return CC_OK;
+}
+
+static void rng_release(rng_ref_t *ref)
+{
+    cc_rng_free(ref->owned);
+}
+
+cc_status_t cc_random_bytes(cc_rng_t *rng, uint8_t *out, size_t len)
 {
     if ((out == NULL && len > 0) || len > 0xFFFFFFFFu)
         return CC_ERR_INVALID_ARG;
 
-    gmp_randstate_t state;
-    CC_TRY(rng_init(state));
-    rand_bytes((char *)out, state, (unsigned int)len);
-    gmp_randclear(state);
+    rng_ref_t ref;
+    CC_TRY(rng_acquire(&ref, rng));
+    rand_bytes((char *)out, ref.rng->state, (unsigned int)len);
+    rng_release(&ref);
     return CC_OK;
 }
 
-cc_status_t cc_random_bits(unsigned int bits, uint8_t *out, size_t *out_len)
+cc_status_t cc_random_bits(cc_rng_t *rng, unsigned int bits, uint8_t *out, size_t *out_len)
 {
-    gmp_randstate_t state;
-    CC_TRY(rng_init(state));
+    rng_ref_t ref;
+    CC_TRY(rng_acquire(&ref, rng));
 
     mpz_t r;
     mpz_init(r);
-    rand_int_b(r, state, bits);
+    rand_int_b(r, ref.rng->state, bits);
     cc_status_t status = api_output_mpz(out, out_len, r);
 
     mpz_clear(r);
-    gmp_randclear(state);
+    rng_release(&ref);
     return status;
 }
 
-cc_status_t cc_random_below(const uint8_t *m, size_t m_len, uint8_t *out, size_t *out_len)
+cc_status_t cc_random_below(cc_rng_t *rng, const uint8_t *m, size_t m_len, uint8_t *out, size_t *out_len)
 {
-    gmp_randstate_t state;
-    CC_TRY(rng_init(state));
+    if (m == NULL && m_len > 0)
+        return CC_ERR_INVALID_ARG;
+
+    rng_ref_t ref;
+    CC_TRY(rng_acquire(&ref, rng));
 
     mpz_t bound, r;
     mpz_inits(bound, r, NULL);
     api_input_mpz(bound, m, m_len);
-    cc_status_t status = rand_int_m(r, state, bound);
+    cc_status_t status = rand_int_m(r, ref.rng->state, bound);
     if (status == CC_OK)
         status = api_output_mpz(out, out_len, r);
 
     mpz_clears(bound, r, NULL);
-    gmp_randclear(state);
+    rng_release(&ref);
     return status;
 }
 

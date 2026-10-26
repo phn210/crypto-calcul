@@ -28,6 +28,9 @@ function(cc_module name)
 
     add_custom_target(tests_${name})
     add_dependencies(tests tests_${name})
+    if(NOT CC_BUILD_TESTS)
+        return()
+    endif()
 
     foreach(test_src ${test_srcs})
         get_filename_component(test_name ${test_src} NAME_WE) # enc.test.c -> enc
@@ -94,9 +97,11 @@ check_linker_flag(C "LINKER:-no_warn_duplicate_libraries" CC_LINKER_NO_DUP_WARNI
 if(CC_LINKER_NO_DUP_WARNING)
     target_link_options(cryptocalc PRIVATE "LINKER:-no_warn_duplicate_libraries")
 endif()
+if(NOT SKBUILD)
+    # Wheels cannot hold symlinks, so the versioned names are only used for a system install
+    set_target_properties(cryptocalc PROPERTIES VERSION ${PROJECT_VERSION} SOVERSION ${PROJECT_VERSION_MAJOR})
+endif()
 set_target_properties(cryptocalc PROPERTIES
-    VERSION ${PROJECT_VERSION}
-    SOVERSION ${PROJECT_VERSION_MAJOR}
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
     ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -104,6 +109,9 @@ set_target_properties(cryptocalc PROPERTIES
 # The API test links only the shared library, so it can only use exported functions
 add_custom_target(tests_api)
 add_dependencies(tests tests_api)
+if(NOT CC_BUILD_TESTS)
+    set(api_test_srcs "")
+endif()
 foreach(test_src ${api_test_srcs})
     get_filename_component(test_name ${test_src} NAME_WE)
     set(target test_api_${test_name})
@@ -117,5 +125,8 @@ foreach(test_src ${api_test_srcs})
     set_tests_properties(api/${test_name} PROPERTIES LABELS api FAIL_REGULAR_EXPRESSION "FAIL")
 endforeach()
 
-install(TARGETS cryptocalc)
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/include/cryptocalc.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+# C library install (a Python wheel installs the library inside the package instead)
+if(NOT SKBUILD)
+    install(TARGETS cryptocalc)
+    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/include/cryptocalc.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+endif()

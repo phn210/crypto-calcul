@@ -117,11 +117,19 @@ typedef enum cc_prime_test
     CC_PRIME_TEST_MILLER_RABIN,
 } cc_prime_test_t;
 
-CC_API cc_status_t cc_random_bytes(uint8_t *out, size_t len);
+// Random generator state. NULL can be passed instead of a generator to use a fresh one seeded
+// from the system. A seeded generator is reproducible: use it for experiments, never for keys.
+typedef struct cc_rng cc_rng_t;
+
+CC_API cc_status_t cc_rng_new(cc_rng_t **rng);
+CC_API cc_status_t cc_rng_new_seeded(cc_rng_t **rng, uint32_t seed);
+CC_API void cc_rng_free(cc_rng_t *rng);
+
+CC_API cc_status_t cc_random_bytes(cc_rng_t *rng, uint8_t *out, size_t len);
 // Uniform integer in [0, 2^bits)
-CC_API cc_status_t cc_random_bits(unsigned int bits, uint8_t *out, size_t *out_len);
+CC_API cc_status_t cc_random_bits(cc_rng_t *rng, unsigned int bits, uint8_t *out, size_t *out_len);
 // Uniform integer in [0, m); m > 0
-CC_API cc_status_t cc_random_below(const uint8_t *m, size_t m_len, uint8_t *out, size_t *out_len);
+CC_API cc_status_t cc_random_below(cc_rng_t *rng, const uint8_t *m, size_t m_len, uint8_t *out, size_t *out_len);
 
 // Sets *is_prime to 1 if n is (probably) prime after `rounds` rounds of the test, 0 otherwise
 CC_API cc_status_t cc_is_prime(const uint8_t *n, size_t n_len, cc_prime_test_t test, int rounds, int *is_prime);

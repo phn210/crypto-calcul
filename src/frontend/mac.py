@@ -1,7 +1,5 @@
-from utils import WIREFRAME_PATH, add_build_to_path, show_error_dialog
-add_build_to_path()
-from wrappers.mac import CBCMAC, HMAC
-from wrappers.enums import HashFunction, SecurityLevel
+from utils import WIREFRAME_PATH, show_error_dialog
+from cryptocalc import CBCMAC, HMAC, HashFunction, SecurityLevel
 
 from PyQt5 import QtWidgets
 from PyQt5.uic import loadUi
@@ -101,7 +99,7 @@ class MacUI(QtWidgets.QWidget):
             if self.cbcMacRadioButton.isChecked():
                 mac = CBCMAC(secLevel)
                 self.outputText.setPlainText(f"CBC-MAC-{secLevel.value}:")
-                tag = mac.mac_file(input, key) if isFile else mac.mac(input, key)
+                tag = mac.mac_file(input, key) if isFile else mac.mac(key, input)
             else:
                 if self.md5RadioButton.isChecked():
                     hashFunc = HashFunction.MD5
@@ -118,7 +116,7 @@ class MacUI(QtWidgets.QWidget):
                 else:
                     raise ValueError("No hash function selected")
                 mac = HMAC(secLevel, hashFunc)
-                tag = mac.mac_file(input, key) if isFile else mac.mac(input, key)
+                tag = mac.mac_file(input, key) if isFile else mac.mac(key, input)
                 
             self.outputText.append(tag.hex().upper())
         except Exception as e:

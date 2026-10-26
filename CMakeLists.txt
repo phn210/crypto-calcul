@@ -6,7 +6,8 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 # Options
-option(CC_BUILD_WRAPPERS "Build the Cython wrappers used by the GUI" ON)
+option(CC_BUILD_PYTHON "Build the Python package (cffi bindings) used by the GUI" ON)
+option(CC_BUILD_TESTS "Build the test executables" ON)
 option(CC_SANITIZE "Build with sanitizers" OFF)
 set(CC_SANITIZER "address" CACHE STRING "Sanitizer used when CC_SANITIZE is ON: address, leak, thread, undefined")
 
@@ -48,6 +49,6 @@ include(GNUInstallDirs)
 enable_testing()
 add_subdirectory(src/backend)
 
-if(CC_BUILD_WRAPPERS)
-    add_subdirectory(src/backend/wrappers)
+if(CC_BUILD_PYTHON)
+    add_subdirectory(src/python)
 endif()

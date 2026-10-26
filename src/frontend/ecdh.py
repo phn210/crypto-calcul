@@ -1,7 +1,5 @@
-from utils import WIREFRAME_PATH, add_build_to_path, show_error_dialog
-add_build_to_path()
-from wrappers.ec import EC, ECType, WeierstrassCurve, MontgomeryCurve, EdwardsCurve
-from wrappers.ecdh import ECDH
+from utils import WIREFRAME_PATH, show_error_dialog
+from cryptocalc import ECDH, EC, ECType, EdwardsCurve, MontgomeryCurve, WeierstrassCurve
 
 import base64
 from PyQt5 import QtWidgets
@@ -38,6 +36,8 @@ class ECDHUI(QtWidgets.QWidget):
                 raise ValueError("Please select a curve type.")
             if self.curveType == ECType.WEIERSTRASS:
                 self.curveId = WeierstrassCurve(self.selWeier.currentIndex())
+            elif self.curveType == ECType.MONTGOMERY:
+                self.curveId = MontgomeryCurve(self.selMont.currentIndex())
             else:
                 self.curveId = EdwardsCurve(self.selEdw.currentIndex())
             ec = EC(self.curveType, self.curveId)

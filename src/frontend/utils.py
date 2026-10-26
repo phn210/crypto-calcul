@@ -1,15 +1,7 @@
-import os, platform, sys
+import os
 from PyQt5.QtWidgets import QMessageBox
 
-WIREFRAME_PATH = 'src/frontend/wireframes'
-
-def add_build_to_path(name='build'):
-    path_sep = '/'
-    if platform.system() == 'Windows':
-        path_sep = '\\'
-    index = os.getcwd().split(path_sep).index('crypto-calcul')
-    path = path_sep.join(os.getcwd().split(path_sep)[:index+1] + [name])
-    sys.path.append(path)
+WIREFRAME_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'wireframes')
 
 def show_error_dialog(message: str):
     msg = QMessageBox()

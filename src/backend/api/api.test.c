@@ -80,13 +80,27 @@ static void test_random_and_primes(void)
     size_t len = sizeof(out);
     int is_prime = 0;
 
-    int ok = cc_random_bytes(out, 32) == CC_OK;
-    ok &= cc_random_bits(16, out, &len) == CC_OK && len <= 2;
+    int ok = cc_random_bytes(NULL, out, 32) == CC_OK;
+    ok &= cc_random_bits(NULL, 16, out, &len) == CC_OK && len <= 2;
     len = sizeof(out);
-    ok &= cc_random_below(m, sizeof(m), out, &len) == CC_OK && len == 1;
+    ok &= cc_random_below(NULL, m, sizeof(m), out, &len) == CC_OK && len == 1;
     len = sizeof(out);
-    ok &= cc_random_below((const uint8_t *)"\0", 1, out, &len) == CC_ERR_INVALID_ARG;
+    ok &= cc_random_below(NULL, (const uint8_t *)"\0", 1, out, &len) == CC_ERR_INVALID_ARG;
     CHECK("Random numbers", ok);
+
+    // Generators seeded alike produce the same sequence
+    cc_rng_t *a = NULL, *b = NULL;
+    uint8_t xa[64], xb[64];
+    size_t la = sizeof(xa), lb = sizeof(xb);
+    ok = cc_rng_new_seeded(&a, 42) == CC_OK && cc_rng_new_seeded(&b, 42) == CC_OK &&
+         cc_random_bytes(a, xa, 16) == CC_OK && cc_random_bytes(b, xb, 16) == CC_OK && memcmp(xa, xb, 16) == 0 &&
+         cc_random_bits(a, 256, xa, &la) == CC_OK && cc_random_bits(b, 256, xb, &lb) == CC_OK &&
+         la == lb && memcmp(xa, xb, la) == 0;
+    cc_rng_free(a);
+    cc_rng_free(b);
+    ok &= cc_rng_new(&a) == CC_OK && cc_random_bytes(a, xa, 16) == CC_OK;
+    cc_rng_free(a);
+    CHECK("Seeded and system generators", ok);
 
     uint8_t mersenne[] = {0x7f, 0xff, 0xff, 0xff}; // 2^31 - 1
     uint8_t composite[] = {0x7f, 0xff, 0xff, 0xfd};

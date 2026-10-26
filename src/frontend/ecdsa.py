@@ -1,8 +1,5 @@
-from utils import WIREFRAME_PATH, add_build_to_path, show_error_dialog
-add_build_to_path()
-from wrappers.ec import EC, ECType, WeierstrassCurve, MontgomeryCurve, EdwardsCurve
-from wrappers.ecelgamal import ECElGamal
-from wrappers.enums import HashFunction
+from utils import WIREFRAME_PATH, show_error_dialog
+from cryptocalc import ECDSA, EC, ECType, EdwardsCurve, HashFunction, WeierstrassCurve
 
 import base64
 from PyQt5 import QtWidgets
@@ -41,19 +38,19 @@ class ECDSAUI(QtWidgets.QWidget):
             else:
                 self.curveId = EdwardsCurve(self.selEdw.currentIndex())
             ec = EC(self.curveType, self.curveId)
-            self.elgamal = ECElGamal(ec)
-            self.elgamal.keygen()
-            pubKey = self.elgamal.pubKey
-            prvKey = self.elgamal.prvKey
-            self.outputPubKey.setText(f"q: {pubKey.y}")
-            self.outputPrivKey.setText(f"d: {prvKey.x}")
+            self.ecdsa = ECDSA(ec, HashFunction.SHA2)
+            self.ecdsa.keygen()
+            pubKey = self.ecdsa.pubKey
+            prvKey = self.ecdsa.prvKey
+            self.outputPubKey.setText(f"q: {pubKey.q}")
+            self.outputPrivKey.setText(f"d: {prvKey.d}")
         except Exception as e:
             show_error_dialog(str(e))
 
     def sign(self):
         try:
             input = bytes(self.inputText.toPlainText(), 'utf-8')
-            signed = self.elgamal.sign(input, HashFunction.SHA2)
+            signed = self.ecdsa.sign(input)
             signed = [str(base64.b64encode(e))[2:-1] for e in signed]
             self.outputText.setText(str(signed))
         except Exception as e:
@@ -63,7 +60,7 @@ class ECDSAUI(QtWidgets.QWidget):
         try:
             input = bytes(self.inputText.toPlainText(), 'utf-8')
             sig = [base64.b64decode(e) for e in self.inputSig.toPlainText()[1:-1].replace(' ', '').split(',')]
-            verified = self.elgamal.verify(input, sig[0], sig[1], HashFunction.SHA2)
+            verified = self.ecdsa.verify(input, sig[0], sig[1])
             self.outputText.setText(str(verified))
         except Exception as e:
             show_error_dialog(str(e))
