@@ -1,4 +1,6 @@
-from PyQt5 import QtWidgets
+from PyQt5 import QtCore, QtWidgets
+
+import theme
 from navbar import NavBarUI
 from primitives import PrimitivesUI
 from hash import HashUI
@@ -12,47 +14,45 @@ from ecelgamal import ECElGamalUI
 from ecdsa import ECDSAUI
 from ecdh import ECDHUI
 
-NAVBAR_WIDTH=350
-CONTENT_WIDTH=1000
-WINDOW_HEIGHT=935
+NAVBAR_WIDTH = 248
+CONTENT_MAX_WIDTH = 1040
+
+# Page key: (title, subtitle)
+PAGE_INFO = {
+    "primitives": ("Random numbers & primes", "Random integers, primality tests and prime generation"),
+    "hash": ("Hash functions", "MD5, SHA-1, SHA-2 and SHA-3 digests, and SHAKE extendable output"),
+    "enc": ("Symmetric encryption", "AES and DES with PKCS#7 padding, for text or files"),
+    "mac": ("Message authentication", "HMAC and AES-CBC-MAC tags for text or files"),
+    "rsa": ("RSA", "Textbook, PKCS#1 v1.5 and OAEP/PSS encryption and signatures"),
+    "elgamal": ("ElGamal", "ElGamal encryption and signatures over RFC 3526 groups"),
+    "dsa": ("DSA", "Digital Signature Algorithm with SHA-2 or SHA-3"),
+    "dh": ("Diffie-Hellman", "Key exchange over finite-field groups"),
+    "ecelgamal": ("EC-ElGamal", "Elliptic-curve ElGamal encryption and signatures"),
+    "ecdsa": ("ECDSA", "Elliptic Curve Digital Signature Algorithm"),
+    "ecdh": ("ECDH", "Elliptic-curve Diffie-Hellman key exchange"),
+}
+
 
 class MainWindow(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.setWindowTitle("DLC: Cryptographic Calculator - Group 14A")
-        self.setMinimumSize(CONTENT_WIDTH + NAVBAR_WIDTH, WINDOW_HEIGHT)
+        self.setObjectName("root")
+        self.setAttribute(QtCore.Qt.WA_StyledBackground, True)
+        self.setWindowTitle("Cryptographic Calculator")
+        self.setMinimumSize(1100, 760)
+        self.resize(1320, 880)
+        self.themeName = theme.saved()
         self.initNavBar()
         self.initStackedWidget()
         self.initMainLayout()
-        self.initNavBarBtns()
-
-    def initMainLayout(self):
-        self.mainLayout = QtWidgets.QGridLayout()
-        self.mainLayout.setSizeConstraint(QtWidgets.QLayout.SetNoConstraint)
-        self.mainLayout.setContentsMargins(0,0,0,0)
-        self.mainLayout.setSpacing(0)
-        self.mainLayout.setObjectName("mainLayout")
-        self.setLayout(self.mainLayout)
-        self.mainLayout.addWidget(self.navbar, 0, 0, 1, 2)
-        self.mainLayout.addWidget(self.stackedWidget, 0, 1, 1, 2)
-
+        self.loadPage(0)
 
     def initNavBar(self):
         self.navbar = NavBarUI()
         self.navbar.setFixedWidth(NAVBAR_WIDTH)
-        self.navbar.setObjectName("NavBar")
-        self.navbar.setStyleSheet("QWidget#NavBar { background-color: #303657; }")
-
-
-    def initNavBarBtns(self):
-        for _, btn in enumerate(self.navbar.findChildren(QtWidgets.QPushButton)):
-            text = btn.objectName().lower()
-            if btn.isEnabled():
-                id = self.pages.index(text)
-                btn.clicked.connect(lambda _, i=id: self.loadPage(i))
-
-    def loadPage(self, pageIndex):
-        self.stackedWidget.setCurrentIndex(pageIndex)
+        self.navbar.pageSelected.connect(lambda key: self.loadPage(self.pages.index(key)))
+        self.navbar.themeToggled.connect(self.toggleTheme)
+        self.navbar.setTheme(self.themeName)
 
     def initStackedWidget(self):
         self.stackedWidget = QtWidgets.QStackedWidget(self)
@@ -60,78 +60,64 @@ class MainWindow(QtWidgets.QWidget):
         self.pages = ['primitives', 'hash', 'enc', 'mac', 'rsa', 'elgamal', 'dsa', 'dh', 'ecelgamal', 'ecdsa', 'ecdh']
         self.widgets = [PrimitivesUI(), HashUI(), SKEncUI(), MacUI(), RsaUI(), ElGamalUI(), DsaUI(), DHUI(), ECElGamalUI(), ECDSAUI(), ECDHUI()]
         for widget in self.widgets:
+            theme.polish(widget)
             self.stackedWidget.addWidget(widget)
 
-    #     self.initPrimitives()
-    #     self.stackedWidget.addWidget(self.primitives)
-        
-    #     self.initHash()
-    #     self.stackedWidget.addWidget(self.hash)
+    def initMainLayout(self):
+        self.pageTitle = QtWidgets.QLabel()
+        self.pageTitle.setObjectName("pageTitle")
+        self.pageSubtitle = QtWidgets.QLabel()
+        self.pageSubtitle.setObjectName("pageSubtitle")
 
-    #     self.initSKEnc()
-    #     self.stackedWidget.addWidget(self.ske)
+        # Header and page in a column of bounded width, scrolled when the window is small
+        column = QtWidgets.QWidget()
+        column.setMaximumWidth(CONTENT_MAX_WIDTH)
+        columnLayout = QtWidgets.QVBoxLayout(column)
+        columnLayout.setContentsMargins(40, 32, 40, 32)
+        columnLayout.setSpacing(4)
+        columnLayout.addWidget(self.pageTitle)
+        columnLayout.addWidget(self.pageSubtitle)
+        columnLayout.addSpacing(20)
+        columnLayout.addWidget(self.stackedWidget, 1)
 
-    #     self.initMac()
-    #     self.stackedWidget.addWidget(self.mac)
+        content = QtWidgets.QWidget()
+        content.setObjectName("content")
+        content.setAttribute(QtCore.Qt.WA_StyledBackground, True)
+        contentLayout = QtWidgets.QHBoxLayout(content)
+        contentLayout.setContentsMargins(0, 0, 0, 0)
+        contentLayout.addWidget(column, 1)
+        contentLayout.addStretch(0)
 
-    #     self.initRsa()
-    #     self.stackedWidget.addWidget(self.rsa)
+        scroll = QtWidgets.QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QtWidgets.QFrame.NoFrame)
+        scroll.setWidget(content)
 
-    #     self.initElGamal()
-    #     self.stackedWidget.addWidget(self.elgamal)
+        self.mainLayout = QtWidgets.QHBoxLayout(self)
+        self.mainLayout.setContentsMargins(0, 0, 0, 0)
+        self.mainLayout.setSpacing(0)
+        self.mainLayout.addWidget(self.navbar)
+        self.mainLayout.addWidget(scroll, 1)
 
-    #     self.initDsa()
-    #     self.stackedWidget.addWidget(self.dsa)
+    def loadPage(self, pageIndex):
+        key = self.pages[pageIndex]
+        self.stackedWidget.setCurrentIndex(pageIndex)
+        title, subtitle = PAGE_INFO[key]
+        self.pageTitle.setText(title)
+        self.pageSubtitle.setText(subtitle)
+        self.navbar.select(key)
 
-    #     self.initDH()
-    #     self.stackedWidget.addWidget(self.dh)
+    def toggleTheme(self):
+        self.themeName = "dark" if self.themeName == "light" else "light"
+        theme.save(self.themeName)
+        theme.apply(QtWidgets.QApplication.instance(), self.themeName)
+        self.navbar.setTheme(self.themeName)
 
-    #     self.initECElGamal()
-    #     self.stackedWidget.addWidget(self.ecelgamal)
-
-    #     self.initECDSA()
-    #     self.stackedWidget.addWidget(self.ecdsa)
-
-    #     self.initECDH()
-    #     self.stackedWidget.addWidget(self.ecdh)
-        
-    # def initPrimitives(self):
-    #     self.primitives = PrimitivesUI()
-    
-    # def initHash(self):
-    #     self.hash = HashUI()
-    
-    # def initSKEnc(self):
-    #     self.ske = SKEncUI()    
-
-    # def initMac(self):
-    #     self.mac = MacUI()
-    
-    # def initRsa(self):
-    #     self.rsa = RsaUI()
-
-    # def initElGamal(self):
-    #     self.elgamal = ElGamalUI()
-    
-    # def initDsa(self):
-    #     self.dsa = DsaUI()
-
-    # def initDH(self):
-    #     self.dh = DHUI()
-    
-    # def initECElGamal(self):
-    #     self.ecelgamal = ECElGamalUI()
-
-    # def initECDSA(self):
-    #     self.ecdsa = ECDSAUI()
-    
-    # def initECDH(self):
-    #     self.ecdh = ECDHUI()
 
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
+    theme.apply(app, theme.saved())
     mainWindow = MainWindow()
-    # mainWindow.setStyleSheet("background-color: #303657;")
     mainWindow.show()
     sys.exit(app.exec_())

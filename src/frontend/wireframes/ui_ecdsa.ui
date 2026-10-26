@@ -16,9 +16,6 @@
         <layout class="QVBoxLayout" name="mainLayout">
             <item>
                 <widget class="QLabel" name="mainTitle">
-                    <property name="styleSheet">
-                        <string>font-size: 35px; font-weight: bold; color: #3f4773;</string>
-                    </property>
                     <property name="text">
                         <string>ECDSA: Elliptic Curve Digital Signature Algorithm</string>
                     </property>
@@ -161,9 +158,6 @@
                                 </item>
                                 <item>
                                     <widget class="QPushButton" name="btnKeyGen">
-                                        <property name="styleSheet">
-                                            <string notr="true">background-color: #007BFF; color: white; padding: 5px 10px; border-radius: 5px;</string>
-                                        </property>
                                         <property name="text">
                                             <string>Generate Key</string>
                                         </property>
@@ -251,9 +245,6 @@
                                                 <height>30</height>
                                             </size>
                                         </property>
-                                        <property name="styleSheet">
-                                            <string>background-color: #007BFF; color: white; padding: 5px 10px; border-radius: 5px;</string>
-                                        </property>
                                         <property name="text">
                                             <string>Sign</string>
                                         </property>
@@ -266,9 +257,6 @@
                                                 <width>150</width>
                                                 <height>30</height>
                                             </size>
-                                        </property>
-                                        <property name="styleSheet">
-                                            <string>background-color: #FF5733; color: white; padding: 5px 10px; border-radius: 5px;</string>
                                         </property>
                                         <property name="text">
                                             <string>Verify</string>

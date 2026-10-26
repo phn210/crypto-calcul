@@ -22,7 +22,7 @@ env
 # QT Creator files
 .qtcreator
 .qtc_clangd
-DLC.*
+*.user
 
 # Prerequisites
 *.d

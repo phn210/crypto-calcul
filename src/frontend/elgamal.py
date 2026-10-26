@@ -103,7 +103,11 @@ class ElGamalUI(QtWidgets.QWidget):
 
 if __name__ == "__main__":
     import sys
+    import theme
     app = QtWidgets.QApplication(sys.argv)
+    theme.apply(app, theme.saved())
     widget = ElGamalUI()
+    theme.polish(widget)
+    widget.setContentsMargins(32, 32, 32, 32)
     widget.show()
     sys.exit(app.exec_())

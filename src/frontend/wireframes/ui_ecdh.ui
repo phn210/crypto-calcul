@@ -16,9 +16,6 @@
         <layout class="QVBoxLayout" name="mainLayout">
             <item>
                 <widget class="QLabel" name="mainTitle">
-                    <property name="styleSheet">
-                        <string>font-size: 35px; font-weight: bold; color: #3f4773;</string>
-                    </property>
                     <property name="text">
                         <string>ECDH Key Exchange</string>
                     </property>
@@ -193,9 +190,6 @@
                                 </item>
                                 <item>
                                     <widget class="QPushButton" name="btnSecretGen">
-                                        <property name="styleSheet">
-                                            <string notr="true">background-color: #007BFF; color: white; padding: 5px 10px; border-radius: 5px;</string>
-                                        </property>
                                         <property name="text">
                                             <string>Generate Secret</string>
                                         </property>
@@ -256,9 +250,6 @@
                                                 <width>200</width>
                                                 <height>30</height>
                                             </size>
-                                        </property>
-                                        <property name="styleSheet">
-                                            <string>background-color: #007BFF; color: white; padding: 5px 10px; border-radius: 5px;</string>
                                         </property>
                                         <property name="text">
                                             <string>Generate Shared Secret</string>

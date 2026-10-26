@@ -175,11 +175,13 @@ except CryptoError as e:
 make gui
 ```
 
-or
+or, for a single page:
 
 ```sh
 make gui_<page_name>
 ```
+
+The interface has light and dark themes, switched from the bottom of the sidebar and remembered between runs. Its look is defined in [src/frontend/theme.py](src/frontend/theme.py): color tokens for each theme and the Qt stylesheet built from them. The page forms are Qt Designer files in [src/frontend/wireframes/](src/frontend/wireframes/) and carry no styling of their own.
 
 ## Cleaning Up
 
