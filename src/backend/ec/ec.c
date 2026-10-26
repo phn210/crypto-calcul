@@ -1,5 +1,7 @@
 #include "ec.h"
 #include "conversion.h"
+#include "sha2.h"
+#include "sha3.h"
 
 void init_point(point_t *p)
 {
@@ -44,8 +46,18 @@ void copy_affine(point_affine_t *r, const point_affine_t p)
     mpz_set(r->y, p.y);
 }
 
-void init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id)
+static char *copy_name(const char *name)
 {
+    size_t name_len = strlen(name);
+    char *copy = malloc(name_len + 1);
+    if (copy != NULL)
+        memcpy(copy, name, name_len + 1);
+    return copy;
+}
+
+cc_status_t init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id)
+{
+    curve->name = NULL;
     init_affine(&curve->G);
     mpz_inits(curve->p, curve->r, curve->a, curve->b, NULL);
     curve->type = curve_type;
@@ -59,10 +71,7 @@ void init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id)
         {
         case P224:
         {
-            size_t name_len = strlen(P224_NAME);
-            curve->name = (char *)malloc(name_len + 1);
-            memcpy(curve->name, P224_NAME, name_len);
-            curve->name[name_len] = '\0';
+            curve->name = copy_name(P224_NAME);
             curve->md_len = P224_MD_LEN;
             curve->efs = P224_EFS;
             curve->cof = P224_COF;
@@ -76,10 +85,7 @@ void init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id)
         }
         case P384:
         {
-            size_t name_len = strlen(P384_NAME);
-            curve->name = (char *)malloc(name_len + 1);
-            memcpy(curve->name, P384_NAME, name_len);
-            curve->name[name_len] = '\0';
+            curve->name = copy_name(P384_NAME);
             curve->md_len = P384_MD_LEN;
             curve->efs = P384_EFS;
             curve->cof = P384_COF;
@@ -93,10 +99,7 @@ void init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id)
         }
         case P256:
         {
-            size_t name_len = strlen(P256_NAME);
-            curve->name = (char *)malloc(name_len + 1);
-            memcpy(curve->name, P256_NAME, name_len);
-            curve->name[name_len] = '\0';
+            curve->name = copy_name(P256_NAME);
             curve->md_len = P256_MD_LEN;
             curve->efs = P256_EFS;
             curve->cof = P256_COF;
@@ -110,10 +113,7 @@ void init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id)
         }
         case P521:
         {
-            size_t name_len = strlen(P521_NAME);
-            curve->name = (char *)malloc(name_len + 1);
-            memcpy(curve->name, P521_NAME, name_len);
-            curve->name[name_len] = '\0';
+            curve->name = copy_name(P521_NAME);
             curve->md_len = P521_MD_LEN;
             curve->efs = P521_EFS;
             curve->cof = P521_COF;
@@ -127,10 +127,7 @@ void init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id)
         }
         case P256K1:
         {
-            size_t name_len = strlen(P256K1_NAME);
-            curve->name = (char *)malloc(name_len + 1);
-            memcpy(curve->name, P256K1_NAME, name_len);
-            curve->name[name_len] = '\0';
+            curve->name = copy_name(P256K1_NAME);
             curve->md_len = P256K1_MD_LEN;
             curve->efs = P256K1_EFS;
             curve->cof = P256K1_COF;
@@ -144,10 +141,7 @@ void init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id)
         }
         case W25519:
         {
-            size_t name_len = strlen(W25519_NAME);
-            curve->name = (char *)malloc(name_len + 1);
-            memcpy(curve->name, W25519_NAME, name_len);
-            curve->name[name_len] = '\0';
+            curve->name = copy_name(W25519_NAME);
             curve->md_len = W25519_MD_LEN;
             curve->efs = W25519_EFS;
             curve->cof = W25519_COF;
@@ -161,10 +155,7 @@ void init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id)
         }
         case W448:
         {
-            size_t name_len = strlen(W448_NAME);
-            curve->name = (char *)malloc(name_len + 1);
-            memcpy(curve->name, W448_NAME, name_len);
-            curve->name[name_len] = '\0';
+            curve->name = copy_name(W448_NAME);
             curve->md_len = W448_MD_LEN;
             curve->efs = W448_EFS;
             curve->cof = W448_COF;
@@ -178,8 +169,8 @@ void init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id)
         }
         default:
         {
-            fprintf(stderr, "Invalid curve ID\n");
-            exit(EXIT_FAILURE);
+            free_curve(curve);
+            return CC_ERR_INVALID_ARG;
         }
         }
         break;
@@ -190,10 +181,7 @@ void init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id)
         {
         case C25519:
         {
-            size_t name_len = strlen(C25519_NAME);
-            curve->name = (char *)malloc(name_len + 1);
-            memcpy(curve->name, C25519_NAME, name_len);
-            curve->name[name_len] = '\0';
+            curve->name = copy_name(C25519_NAME);
             curve->md_len = C25519_MD_LEN;
             curve->efs = C25519_EFS;
             curve->cof = C25519_COF;
@@ -207,10 +195,7 @@ void init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id)
         }
         case C448:
         {
-            size_t name_len = strlen(C448_NAME);
-            curve->name = (char *)malloc(name_len + 1);
-            memcpy(curve->name, C448_NAME, name_len);
-            curve->name[name_len] = '\0';
+            curve->name = copy_name(C448_NAME);
             curve->md_len = C448_MD_LEN;
             curve->efs = C448_EFS;
             curve->cof = C448_COF;
@@ -224,8 +209,8 @@ void init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id)
         }
         default:
         {
-            fprintf(stderr, "Invalid curve ID\n");
-            exit(EXIT_FAILURE);
+            free_curve(curve);
+            return CC_ERR_INVALID_ARG;
         }
         }
         break;
@@ -236,10 +221,7 @@ void init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id)
         {
         case ED25519:
         {
-            size_t name_len = strlen(ED25519_NAME);
-            curve->name = (char *)malloc(name_len + 1);
-            memcpy(curve->name, ED25519_NAME, name_len);
-            curve->name[name_len] = '\0';
+            curve->name = copy_name(ED25519_NAME);
             curve->md_len = ED25519_MD_LEN;
             curve->efs = ED25519_EFS;
             curve->cof = ED25519_COF;
@@ -253,10 +235,7 @@ void init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id)
         }
         case ED448:
         {
-            size_t name_len = strlen(ED448_NAME);
-            curve->name = (char *)malloc(name_len + 1);
-            memcpy(curve->name, ED448_NAME, name_len);
-            curve->name[name_len] = '\0';
+            curve->name = copy_name(ED448_NAME);
             curve->md_len = ED448_MD_LEN;
             curve->efs = ED448_EFS;
             curve->cof = ED448_COF;
@@ -270,10 +249,7 @@ void init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id)
         }
         case E448:
         {
-            size_t name_len = strlen(E448_NAME);
-            curve->name = (char *)malloc(name_len + 1);
-            memcpy(curve->name, E448_NAME, name_len);
-            curve->name[name_len] = '\0';
+            curve->name = copy_name(E448_NAME);
             curve->md_len = E448_MD_LEN;
             curve->efs = E448_EFS;
             curve->cof = E448_COF;
@@ -287,23 +263,24 @@ void init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id)
         }
         default:
         {
-            fprintf(stderr, "Invalid curve ID\n");
-            exit(EXIT_FAILURE);
+            free_curve(curve);
+            return CC_ERR_INVALID_ARG;
         }
         }
         break;
     }
     default:
     {
-        fprintf(stderr, "Invalid curve type\n");
-        exit(EXIT_FAILURE);
+        free_curve(curve);
+        return CC_ERR_INVALID_ARG;
     }
     }
     if (curve->name == NULL)
     {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
+        free_curve(curve);
+        return CC_ERR_NOMEM;
     }
+    return CC_OK;
 }
 
 void free_curve(curve_t *curve)
@@ -404,6 +381,15 @@ char is_on_curve(const point_t p, const curve_t curve)
     return res;
 }
 
+char is_valid_point(const point_t p, const curve_t curve)
+{
+    if (mpz_cmp_ui(p.z, 1) != 0 || mpz_sgn(p.x) < 0 || mpz_cmp(p.x, curve.p) >= 0)
+        return 0;
+    if (curve.type != MONTGOMERY && (mpz_sgn(p.y) < 0 || mpz_cmp(p.y, curve.p) >= 0))
+        return 0;
+    return !is_infinity(p, curve) && is_on_curve(p, curve);
+}
+
 char equals(const point_t p, const point_t q, const curve_t curve)
 {
     char res = 1;
@@ -430,8 +416,11 @@ char equals(const point_t p, const point_t q, const curve_t curve)
     return res;
 }
 
-void neg(point_t *r, const point_t p, const curve_t curve)
+cc_status_t neg(point_t *r, const point_t p, const curve_t curve)
 {
+    if (curve.type == MONTGOMERY)
+        return CC_ERR_UNSUPPORTED;
+
     copy_point(r, p);
     if (curve.type == WEIERSTRASS)
     {
@@ -443,25 +432,24 @@ void neg(point_t *r, const point_t p, const curve_t curve)
         mpz_neg(r->x, r->x);
         mpz_mod(r->x, r->x, curve.p);
     }
-    else
-    {
-        fprintf(stderr, "Negation not supported for Montgomery curves\n");
-        exit(EXIT_FAILURE);
-    }
+    return CC_OK;
 }
 
-void add(point_t *r, const point_t p, const point_t q, const curve_t curve)
+cc_status_t add(point_t *r, const point_t p, const point_t q, const curve_t curve)
 {
+    if (curve.type == MONTGOMERY)
+        return CC_ERR_UNSUPPORTED;
+
     if (is_infinity(p, curve))
     {
         copy_point(r, q);
-        return;
+        return CC_OK;
     }
 
     if (is_infinity(q, curve))
     {
         copy_point(r, p);
-        return;
+        return CC_OK;
     }
 
     switch (curve.type)
@@ -618,32 +606,27 @@ void add(point_t *r, const point_t p, const point_t q, const curve_t curve)
         break;
     }
     case MONTGOMERY:
-    {
-        fprintf(stderr, "Addition not supported for Montgomery curves\n");
-        exit(EXIT_FAILURE);
         break;
     }
-    }
+    return CC_OK;
 }
 
-void dadd(point_t *r, const point_t p, const point_t q, const point_t w, const curve_t curve)
+cc_status_t dadd(point_t *r, const point_t p, const point_t q, const point_t w, const curve_t curve)
 {
+    // Differential addition only exists for Montgomery curves
+    if (curve.type != MONTGOMERY)
+        return CC_ERR_UNSUPPORTED;
+
     if (is_infinity(p, curve))
     {
         copy_point(r, q);
-        return;
+        return CC_OK;
     }
 
     if (is_infinity(q, curve))
     {
         copy_point(r, p);
-        return;
-    }
-
-    if (curve.type != MONTGOMERY)
-    {
-        fprintf(stderr, "Double addition not supported only for Montgomery curves\n");
-        exit(EXIT_FAILURE);
+        return CC_OK;
     }
 
     // XZ coordinates for Montgomery curves
@@ -672,6 +655,7 @@ void dadd(point_t *r, const point_t p, const point_t q, const point_t w, const c
     mpz_set(r->z, Z5);
 
     mpz_clears(A, B, C, D, E, F, X5, Z5, NULL);
+    return CC_OK;
 }
 
 void dbl(point_t *r, const point_t p, const curve_t curve)
@@ -952,43 +936,24 @@ void from_affine(point_t *r, const point_affine_t p, const curve_t curve)
     mpz_set_ui(r->z, 1);
 }
 
-void point_to_bytes(unsigned char *buf, const point_t p, const curve_t curve)
+size_t point_size(const curve_t curve)
 {
-    unsigned char temp[curve.efs];
-    size_t count = 0;
+    return curve.type == MONTGOMERY ? curve.efs : 2 * curve.efs;
+}
 
+cc_status_t point_to_bytes(unsigned char *buf, const point_t p, const curve_t curve)
+{
     point_affine_t p_affine;
     init_affine(&p_affine);
     to_affine(&p_affine, p, curve);
 
-    // Export x-coordinate
-    memset(buf, 0, curve.efs);
-    memset(temp, 0, curve.efs);
-    mpz_export(temp, &count, 1, 1, 0, 0, p_affine.x);
-    memcpy(buf + (curve.efs - count), temp, count);
-    if (count > curve.efs)
-    {
-        fprintf(stderr, "Error: x-coordinate too large for curve.efs\n");
-        free_affine(&p_affine);
-        exit(EXIT_FAILURE);
-    }
-
-    if (curve.type != MONTGOMERY)
-    {
-        // Export y-coordinate
-        memset(buf + curve.efs, 0, curve.efs);
-        memset(temp, 0, curve.efs);
-        mpz_export(temp, &count, 1, 1, 0, 0, p_affine.y);
-        memcpy(buf + curve.efs + (curve.efs - count), temp, count);
-        if (count > curve.efs)
-        {
-            fprintf(stderr, "Error: y-coordinate too large for curve.efs\n");
-            free_affine(&p_affine);
-            exit(EXIT_FAILURE);
-        }
-    }
+    // x (and y for non-Montgomery curves), each as curve.efs big-endian bytes
+    cc_status_t status = bigint_to_bytes_fixed(buf, curve.efs, p_affine.x);
+    if (status == CC_OK && curve.type != MONTGOMERY)
+        status = bigint_to_bytes_fixed(buf + curve.efs, curve.efs, p_affine.y);
 
     free_affine(&p_affine);
+    return status;
 }
 
 void point_from_bytes(point_t *r, const unsigned char *buf, const curve_t curve)
@@ -1010,4 +975,19 @@ void point_from_bytes(point_t *r, const unsigned char *buf, const curve_t curve)
 
     // Set z-coordinate to 1 (affine form)
     mpz_set_ui(r->z, 1);
+}
+
+cc_status_t ec_hash_function(hash_func_t hash_function, void *(**hash)(const void *, size_t, void *, size_t))
+{
+    switch (hash_function)
+    {
+    case SHA2:
+        *hash = &sha2;
+        return CC_OK;
+    case SHA3:
+        *hash = &sha3;
+        return CC_OK;
+    default:
+        return CC_ERR_INVALID_ARG;
+    }
 }

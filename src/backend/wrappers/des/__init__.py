@@ -4,7 +4,8 @@ import cython
 class DES:
     @cython.ccall
     def des(self, data: bytes, key: bytes, mode):
-        assert len(data) / _DES_BLOCK_SIZE == len(data) // _DES_BLOCK_SIZE
+        if len(data) % _DES_BLOCK_SIZE != 0:
+            raise ValueError("DES input length must be a multiple of 8 bytes")
         num_blocks = len(data) // _DES_BLOCK_SIZE
 
         in_blocks = cython.cast(cython.p_ulonglong, malloc(num_blocks * _DES_BLOCK_SIZE))
@@ -29,7 +30,7 @@ class DES:
         out_ptr = cython.cast(cython.p_char, outfile)
         key_block = cython.cast(cython.ulonglong, int.from_bytes(key, byteorder='little'))
 
-        des_file(in_ptr, out_ptr, key_block, mode)
+        check(des_file(in_ptr, out_ptr, key_block, mode))
 
     @cython.ccall
     def encrypt_file(self, file_path: str, output_path: str, key: bytes) -> cython.void:
@@ -52,16 +53,18 @@ class DES:
 
     @cython.ccall
     def pad(self, data: bytes, length: cython.size_t) -> bytes:
-        in_bytes = cython.declare(cython.p_uchar, data)
+        padded_data: cython.p_uchar = cython.NULL
         padded_len: cython.size_t = 0
-        padded_data = pkcs7_padding(in_bytes, length, cython.address(padded_len), _DES_BLOCK_SIZE)
+        check(pkcs7_padding(cython.cast(cython.p_uchar, data), length, cython.address(padded_data), cython.address(padded_len), _DES_BLOCK_SIZE))
         result = cython.declare(bytes, padded_data[:padded_len])
-        return result[:padded_len]
+        free(padded_data)
+        return result
 
     @cython.ccall
     def unpad(self, padded_data: bytes, length: cython.size_t) -> bytes:
-        in_bytes = cython.declare(cython.p_uchar, padded_data)
+        data: cython.p_uchar = cython.NULL
         unpadded_len: cython.size_t = 0
-        data = pkcs7_unpadding(in_bytes, length, cython.address(unpadded_len), _DES_BLOCK_SIZE)
+        check(pkcs7_unpadding(cython.cast(cython.p_uchar, padded_data), length, cython.address(data), cython.address(unpadded_len), _DES_BLOCK_SIZE))
         result = cython.declare(bytes, data[:unpadded_len])
-        return result[:unpadded_len]
+        free(data)
+        return result

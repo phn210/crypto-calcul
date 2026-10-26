@@ -45,24 +45,38 @@ typedef struct priv_key
     mpz_t q_inv; // q^(-1) mod p
 } priv_key_t;
 
-// Core RSA functions
-void setup(public_params_t *pp, sec_level_t level);
+// Setup and key generation initialize their outputs only on success
+CC_NODISCARD cc_status_t rsa_setup(public_params_t *pp, sec_level_t level);
+CC_NODISCARD cc_status_t rsa_keygen(priv_key_t *sk, pub_key_t *pk, const public_params_t *pp);
+void rsa_free_params(public_params_t *pp);
+void rsa_free_keys(priv_key_t *sk, pub_key_t *pk);
 
-void keygen(priv_key_t *sk, pub_key_t *pk, public_params_t pp);
+// Size in bytes of the modulus: the length of ciphertexts and signatures of the padded schemes
+size_t rsa_modulus_size(const mpz_t n);
+// SHA-2 output length used by the padded schemes at this security level
+CC_NODISCARD cc_status_t rsa_hash_length(sec_level_t sec_level, size_t *hash_len);
 
-void crypto_encrypt(mpz_t c, const mpz_t m, const pub_key_t *pk);
-void crypto_decrypt(mpz_t m, const mpz_t c, const priv_key_t *sk, rsa_algo_t algorithm);
-void crypto_sign(mpz_t s, const mpz_t m, const priv_key_t *sk, rsa_algo_t algorithm);
-int crypto_verify(const mpz_t m, const mpz_t s, const pub_key_t *pk);
+// Raw RSA primitives: x^e mod n and x^d mod n, for 0 <= x < n
+void rsa_public_op(mpz_t r, const mpz_t x, const pub_key_t *pk);
+CC_NODISCARD cc_status_t rsa_private_op(mpz_t r, const mpz_t x, const priv_key_t *sk, rsa_algo_t algorithm);
 
-void crypto_encrypt_pkcs1(mpz_t c, const mpz_t m, const pub_key_t *pk);
-void crypto_decrypt_pkcs1(mpz_t m, const mpz_t c, const priv_key_t *sk, rsa_algo_t algorithm);
-void crypto_sign_pkcs1(mpz_t s, const mpz_t m, const priv_key_t *sk, rsa_algo_t algorithm, sec_level_t sec_level);
-int crypto_verify_pkcs1(const mpz_t m, const mpz_t s, const pub_key_t *pk, sec_level_t sec_level);
+// Textbook RSA on integers in [0, n)
+CC_NODISCARD cc_status_t rsa_encrypt(mpz_t c, const mpz_t m, const pub_key_t *pk);
+CC_NODISCARD cc_status_t rsa_decrypt(mpz_t m, const mpz_t c, const priv_key_t *sk, rsa_algo_t algorithm);
+CC_NODISCARD cc_status_t rsa_sign(mpz_t s, const mpz_t m, const priv_key_t *sk, rsa_algo_t algorithm);
+// Returns CC_OK if the signature is valid, CC_ERR_VERIFY otherwise
+CC_NODISCARD cc_status_t rsa_verify(const mpz_t m, const mpz_t s, const pub_key_t *pk);
 
-void crypto_encrypt_oaep(mpz_t c, const mpz_t m, const pub_key_t *pk, sec_level_t sec_level);
-void crypto_decrypt_oaep(mpz_t m, const mpz_t c, const priv_key_t *sk, rsa_algo_t algorithm, sec_level_t sec_level);
-void crypto_sign_pss(mpz_t s, const mpz_t m, const priv_key_t *sk, rsa_algo_t algorithm, sec_level_t sec_level);
-int crypto_verify_pss(const mpz_t m, const mpz_t s, const pub_key_t *pk, sec_level_t sec_level);
+// Padded schemes work on byte strings. Ciphertexts and signatures are rsa_modulus_size(n) bytes;
+// decrypted messages are at most that long.
+CC_NODISCARD cc_status_t rsa_encrypt_pkcs1(unsigned char *c, const unsigned char *m, size_t m_len, const pub_key_t *pk);
+CC_NODISCARD cc_status_t rsa_decrypt_pkcs1(unsigned char *m, size_t *m_len, const unsigned char *c, size_t c_len, const priv_key_t *sk, rsa_algo_t algorithm);
+CC_NODISCARD cc_status_t rsa_sign_pkcs1(unsigned char *s, const unsigned char *m, size_t m_len, const priv_key_t *sk, rsa_algo_t algorithm, sec_level_t sec_level);
+CC_NODISCARD cc_status_t rsa_verify_pkcs1(const unsigned char *m, size_t m_len, const unsigned char *s, size_t s_len, const pub_key_t *pk, sec_level_t sec_level);
+
+CC_NODISCARD cc_status_t rsa_encrypt_oaep(unsigned char *c, const unsigned char *m, size_t m_len, const pub_key_t *pk, sec_level_t sec_level);
+CC_NODISCARD cc_status_t rsa_decrypt_oaep(unsigned char *m, size_t *m_len, const unsigned char *c, size_t c_len, const priv_key_t *sk, rsa_algo_t algorithm, sec_level_t sec_level);
+CC_NODISCARD cc_status_t rsa_sign_pss(unsigned char *s, const unsigned char *m, size_t m_len, const priv_key_t *sk, rsa_algo_t algorithm, sec_level_t sec_level);
+CC_NODISCARD cc_status_t rsa_verify_pss(const unsigned char *m, size_t m_len, const unsigned char *s, size_t s_len, const pub_key_t *pk, sec_level_t sec_level);
 
 #endif

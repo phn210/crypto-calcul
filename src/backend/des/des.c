@@ -1,5 +1,6 @@
 #include "des.h"
 #include "conversion.h"
+#include "file_io.h"
 
 void des_ip(uint64_t *block)
 {
@@ -79,7 +80,7 @@ void des_sbox(uint64_t *subblock, uint32_t *res_subblock)
         uint8_t row = ((s_input & 0x20) >> 4) | (s_input & 1);
         uint8_t col = (s_input >> 1) & 0xF;
         uint8_t s_output = DES_SBOX[i][row][col];
-        new_subblock |= s_output << (32 - 4 * (i + 1));
+        new_subblock |= (uint32_t)s_output << (32 - 4 * (i + 1));
     }
     *res_subblock = new_subblock;
 }
@@ -149,94 +150,52 @@ void des(uint64_t *input, uint64_t *output, const uint64_t key, int len, des_mod
     }
 }
 
-void des_file(const char *input_file, const char *output_file, const uint64_t key, des_mode_t mode)
+cc_status_t des_file(const char *input_file, const char *output_file, const uint64_t key, des_mode_t mode)
 {
-    FILE *input = fopen(input_file, "rb");
-    FILE *output = fopen(output_file, "wb");
+    if (mode != DES_ENCRYPT && mode != DES_DECRYPT)
+        return CC_ERR_INVALID_ARG;
 
-    if (input == NULL || output == NULL)
-    {
-        perror("Error opening file");
-        exit(1);
-    }
+    unsigned char *input_data, *blocks_data = NULL, *output_data = NULL;
+    size_t file_size, len = 0, output_len = 0;
+    uint64_t *output_blocks = NULL;
+    CC_TRY(read_file(input_file, &input_data, &file_size));
 
-    fseek(input, 0, SEEK_END);
-    size_t file_size = ftell(input);
-    fseek(input, 0, SEEK_SET);
-
-    uint64_t *input_blocks, *output_blocks;
-    size_t len = 0;
-
+    cc_status_t status = CC_OK;
     if (mode == DES_ENCRYPT)
-    {
-        unsigned char *input_data = malloc(file_size);
-        if (input_data == NULL)
-        {
-            fprintf(stderr, "Memory allocation failed\n");
-            exit(EXIT_FAILURE);
-        }
-        fread(input_data, 1, file_size, input);
-        unsigned char *padded_data = pkcs7_padding(input_data, file_size, &len, DES_BLOCK_SIZE);
-        len = len / 8;
-        input_blocks = malloc(len * sizeof(uint64_t));
-        if (input_blocks == NULL)
-        {
-            fprintf(stderr, "Memory allocation failed\n");
-            exit(EXIT_FAILURE);
-        }
-        memcpy(input_blocks, padded_data, len * 8);
-
-        free(input_data);
-        free(padded_data);
-    }
+        status = pkcs7_padding(input_data, file_size, &blocks_data, &len, DES_BLOCK_SIZE);
+    else if (file_size % DES_BLOCK_SIZE != 0)
+        status = CC_ERR_INVALID_INPUT;
     else
     {
-        if (file_size % 8 != 0)
-        {
-            perror("Invalid file size");
-            exit(1);
-        }
-        len = file_size / 8;
-        input_blocks = malloc(len * sizeof(uint64_t));
-        if (input_blocks == NULL)
-        {
-            fprintf(stderr, "Memory allocation failed\n");
-            exit(EXIT_FAILURE);
-        }
-        fread(input_blocks, sizeof(uint64_t), len, input);
+        blocks_data = input_data;
+        input_data = NULL;
+        len = file_size;
     }
-    output_blocks = malloc(len * sizeof(uint64_t));
-    if (output_blocks == NULL)
+
+    // Blocks are processed as native-endian 64-bit words
+    size_t nb_blocks = len / DES_BLOCK_SIZE;
+    uint64_t *input_blocks = NULL;
+    if (status == CC_OK && ((input_blocks = malloc(len + 1)) == NULL || (output_blocks = malloc(len + 1)) == NULL))
+        status = CC_ERR_NOMEM;
+    if (status == CC_OK)
     {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
+        memcpy(input_blocks, blocks_data, len);
+        des(input_blocks, output_blocks, key, (int)nb_blocks, mode);
 
-    des(input_blocks, output_blocks, key, len, mode);
-
-    if (mode == DES_ENCRYPT)
-    {
-        fwrite(output_blocks, sizeof(uint64_t), len, output);
-    }
-    else
-    {
-        unsigned char *output_data = malloc(len * 8);
-        if (output_data == NULL)
+        if (mode == DES_ENCRYPT)
+            status = write_file(output_file, (unsigned char *)output_blocks, len);
+        else
         {
-            fprintf(stderr, "Memory allocation failed\n");
-            exit(EXIT_FAILURE);
+            status = pkcs7_unpadding((unsigned char *)output_blocks, len, &output_data, &output_len, DES_BLOCK_SIZE);
+            if (status == CC_OK)
+                status = write_file(output_file, output_data, output_len);
         }
-        memcpy(output_data, output_blocks, len * 8);
-        unsigned char *unpadded_data = pkcs7_unpadding(output_data, len * 8, &len, DES_BLOCK_SIZE);
-        fwrite(unpadded_data, 1, len, output);
-
-        free(output_data);
-        free(unpadded_data);
     }
 
-    fclose(input);
-    fclose(output);
-
+    free(input_data);
+    free(blocks_data);
     free(input_blocks);
     free(output_blocks);
+    free(output_data);
+    return status;
 }

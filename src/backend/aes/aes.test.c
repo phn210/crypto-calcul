@@ -1,4 +1,5 @@
 #include "aes.h"
+#include "test_util.h"
 #include "conversion.h"
 
 int compare_files(const char *file1, const char *file2)
@@ -62,7 +63,8 @@ int main()
 
     // Pad input if necessary
     size_t padded_len;
-    unsigned char *padded_message = pkcs7_padding((unsigned char *)message, len, &padded_len, AES_BLOCK_SIZE);
+    unsigned char *padded_message = NULL;
+    EXPECT_OK(pkcs7_padding((unsigned char *)message, len, &padded_message, &padded_len, AES_BLOCK_SIZE));
     // size_t len_blocks = padded_len / AES_BLOCK_SIZE;
 
     // printf("\nPadded message hex: ");
@@ -104,7 +106,7 @@ int main()
         exit(EXIT_FAILURE);
     }
 
-    aes_encrypt_ecb(input_blocks, encrypted_ecb, key_hex, padded_len, AES_KEY_SIZE_128);
+    EXPECT_OK(aes_encrypt_ecb(input_blocks, encrypted_ecb, key_hex, padded_len, AES_KEY_SIZE_128));
 
     // printf("\nEncrypted (ECB): ");
     // for (size_t i = 0; i < padded_len; i++)
@@ -112,11 +114,12 @@ int main()
     //     printf("%02x", encrypted_ecb[i]);
     // }
 
-    aes_decrypt_ecb(encrypted_ecb, decrypted_ecb, key_hex, padded_len, AES_KEY_SIZE_128);
+    EXPECT_OK(aes_decrypt_ecb(encrypted_ecb, decrypted_ecb, key_hex, padded_len, AES_KEY_SIZE_128));
 
     // Unpad decrypted message
     size_t decrypted_len;
-    unsigned char *unpadded_message = pkcs7_unpadding(decrypted_ecb, padded_len, &decrypted_len, AES_BLOCK_SIZE);
+    unsigned char *unpadded_message = NULL;
+    EXPECT_OK(pkcs7_unpadding(decrypted_ecb, padded_len, &unpadded_message, &decrypted_len, AES_BLOCK_SIZE));
 
     // printf("\nDecrypted (ECB): %s\n", unpadded_message);
 
@@ -153,7 +156,7 @@ int main()
         exit(EXIT_FAILURE);
     }
 
-    aes_encrypt_cbc(input_blocks, encrypted_cbc, iv_cbc, key_hex, padded_len, AES_KEY_SIZE_128);
+    EXPECT_OK(aes_encrypt_cbc(input_blocks, encrypted_cbc, iv_cbc, key_hex, padded_len, AES_KEY_SIZE_128));
 
     // printf("\nEncrypted (CBC): ");
     // for (size_t i = 0; i < padded_len; i++)
@@ -161,7 +164,7 @@ int main()
     //     printf("%02x", encrypted_cbc[i]);
     // }
 
-    aes_decrypt_cbc(encrypted_cbc, decrypted_cbc, iv_cbc, key_hex, padded_len, AES_KEY_SIZE_128);
+    EXPECT_OK(aes_decrypt_cbc(encrypted_cbc, decrypted_cbc, iv_cbc, key_hex, padded_len, AES_KEY_SIZE_128));
 
     // printf("\nDecrypted (CBC) hex: ");
     // for (size_t i = 0; i < padded_len; i++)
@@ -170,7 +173,7 @@ int main()
     // }
 
     // Unpad decrypted message
-    unpadded_message = pkcs7_unpadding(decrypted_cbc, padded_len, &decrypted_len, AES_BLOCK_SIZE);
+    EXPECT_OK(pkcs7_unpadding(decrypted_cbc, padded_len, &unpadded_message, &decrypted_len, AES_BLOCK_SIZE));
 
     // printf("\nDecrypted (CBC): %s\n", unpadded_message);
 
@@ -215,7 +218,7 @@ int main()
         exit(EXIT_FAILURE);
     }
 
-    aes_encrypt_cbc(input_blocks, encrypted_cbc_256, iv_cbc_256, key_hex_256, padded_len, AES_KEY_SIZE_256);
+    EXPECT_OK(aes_encrypt_cbc(input_blocks, encrypted_cbc_256, iv_cbc_256, key_hex_256, padded_len, AES_KEY_SIZE_256));
 
     // printf("\nEncrypted (CBC): ");
     // for (size_t i = 0; i < padded_len; i++)
@@ -223,7 +226,7 @@ int main()
     //     printf("%02x", encrypted_cbc_256[i]);
     // }
 
-    aes_decrypt_cbc(encrypted_cbc_256, decrypted_cbc_256, iv_cbc_256, key_hex_256, padded_len, AES_KEY_SIZE_256);
+    EXPECT_OK(aes_decrypt_cbc(encrypted_cbc_256, decrypted_cbc_256, iv_cbc_256, key_hex_256, padded_len, AES_KEY_SIZE_256));
 
     // printf("\nDecrypted (CBC) hex: ");
     // for (size_t i = 0; i < padded_len; i++)
@@ -232,7 +235,7 @@ int main()
     // }
 
     // Unpad decrypted message
-    unpadded_message = pkcs7_unpadding(decrypted_cbc_256, padded_len, &decrypted_len, AES_BLOCK_SIZE);
+    EXPECT_OK(pkcs7_unpadding(decrypted_cbc_256, padded_len, &unpadded_message, &decrypted_len, AES_BLOCK_SIZE));
 
     // printf("\nDecrypted (CBC): %s\n", unpadded_message);
     printf("AES-CBC-256:\t%s\n", memcmp(message, unpadded_message, strlen(message)) == 0 ? "PASS" : "FAIL");
@@ -268,7 +271,7 @@ int main()
         exit(EXIT_FAILURE);
     }
 
-    aes_encrypt_cfb(input_blocks, encrypted_cfb, iv_cfb, key_hex, padded_len, AES_KEY_SIZE_128);
+    EXPECT_OK(aes_encrypt_cfb(input_blocks, encrypted_cfb, iv_cfb, key_hex, padded_len, AES_KEY_SIZE_128));
 
     // printf("\nEncrypted (CFB): ");
     // for (size_t i = 0; i < padded_len; i++)
@@ -276,7 +279,7 @@ int main()
     //     printf("%02x", encrypted_cfb[i]);
     // }
 
-    aes_decrypt_cfb(encrypted_cfb, decrypted_cfb, iv_cfb, key_hex, padded_len, AES_KEY_SIZE_128);
+    EXPECT_OK(aes_decrypt_cfb(encrypted_cfb, decrypted_cfb, iv_cfb, key_hex, padded_len, AES_KEY_SIZE_128));
 
     // printf("\nDecrypted (CFB) hex: ");
     // for (size_t i = 0; i < padded_len; i++)
@@ -285,7 +288,7 @@ int main()
     // }
 
     // Unpad decrypted message
-    unpadded_message = pkcs7_unpadding(decrypted_cfb, padded_len, &decrypted_len, AES_BLOCK_SIZE);
+    EXPECT_OK(pkcs7_unpadding(decrypted_cfb, padded_len, &unpadded_message, &decrypted_len, AES_BLOCK_SIZE));
 
     // printf("\nDecrypted (CFB): %s\n", unpadded_message);
     printf("AES-CFB-128:\t%s\n", memcmp(message, unpadded_message, strlen(message)) == 0 ? "PASS" : "FAIL");
@@ -321,7 +324,7 @@ int main()
         exit(EXIT_FAILURE);
     }
 
-    aes_encrypt_ofb(input_blocks, encrypted_ofb, iv_ofb, key_hex, padded_len, AES_KEY_SIZE_128);
+    EXPECT_OK(aes_encrypt_ofb(input_blocks, encrypted_ofb, iv_ofb, key_hex, padded_len, AES_KEY_SIZE_128));
 
     // printf("\nEncrypted (OFB): ");
     // for (size_t i = 0; i < padded_len; i++)
@@ -329,7 +332,7 @@ int main()
     //     printf("%02x", encrypted_ofb[i]);
     // }
 
-    aes_decrypt_ofb(encrypted_ofb, decrypted_ofb, iv_ofb, key_hex, padded_len, AES_KEY_SIZE_128);
+    EXPECT_OK(aes_decrypt_ofb(encrypted_ofb, decrypted_ofb, iv_ofb, key_hex, padded_len, AES_KEY_SIZE_128));
 
     // printf("\nDecrypted (OFB) hex: ");
     // for (size_t i = 0; i < padded_len; i++)
@@ -338,7 +341,7 @@ int main()
     // }
 
     // Unpad decrypted message
-    unpadded_message = pkcs7_unpadding(decrypted_ofb, padded_len, &decrypted_len, AES_BLOCK_SIZE);
+    EXPECT_OK(pkcs7_unpadding(decrypted_ofb, padded_len, &unpadded_message, &decrypted_len, AES_BLOCK_SIZE));
 
     // printf("\nDecrypted (OFB): %s\n", unpadded_message);
     printf("AES-OFB-128:\t%s\n", memcmp(message, unpadded_message, strlen(message)) == 0 ? "PASS" : "FAIL");
@@ -374,7 +377,7 @@ int main()
         fprintf(stderr, "Memory allocation failed\n");
         exit(EXIT_FAILURE);
     }
-    aes_ctr(input_blocks, encrypted_ctr, nonce_ctr, key_hex, padded_len, AES_KEY_SIZE_128);
+    EXPECT_OK(aes_ctr(input_blocks, encrypted_ctr, nonce_ctr, key_hex, padded_len, AES_KEY_SIZE_128));
 
     // printf("\nEncrypted (CTR): ");
     // for (size_t i = 0; i < padded_len; i++)
@@ -382,7 +385,7 @@ int main()
     //     printf("%02x", encrypted_ctr[i]);
     // }
 
-    aes_ctr(encrypted_ctr, decrypted_ctr, nonce_ctr, key_hex, padded_len, AES_KEY_SIZE_128);
+    EXPECT_OK(aes_ctr(encrypted_ctr, decrypted_ctr, nonce_ctr, key_hex, padded_len, AES_KEY_SIZE_128));
 
     // printf("\nDecrypted (CTR) hex: ");
     // for (size_t i = 0; i < padded_len; i++)
@@ -391,7 +394,7 @@ int main()
     // }
 
     // Unpad decrypted message
-    unpadded_message = pkcs7_unpadding(decrypted_ctr, padded_len, &decrypted_len, AES_BLOCK_SIZE);
+    EXPECT_OK(pkcs7_unpadding(decrypted_ctr, padded_len, &unpadded_message, &decrypted_len, AES_BLOCK_SIZE));
 
     // printf("\nDecrypted (CTR): %s\n", unpadded_message);
     printf("AES-CTR-128:\t%s\n", memcmp(message, unpadded_message, strlen(message)) == 0 ? "PASS" : "FAIL");
@@ -409,18 +412,25 @@ int main()
 
     unsigned char iv_file[AES_BLOCK_SIZE] = {10};
 
-    aes_file_encrypt(input_file, encrypted_file, key_hex, iv_file, AES_KEY_SIZE_128, AES_MODE_CBC);
+    EXPECT_OK(aes_file_encrypt(input_file, encrypted_file, key_hex, iv_file, AES_KEY_SIZE_128, AES_MODE_CBC));
 
     // printf("\nFile encrypted successfully to %s\n", encrypted_file);
 
-    aes_file_decrypt(encrypted_file, decrypted_file, key_hex, iv_file, AES_KEY_SIZE_128, AES_MODE_CBC);
+    EXPECT_OK(aes_file_decrypt(encrypted_file, decrypted_file, key_hex, iv_file, AES_KEY_SIZE_128, AES_MODE_CBC));
 
     int file_compare_result = compare_files(input_file, decrypted_file);
     printf("AES File:\t%s\n", file_compare_result ? "PASS" : "FAIL");
 
-    // printf("\nFile decrypted successfully to %s\n", decrypted_file);
-
-    // printf("\n===================================================\n\n");
+    // Errors are reported instead of exiting: wrong key, bad length, bad key size, missing file
+    unsigned char wrong_key[AES_KEY_SIZE_128] = {0};
+    unsigned char block[AES_BLOCK_SIZE] = {0};
+    int errors_ok =
+        aes_file_decrypt(encrypted_file, decrypted_file, wrong_key, iv_file, AES_KEY_SIZE_128, AES_MODE_CBC) == CC_ERR_DECRYPT &&
+        aes_encrypt_ecb(block, block, key_hex, AES_BLOCK_SIZE - 1, AES_KEY_SIZE_128) == CC_ERR_INVALID_INPUT &&
+        aes_encrypt_ecb(block, block, key_hex, AES_BLOCK_SIZE, (AES_KEY_SIZE)7) == CC_ERR_INVALID_ARG &&
+        aes_file_encrypt("missing_file.txt", encrypted_file, key_hex, iv_file, AES_KEY_SIZE_128, AES_MODE_CBC) == CC_ERR_IO &&
+        aes_file_encrypt(input_file, encrypted_file, key_hex, iv_file, AES_KEY_SIZE_128, AES_MODE_GCM) == CC_ERR_UNSUPPORTED;
+    printf("AES Errors:\t%s\n", errors_ok ? "PASS" : "FAIL");
 
     free(input_blocks);
 

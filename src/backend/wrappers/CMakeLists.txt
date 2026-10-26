@@ -40,7 +40,7 @@ function(cc_wrapper name lib)
     add_dependencies(wrappers wrapper_${name})
 endfunction()
 
-cc_wrapper(enums     common)
+cc_wrapper(enums     misc)
 cc_wrapper(gmp       common)
 cc_wrapper(rng       rng)
 cc_wrapper(prime     prime)

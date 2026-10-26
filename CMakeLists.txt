@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(crypto-calcul LANGUAGES C)
+project(crypto-calcul VERSION 0.1.0 LANGUAGES C)
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
@@ -11,7 +11,8 @@ option(CC_SANITIZE "Build with sanitizers" OFF)
 set(CC_SANITIZER "address" CACHE STRING "Sanitizer used when CC_SANITIZE is ON: address, leak, thread, undefined")
 
 # Compiler flags
-set(CMAKE_POSITION_INDEPENDENT_CODE ON) # static libs are linked into Python extensions
+set(CMAKE_POSITION_INDEPENDENT_CODE ON) # static libs are linked into shared libraries
+set(CMAKE_C_VISIBILITY_PRESET hidden)   # only CC_API functions are exported
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_compile_options(-Wall -Wextra)
 
@@ -43,6 +44,7 @@ else()
     target_link_libraries(gmp INTERFACE ${GMP_LIBRARY})
 endif()
 
+include(GNUInstallDirs)
 enable_testing()
 add_subdirectory(src/backend)
 

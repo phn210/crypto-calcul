@@ -1,9 +1,10 @@
 # Shared header (common.h) and system libraries used by every module
 add_library(common INTERFACE)
-target_include_directories(common INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(common INTERFACE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(common INTERFACE gmp)
 if(WIN32)
     target_link_libraries(common INTERFACE advapi32) # RtlGenRandom
+    target_compile_definitions(common INTERFACE CC_BUILDING_SHARED) # dllexport CC_API functions
 endif()
 
 add_custom_target(tests)
@@ -69,7 +70,52 @@ cc_module(dsa       DEPS prime rng sha2 sha3 misc)
 cc_module(dh        DEPS elgamal rng misc)
 
 # Public key (elliptic curve)
-cc_module(ec        DEPS misc)
+cc_module(ec        DEPS sha2 sha3 misc)
 cc_module(ecelgamal DEPS ec rng sha2 sha3 misc)
 cc_module(ecdsa     DEPS ec rng sha2 sha3 misc)
 cc_module(ecdh      DEPS ecelgamal rng misc)
+
+# Public API: a single shared library exporting the cc_* functions of include/cryptocalc.h
+file(GLOB api_srcs CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/api/*.c)
+file(GLOB api_test_srcs CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/api/*.test.c)
+list(REMOVE_ITEM api_srcs ${api_test_srcs})
+
+# cc_strerror is not called by the API itself, so it would not be pulled from libmisc
+add_library(cryptocalc SHARED ${api_srcs} ${CMAKE_CURRENT_SOURCE_DIR}/misc/status.c)
+target_include_directories(cryptocalc PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+target_link_libraries(cryptocalc PRIVATE misc rng md5 sha1 sha2 sha3 prime mgf aes des mac rsa elgamal dsa dh ec ecelgamal ecdsa ecdh)
+target_compile_definitions(cryptocalc INTERFACE $<$<BOOL:${WIN32}>:CC_USING_SHARED>)
+
+# CMake repeats static libraries on the link line to satisfy their order; Apple's linker warns about it
+include(CheckLinkerFlag)
+check_linker_flag(C "LINKER:-no_warn_duplicate_libraries" CC_LINKER_NO_DUP_WARNING)
+if(CC_LINKER_NO_DUP_WARNING)
+    target_link_options(cryptocalc PRIVATE "LINKER:-no_warn_duplicate_libraries")
+endif()
+set_target_properties(cryptocalc PROPERTIES
+    VERSION ${PROJECT_VERSION}
+    SOVERSION ${PROJECT_VERSION_MAJOR}
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+
+# The API test links only the shared library, so it can only use exported functions
+add_custom_target(tests_api)
+add_dependencies(tests tests_api)
+foreach(test_src ${api_test_srcs})
+    get_filename_component(test_name ${test_src} NAME_WE)
+    set(target test_api_${test_name})
+    add_executable(${target} ${test_src})
+    target_link_libraries(${target} PRIVATE cryptocalc)
+    set_target_properties(${target} PROPERTIES
+        OUTPUT_NAME ${test_name}.test
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/tests/api)
+    add_dependencies(tests_api ${target})
+    add_test(NAME api/${test_name} COMMAND ${target} WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+    set_tests_properties(api/${test_name} PROPERTIES LABELS api FAIL_REGULAR_EXPRESSION "FAIL")
+endforeach()
+
+install(TARGETS cryptocalc)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/include/cryptocalc.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})

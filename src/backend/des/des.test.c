@@ -1,4 +1,5 @@
 #include "des.h"
+#include "test_util.h"
 #include "conversion.h"
 
 int compare_files(const char *file1, const char *file2)
@@ -55,7 +56,8 @@ int main()
 
     // Pad input if necessary
     size_t padded_len;
-    unsigned char *padded_message = pkcs7_padding((unsigned char *)message, len, &padded_len, DES_BLOCK_SIZE);
+    unsigned char *padded_message = NULL;
+    EXPECT_OK(pkcs7_padding((unsigned char *)message, len, &padded_message, &padded_len, DES_BLOCK_SIZE));
     size_t len_blocks = padded_len / DES_BLOCK_SIZE;
 
     uint64_t *encrypted = malloc(len_blocks * sizeof(uint64_t));
@@ -108,7 +110,8 @@ int main()
 
     // Remove padding
     size_t decrypted_len;
-    unsigned char *unpadded_message = pkcs7_unpadding(decrypted_message, padded_len, &decrypted_len, DES_BLOCK_SIZE);
+    unsigned char *unpadded_message = NULL;
+    EXPECT_OK(pkcs7_unpadding(decrypted_message, padded_len, &unpadded_message, &decrypted_len, DES_BLOCK_SIZE));
 
     // printf("\nDecrypted: %s\n", decrypted_message);
     printf("DES:\t\t%s\n", memcmp(message, unpadded_message, strlen(message)) == 0 ? "PASS" : "FAIL");
@@ -119,16 +122,22 @@ int main()
     char *encrypted_file = "des_output_encrypted_file.txt";
     char *decrypted_file = "des_output_decrypted_file.txt";
 
-    des_file(input_file, encrypted_file, key, DES_ENCRYPT);
+    EXPECT_OK(des_file(input_file, encrypted_file, key, DES_ENCRYPT));
 
     // printf("File encrypted successfully to %s\n", encrypted_file);
 
-    des_file(encrypted_file, decrypted_file, key, DES_DECRYPT);
+    EXPECT_OK(des_file(encrypted_file, decrypted_file, key, DES_DECRYPT));
 
     // printf("File decrypted successfully to %s\n", decrypted_file);
 
     int result = compare_files(input_file, decrypted_file);
     printf("DES File:\t%s\n", result ? "PASS" : "FAIL");
+
+    // Errors are reported instead of exiting
+    int errors_ok = des_file(encrypted_file, decrypted_file, key ^ 0x0202020202020202ULL, DES_DECRYPT) == CC_ERR_DECRYPT &&
+                    des_file("missing_file.txt", decrypted_file, key, DES_ENCRYPT) == CC_ERR_IO &&
+                    des_file(input_file, decrypted_file, key, (des_mode_t)7) == CC_ERR_INVALID_ARG;
+    printf("DES Errors:\t%s\n", errors_ok ? "PASS" : "FAIL");
 
     free(encrypted);
     free(decrypted);

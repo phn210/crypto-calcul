@@ -1,30 +1,5 @@
 #include "dh.h"
-
-void test_setup(public_params_t *pp, sec_level_t level)
-{
-    setup(pp, level);
-    // Print parameters for debugging
-    // gmp_printf("Public Parameters (p): %Zd\n", pp->p);
-    // gmp_printf("Public Parameters (g): %Zd\n", pp->g);
-}
-
-void test_keygen(mpz_t secret, mpz_t public, const public_params_t *pp)
-{
-    gen_secret(secret, *pp);
-    gen_public(public, secret, *pp);
-
-    // Print keys for debugging
-    // gmp_printf("Secret Key: %Zd\n", secret);
-    // gmp_printf("Public Key: %Zd\n", public);
-}
-
-void test_compute_shared_secret(mpz_t shared_secret, const mpz_t secret, const mpz_t public, const public_params_t *pp)
-{
-    compute_shared_secret(shared_secret, secret, public, *pp);
-
-    // Print shared secret for debugging
-    // gmp_printf("Shared Secret: %Zd\n", shared_secret);
-}
+#include "test_util.h"
 
 int main()
 {
@@ -32,37 +7,26 @@ int main()
 
     public_params_t pp;
     mpz_t secret_a, public_a, secret_b, public_b, shared_secret_a, shared_secret_b;
-
     mpz_inits(secret_a, public_a, secret_b, public_b, shared_secret_a, shared_secret_b, NULL);
 
-    // Test setup
-    test_setup(&pp, L0);
+    EXPECT_OK(elgamal_setup(&pp, L0));
+    EXPECT_OK(dh_gen_secret(secret_a, &pp));
+    EXPECT_OK(dh_gen_public(public_a, secret_a, &pp));
+    EXPECT_OK(dh_gen_secret(secret_b, &pp));
+    EXPECT_OK(dh_gen_public(public_b, secret_b, &pp));
+    EXPECT_OK(dh_compute_shared_secret(shared_secret_a, secret_a, public_b, &pp));
+    EXPECT_OK(dh_compute_shared_secret(shared_secret_b, secret_b, public_a, &pp));
 
-    // Test key generation for party A
-    test_keygen(secret_a, public_a, &pp);
+    printf("DH Key Exchange:\t%s\n", mpz_cmp(shared_secret_a, shared_secret_b) == 0 ? "PASSED" : "FAILED");
 
-    // Test key generation for party B
-    test_keygen(secret_b, public_b, &pp);
-
-    // Test compute shared secret for party A
-    test_compute_shared_secret(shared_secret_a, secret_a, public_b, &pp);
-
-    // Test compute shared secret for party B
-    test_compute_shared_secret(shared_secret_b, secret_b, public_a, &pp);
-
-    // Verify that both shared secrets are equal
-    printf("DH Key Exchange:\t");
-    if (mpz_cmp(shared_secret_a, shared_secret_b) == 0)
-    {
-        printf("PASSED\n");
-    }
-    else
-    {
-        printf("FAILED\n");
-    }
+    // Peer values 1 and p - 1 would force the shared secret into {1, p - 1}
+    mpz_set_ui(public_b, 1);
+    int passed = dh_compute_shared_secret(shared_secret_a, secret_a, public_b, &pp) == CC_ERR_INVALID_INPUT;
+    mpz_sub_ui(public_b, pp.p, 1);
+    passed &= dh_compute_shared_secret(shared_secret_a, secret_a, public_b, &pp) == CC_ERR_INVALID_INPUT;
+    printf("DH Errors:\t\t%s\n", passed ? "PASSED" : "FAILED");
 
     mpz_clears(secret_a, public_a, secret_b, public_b, shared_secret_a, shared_secret_b, NULL);
-    mpz_clears(pp.p, pp.g, NULL);
-
+    elgamal_free_params(&pp);
     return 0;
 }

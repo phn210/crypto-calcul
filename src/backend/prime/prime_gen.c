@@ -1,128 +1,127 @@
 #include "prime_gen.h"
 #include "rng.h"
 
-void prepare_small_primes(mpz_t *small_primes, int k)
+typedef struct small_primes
 {
-    mpz_init_set_ui(small_primes[0], 2);
+    mpz_t *values;
+    int count;
+} small_primes_t;
+
+static cc_status_t small_primes_init(small_primes_t *sp, int k)
+{
+    sp->values = (mpz_t *)malloc(k * sizeof(mpz_t));
+    if (sp->values == NULL)
+        return CC_ERR_NOMEM;
+    sp->count = k;
+
+    mpz_init_set_ui(sp->values[0], 2);
     for (int i = 1; i < k; i++)
     {
-        mpz_init(small_primes[i]);
-        mpz_nextprime(small_primes[i], small_primes[i - 1]);
+        mpz_init(sp->values[i]);
+        mpz_nextprime(sp->values[i], sp->values[i - 1]);
     }
+    return CC_OK;
 }
 
-int check_w_has_0(mpz_t *w, int k)
+static void small_primes_clear(small_primes_t *sp)
 {
-    for (int i = 1; i < k; i++)
-    {
-        if (mpz_cmp_ui(w[i], 0) == 0)
-            return i;
-    }
-    return 0;
+    for (int i = 0; i < sp->count; i++)
+        mpz_clear(sp->values[i]);
+    free(sp->values);
 }
 
-void gen_prime_b(mpz_t n, gmp_randstate_t state, int b, int k, int t, prime_test_t test)
+// Trial division by the odd small primes, then the primality test
+static cc_status_t is_probable_prime(const mpz_t q, const small_primes_t *sp, gmp_randstate_t state, int t, prime_test_t test, int *is_prime)
 {
-    mpz_t q, tmp;
-    mpz_inits(q, tmp, NULL);
-    while (mpz_tstbit(q, 0) == 0)
+    for (int j = 1; j < sp->count; j++)
     {
-        mpz_urandomb(q, state, b - 1);
-    }
-    mpz_ui_pow_ui(tmp, 2, b - 1);
-    mpz_add(q, q, tmp);
-    if (mpz_divisible_ui_p(q, 2))
-        mpz_add_ui(q, q, 1);
-
-    mpz_t *small_primes = (mpz_t *)malloc(k * sizeof(mpz_t));
-    if (small_primes == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
-    prepare_small_primes(small_primes, k);
-
-    int j = 1;
-    while (j < k)
-    {
-        if (mpz_divisible_p(q, small_primes[j]))
+        if (mpz_cmp(q, sp->values[j]) == 0)
         {
-            mpz_add_ui(q, q, 2);
-            j = 1;
-            continue;
+            *is_prime = 1;
+            return CC_OK;
         }
-        else
-            j++;
-        if (j == k && !primality_test(q, state, t, test))
+        if (mpz_divisible_p(q, sp->values[j]))
         {
-            mpz_add_ui(q, q, 2);
-            j = 1;
+            *is_prime = 0;
+            return CC_OK;
         }
     }
-    mpz_set(n, q);
-    mpz_clears(q, tmp, NULL);
-    for (int i = 0; i < k; i++)
-    {
-        mpz_clear(small_primes[i]);
-    }
-    free(small_primes);
+    return primality_test(q, state, t, test, is_prime);
 }
 
-void gen_prime_m(mpz_t n, gmp_randstate_t state, mpz_t m, int k, int t, prime_test_t test)
+static cc_status_t check_params(int k, int t, prime_test_t test)
 {
-    mpz_t q, tmp;
-    mpz_inits(q, tmp, NULL);
-    rand_int_m(q, state, m);
-    if (mpz_cmp_ui(q, 2) == 0)
-    {
+    if (k < 1 || t < 1 || (test != GMP_TEST && test != FERMAT_TEST && test != MILLER_RABIN_TEST))
+        return CC_ERR_INVALID_ARG;
+    return CC_OK;
+}
+
+cc_status_t gen_prime_b(mpz_t n, gmp_randstate_t state, int b, int k, int t, prime_test_t test)
+{
+    if (b < 2)
+        return CC_ERR_INVALID_ARG;
+    CC_TRY(check_params(k, t, test));
+
+    small_primes_t sp;
+    CC_TRY(small_primes_init(&sp, k));
+
+    // Odd candidate with the top bit set
+    mpz_t q;
+    mpz_init(q);
+    mpz_urandomb(q, state, b - 1);
+    mpz_setbit(q, b - 1);
+    mpz_setbit(q, 0);
+
+    cc_status_t status;
+    int is_prime = 0;
+    while ((status = is_probable_prime(q, &sp, state, t, test, &is_prime)) == CC_OK && !is_prime)
+        mpz_add_ui(q, q, 2);
+
+    if (status == CC_OK)
         mpz_set(n, q);
-        mpz_clears(q, tmp, NULL);
-        return;
-    }
-    if (mpz_divisible_ui_p(q, 2))
-        mpz_add_ui(q, q, 1);
+    mpz_clear(q);
+    small_primes_clear(&sp);
+    return status;
+}
 
-    mpz_t *small_primes = (mpz_t *)malloc(k * sizeof(mpz_t));
-    if (small_primes == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
-    prepare_small_primes(small_primes, k);
+cc_status_t gen_prime_m(mpz_t n, gmp_randstate_t state, const mpz_t m, int k, int t, prime_test_t test)
+{
+    if (mpz_cmp_ui(m, 2) <= 0)
+        return CC_ERR_INVALID_ARG;
+    CC_TRY(check_params(k, t, test));
 
-    int j = 1;
-    while (j < k)
+    small_primes_t sp;
+    CC_TRY(small_primes_init(&sp, k));
+
+    mpz_t q;
+    mpz_init(q);
+
+    cc_status_t status = CC_OK;
+    int is_prime = 0;
+    while (status == CC_OK && !is_prime)
     {
-        if (mpz_cmp(q, m) >= 0)
+        // Random start, then walk up through odd numbers; restart if we pass m
+        status = rand_int_m(q, state, m);
+        if (status != CC_OK)
+            break;
+        if (mpz_cmp_ui(q, 2) == 0)
         {
-            fprintf(stderr, "Generated number is greater than m\n");
-            mpz_clears(q, tmp, NULL);
-            for (int i = 0; i < k; i++)
-            {
-                mpz_clear(small_primes[i]);
-            }
-            free(small_primes);
-            exit(EXIT_FAILURE);
+            is_prime = 1;
+            break;
         }
-        if (mpz_divisible_p(q, small_primes[j]))
+        mpz_setbit(q, 0);
+        while (mpz_cmp(q, m) < 0)
         {
+            status = is_probable_prime(q, &sp, state, t, test, &is_prime);
+            if (status != CC_OK || is_prime)
+                break;
             mpz_add_ui(q, q, 2);
-            j = 1;
-            continue;
-        }
-        else
-            j++;
-        if (j == k && !primality_test(q, state, t, test))
-        {
-            mpz_add_ui(q, q, 2);
-            j = 1;
         }
     }
-    mpz_set(n, q);
-    mpz_clears(q, tmp, NULL);
-    for (int i = 0; i < k; i++)
-    {
-        mpz_clear(small_primes[i]);
-    }
-    free(small_primes);
+
+    if (status == CC_OK)
+        mpz_set(n, q);
+    mpz_clear(q);
+    small_primes_clear(&sp);
+    return status;
 }

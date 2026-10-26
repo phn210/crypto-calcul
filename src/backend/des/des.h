@@ -41,7 +41,7 @@ void des_key_schedule(const uint64_t key, des_ctx_t *ctx);
 // DES encryption/decryption function
 void des(uint64_t *input, uint64_t *output, const uint64_t key, int len, des_mode_t mode);
 // DES file encryption/decryption function
-void des_file(const char *input_file, const char *output_file, const uint64_t key, des_mode_t mode);
+CC_NODISCARD cc_status_t des_file(const char *input_file, const char *output_file, const uint64_t key, des_mode_t mode);
 
 // DES constants
 static const unsigned IP[DES_IP_SIZE] = {

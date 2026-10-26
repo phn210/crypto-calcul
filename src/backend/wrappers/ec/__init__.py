@@ -123,10 +123,12 @@ class EC:
     def __init__(self, curve_type: ECType, curve_id: WeierstrassCurve | MontgomeryCurve | EdwardsCurve):
         self.curve_type = curve_type
         self.curve_id = curve_id
-        init_curve(cython.address(self.curve), self.curve_type.value, self.curve_id.value)
+        check(init_curve(cython.address(self.curve), self.curve_type.value, self.curve_id.value))
+        self.has_curve = True
 
     def __dealloc__(self):
-        free_curve(cython.address(self.curve))
+        if self.has_curve:
+            free_curve(cython.address(self.curve))
 
     def __eq__(self, other):
         if not isinstance(other, EC):
@@ -186,19 +188,19 @@ class EC:
     @cython.ccall
     def neg(self, p: ECP) -> ECP:
         r = ECP(self)
-        neg(cython.address(r.p), p.p, self.curve)
+        check(neg(cython.address(r.p), p.p, self.curve))
         return r
 
     @cython.ccall
     def add(self, p: ECP, q: ECP) -> ECP:
         r = ECP(self)
-        add(cython.address(r.p), p.p, q.p, self.curve)
+        check(add(cython.address(r.p), p.p, q.p, self.curve))
         return r
 
     @cython.ccall
     def dadd(self, p: ECP, q: ECP, w: ECP) -> ECP:
         r = ECP(self)
-        dadd(cython.address(r.p), p.p, q.p, w.p, self.curve)
+        check(dadd(cython.address(r.p), p.p, q.p, w.p, self.curve))
         return r
     
     @cython.ccall
@@ -215,11 +217,12 @@ class EC:
     
     @cython.ccall
     def point_to_bytes(self, p: ECP) -> bytes:
-        len_byte = self.info().efs if self.curve_type == ECType.MONTGOMERY else self.info().efs * 2
+        len_byte = point_size(self.curve)
         buf = cython.cast(cython.p_uchar, malloc(len_byte))
-        point_to_bytes(buf, p.p, self.curve)
+        status = point_to_bytes(buf, p.p, self.curve)
         result = cython.declare(bytes, buf[:len_byte])
         free(buf)
+        check(status)
         return result
     
     @cython.ccall

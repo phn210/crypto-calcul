@@ -1,4 +1,6 @@
 from libc.stdlib cimport malloc, free
+from libc.string cimport memcpy
+from wrappers.enums cimport cc_status_t, check
 
 cdef extern from "aes.h":
     ctypedef enum AES_KEY_SIZE:
@@ -16,26 +18,26 @@ cdef extern from "aes.h":
 
     cdef const size_t _AES_BLOCK_SIZE "AES_BLOCK_SIZE"
 
-    void aes_encrypt_ecb(unsigned char *, unsigned char *, unsigned char *, size_t, AES_KEY_SIZE);
-    void aes_decrypt_ecb(unsigned char *, unsigned char *, unsigned char *, size_t, AES_KEY_SIZE);
+    cc_status_t aes_encrypt_ecb(unsigned char *, unsigned char *, unsigned char *, size_t, AES_KEY_SIZE);
+    cc_status_t aes_decrypt_ecb(unsigned char *, unsigned char *, unsigned char *, size_t, AES_KEY_SIZE);
 
-    void aes_encrypt_cbc(unsigned char *, unsigned char *, unsigned char *, unsigned char *, size_t, AES_KEY_SIZE);
-    void aes_decrypt_cbc(unsigned char *, unsigned char *, unsigned char *, unsigned char *, size_t, AES_KEY_SIZE);
+    cc_status_t aes_encrypt_cbc(unsigned char *, unsigned char *, unsigned char *, unsigned char *, size_t, AES_KEY_SIZE);
+    cc_status_t aes_decrypt_cbc(unsigned char *, unsigned char *, unsigned char *, unsigned char *, size_t, AES_KEY_SIZE);
 
-    void aes_encrypt_cfb(unsigned char *, unsigned char *, unsigned char *, unsigned char *, size_t, AES_KEY_SIZE);
-    void aes_decrypt_cfb(unsigned char *, unsigned char *, unsigned char *, unsigned char *, size_t, AES_KEY_SIZE);
+    cc_status_t aes_encrypt_cfb(unsigned char *, unsigned char *, unsigned char *, unsigned char *, size_t, AES_KEY_SIZE);
+    cc_status_t aes_decrypt_cfb(unsigned char *, unsigned char *, unsigned char *, unsigned char *, size_t, AES_KEY_SIZE);
 
-    void aes_encrypt_ofb(unsigned char *, unsigned char *, unsigned char *, unsigned char *, size_t, AES_KEY_SIZE);
-    void aes_decrypt_ofb(unsigned char *, unsigned char *, unsigned char *, unsigned char *, size_t, AES_KEY_SIZE);
+    cc_status_t aes_encrypt_ofb(unsigned char *, unsigned char *, unsigned char *, unsigned char *, size_t, AES_KEY_SIZE);
+    cc_status_t aes_decrypt_ofb(unsigned char *, unsigned char *, unsigned char *, unsigned char *, size_t, AES_KEY_SIZE);
 
-    void aes_ctr(unsigned char *input, unsigned char *output, unsigned char *nonce, unsigned char *key, size_t len, AES_KEY_SIZE key_size);
+    cc_status_t aes_ctr(unsigned char *input, unsigned char *output, unsigned char *nonce, unsigned char *key, size_t len, AES_KEY_SIZE key_size);
 
-    void aes_file_encrypt(const char *, const char *, unsigned char *, unsigned char *, AES_KEY_SIZE, AES_MODE);
-    void aes_file_decrypt(const char *, const char *, unsigned char *, unsigned char *, AES_KEY_SIZE, AES_MODE);
+    cc_status_t aes_file_encrypt(const char *, const char *, unsigned char *, unsigned char *, AES_KEY_SIZE, AES_MODE);
+    cc_status_t aes_file_decrypt(const char *, const char *, unsigned char *, unsigned char *, AES_KEY_SIZE, AES_MODE);
 
 cdef extern from "conversion.h":
-    unsigned char *pkcs7_padding(unsigned char *, size_t, size_t *, size_t)
-    unsigned char *pkcs7_unpadding(unsigned char *, size_t, size_t *, size_t)
+    cc_status_t pkcs7_padding(const unsigned char *, size_t, unsigned char **, size_t *, size_t)
+    cc_status_t pkcs7_unpadding(const unsigned char *, size_t, unsigned char **, size_t *, size_t)
 
 cdef class AES:
     cdef AES_KEY_SIZE key_size

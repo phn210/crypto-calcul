@@ -4,7 +4,7 @@ from wrappers.gmp import GMPInteger
 @cython.cclass
 class GMPState:
     def __init__(self):
-        rng_init(self.state)
+        check(rng_init(self.state))
 
     def seed(self, seed):
         """Seed the random state."""
@@ -27,7 +27,7 @@ class RNG:
     @cython.ccall
     def rand_int_m(self, modulo: GMPInteger, base: cython.int) -> str:
         result = GMPInteger()
-        rand_int_m(result.value, self.state.state, modulo.value)
+        check(rand_int_m(result.value, self.state.state, modulo.value))
         return result.get_value(base)
 
     @cython.ccall

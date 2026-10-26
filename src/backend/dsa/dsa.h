@@ -36,9 +36,15 @@ typedef struct priv_key
     mpz_t x;
 } priv_key_t;
 
-void setup(public_params_t *pp, sec_level_t level, hash_func_t hash);
-void keygen(priv_key_t *sk, pub_key_t *pk, public_params_t pp);
-void crypto_sign(mpz_t r, mpz_t s, const unsigned char *m, int len, priv_key_t sk, public_params_t pp);
-char crypto_verify(const mpz_t r, const mpz_t s, const unsigned char *m, int len, pub_key_t pk, public_params_t pp);
+// Setup and key generation initialize their outputs only on success (levels L0 and L1, SHA2 or SHA3)
+CC_NODISCARD cc_status_t dsa_setup(public_params_t *pp, sec_level_t level, hash_func_t hash);
+CC_NODISCARD cc_status_t dsa_keygen(priv_key_t *sk, pub_key_t *pk, const public_params_t *pp);
+void dsa_free_params(public_params_t *pp);
+void dsa_free_keys(priv_key_t *sk, pub_key_t *pk);
+
+// r and s must be initialized
+CC_NODISCARD cc_status_t dsa_sign(mpz_t r, mpz_t s, const unsigned char *m, size_t len, const priv_key_t *sk, const public_params_t *pp);
+// Returns CC_OK if the signature is valid, CC_ERR_VERIFY otherwise
+CC_NODISCARD cc_status_t dsa_verify(const mpz_t r, const mpz_t s, const unsigned char *m, size_t len, const pub_key_t *pk, const public_params_t *pp);
 
 #endif

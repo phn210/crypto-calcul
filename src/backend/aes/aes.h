@@ -50,24 +50,25 @@ void aes_inv_mix_columns(unsigned char state[4][4]);
 void aes_block_encrypt(unsigned char *block, unsigned char *w, AES_ROUNDS rounds);
 void aes_block_decrypt(unsigned char *block, unsigned char *w, AES_ROUNDS rounds);
 
+// Returns 0 for an invalid key size
 AES_ROUNDS get_rounds(AES_KEY_SIZE key_size);
 
-void aes_encrypt_ecb(unsigned char *input, unsigned char *output, unsigned char *key, size_t len, AES_KEY_SIZE key_size);
-void aes_decrypt_ecb(unsigned char *input, unsigned char *output, unsigned char *key, size_t len, AES_KEY_SIZE key_size);
+CC_NODISCARD cc_status_t aes_encrypt_ecb(unsigned char *input, unsigned char *output, unsigned char *key, size_t len, AES_KEY_SIZE key_size);
+CC_NODISCARD cc_status_t aes_decrypt_ecb(unsigned char *input, unsigned char *output, unsigned char *key, size_t len, AES_KEY_SIZE key_size);
 
-void aes_encrypt_cbc(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size);
-void aes_decrypt_cbc(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size);
+CC_NODISCARD cc_status_t aes_encrypt_cbc(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size);
+CC_NODISCARD cc_status_t aes_decrypt_cbc(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size);
 
-void aes_encrypt_cfb(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size);
-void aes_decrypt_cfb(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size);
+CC_NODISCARD cc_status_t aes_encrypt_cfb(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size);
+CC_NODISCARD cc_status_t aes_decrypt_cfb(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size);
 
-void aes_encrypt_ofb(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size);
-void aes_decrypt_ofb(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size);
+CC_NODISCARD cc_status_t aes_encrypt_ofb(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size);
+CC_NODISCARD cc_status_t aes_decrypt_ofb(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size);
 
-void aes_ctr(unsigned char *input, unsigned char *output, unsigned char *nonce, unsigned char *key, size_t len, AES_KEY_SIZE key_size);
+CC_NODISCARD cc_status_t aes_ctr(unsigned char *input, unsigned char *output, unsigned char *nonce, unsigned char *key, size_t len, AES_KEY_SIZE key_size);
 
-void aes_file_encrypt(const char *input_file, const char *output_file, unsigned char *key, unsigned char *iv, AES_KEY_SIZE key_size, AES_MODE mode);
-void aes_file_decrypt(const char *input_file, const char *output_file, unsigned char *key, unsigned char *iv, AES_KEY_SIZE key_size, AES_MODE mode);
+CC_NODISCARD cc_status_t aes_file_encrypt(const char *input_file, const char *output_file, unsigned char *key, unsigned char *iv, AES_KEY_SIZE key_size, AES_MODE mode);
+CC_NODISCARD cc_status_t aes_file_decrypt(const char *input_file, const char *output_file, unsigned char *key, unsigned char *iv, AES_KEY_SIZE key_size, AES_MODE mode);
 
 // AES constants
 static const unsigned AES_SBOX[16][16] = {

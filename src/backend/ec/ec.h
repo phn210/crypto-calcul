@@ -73,7 +73,8 @@ void init_affine(point_affine_t *p);
 void free_affine(point_affine_t *p);
 void copy_affine(point_affine_t *r, const point_affine_t p);
 
-void init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id);
+// On failure, the curve is left uninitialized
+CC_NODISCARD cc_status_t init_curve(curve_t *curve, ec_t curve_type, unsigned char curve_id);
 void free_curve(curve_t *curve);
 
 void rhs(mpz_t r, const mpz_t x, const curve_t curve);
@@ -81,15 +82,23 @@ void generator(point_t *p, const curve_t curve);
 void infinity(point_t *p, const curve_t curve);
 char is_infinity(const point_t p, const curve_t curve);
 char is_on_curve(const point_t p, const curve_t curve);
+// For points decoded from untrusted input: affine, coordinates in [0, p), on the curve and not infinity
+char is_valid_point(const point_t p, const curve_t curve);
 char equals(const point_t p, const point_t q, const curve_t curve);
-void neg(point_t *r, const point_t p, const curve_t curve);
-void add(point_t *r, const point_t p, const point_t q, const curve_t curve);
-void dadd(point_t *r, const point_t p, const point_t q, const point_t w, const curve_t curve);
+// neg and add do not support Montgomery curves, dadd only supports them (CC_ERR_UNSUPPORTED)
+cc_status_t neg(point_t *r, const point_t p, const curve_t curve);
+cc_status_t add(point_t *r, const point_t p, const point_t q, const curve_t curve);
+cc_status_t dadd(point_t *r, const point_t p, const point_t q, const point_t w, const curve_t curve);
 void dbl(point_t *r, const point_t p, const curve_t curve);
 void mul(point_t *r, const point_t p, const mpz_t k, const curve_t curve);
 void to_affine(point_affine_t *r, const point_t p, const curve_t curve);
 void from_affine(point_t *r, const point_affine_t p, const curve_t curve);
-void point_to_bytes(unsigned char *buf, const point_t p, const curve_t curve);
+// Encoded points are point_size(curve) bytes: x, then y except on Montgomery curves
+size_t point_size(const curve_t curve);
+CC_NODISCARD cc_status_t point_to_bytes(unsigned char *buf, const point_t p, const curve_t curve);
 void point_from_bytes(point_t *r, const unsigned char *buf, const curve_t curve);
+
+// Hash function used by the EC schemes (SHA2 or SHA3, producing curve.md_len bytes)
+CC_NODISCARD cc_status_t ec_hash_function(hash_func_t hash_function, void *(**hash)(const void *, size_t, void *, size_t));
 
 #endif

@@ -8,7 +8,25 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "cryptocalc.h"
+
 #define UNUSED(x) (void)(x)
+
+// Marks functions whose returned status must be checked
+#if defined(__GNUC__)
+#define CC_NODISCARD __attribute__((warn_unused_result))
+#else
+#define CC_NODISCARD
+#endif
+
+// Propagates a non-OK status to the caller
+#define CC_TRY(expr)                    \
+    do                                  \
+    {                                   \
+        cc_status_t cc_try_st_ = (expr); \
+        if (cc_try_st_ != CC_OK)        \
+            return cc_try_st_;          \
+    } while (0)
 
 #ifdef WINDOWS_H
 

@@ -1,166 +1,133 @@
 #include "ecelgamal.h"
-#include "conversion.h"
 #include "rng.h"
-#include "sha2.h"
-#include "sha3.h"
 
-void setup(public_params_t *pp, ec_t curve_type, unsigned char curve_id)
+#define MAX_MD_LEN 64
+
+cc_status_t ecelgamal_setup(public_params_t *pp, ec_t curve_type, unsigned char curve_id)
 {
-    init_curve(&pp->curve, curve_type, curve_id);
+    return init_curve(&pp->curve, curve_type, curve_id);
 }
 
-void keygen(priv_key_t *sk, pub_key_t *pk, const public_params_t *pp)
+void ecelgamal_free_params(public_params_t *pp)
 {
+    free_curve(&pp->curve);
+}
+
+cc_status_t ecelgamal_keygen(priv_key_t *sk, pub_key_t *pk, const public_params_t *pp)
+{
+    gmp_randstate_t state;
+    CC_TRY(rng_init(state));
     mpz_init(sk->x);
     init_point(&pk->Y);
-    generator(&pk->Y, pp->curve);
 
-    gmp_randstate_t state;
-    rng_init(state);
-
-    rand_int_m(sk->x, state, pp->curve.r);
-    mul(&pk->Y, pk->Y, sk->x, pp->curve);
+    // x in [1, r), Y = xG
+    cc_status_t status = rand_int_nonzero(sk->x, state, pp->curve.r);
+    if (status == CC_OK)
+    {
+        generator(&pk->Y, pp->curve);
+        mul(&pk->Y, pk->Y, sk->x, pp->curve);
+    }
+    else
+        ecelgamal_free_keys(sk, pk);
 
     gmp_randclear(state);
+    return status;
 }
 
-void crypto_encrypt(mpz_t c1, mpz_t c2, const mpz_t m, const pub_key_t *pk, const public_params_t *pp, hash_func_t hash_function)
+void ecelgamal_free_keys(priv_key_t *sk, pub_key_t *pk)
+{
+    mpz_clear(sk->x);
+    free_point(&pk->Y);
+}
+
+// h = H(encoding of the shared point), curve.md_len bytes
+static cc_status_t shared_mask(unsigned char *h, const point_t shared, const public_params_t *pp, void *(*hash)(const void *, size_t, void *, size_t))
+{
+    size_t len = point_size(pp->curve);
+    unsigned char *buf = malloc(len);
+    if (buf == NULL)
+        return CC_ERR_NOMEM;
+
+    cc_status_t status = point_to_bytes(buf, shared, pp->curve);
+    if (status == CC_OK)
+        hash(buf, len, h, pp->curve.md_len);
+
+    free(buf);
+    return status;
+}
+
+cc_status_t ecelgamal_encrypt(unsigned char *c1, unsigned char *c2, const unsigned char *m, size_t m_len,
+                              const pub_key_t *pk, const public_params_t *pp, hash_func_t hash_function)
 {
     void *(*hash)(const void *, size_t, void *, size_t);
-    size_t md_len = pp->curve.md_len;
+    CC_TRY(ec_hash_function(hash_function, &hash));
+    if (m_len > pp->curve.md_len)
+        return CC_ERR_MSG_TOO_LONG;
 
-    switch (hash_function)
-    {
-    case SHA2:
-        hash = &sha2;
-        break;
-    case SHA3:
-        hash = &sha3;
-        break;
-    default:
-        fprintf(stderr, "Invalid hash function\n");
-        exit(EXIT_FAILURE);
-    }
+    gmp_randstate_t state;
+    CC_TRY(rng_init(state));
 
     mpz_t k;
-    point_t C1, tmp;
-    mpz_inits(k, NULL);
+    point_t C1, S;
+    unsigned char h[MAX_MD_LEN];
+    mpz_init(k);
     init_point(&C1);
-    init_point(&tmp);
-    size_t m_len = count_bytes(m);
-    size_t buf_len = 2 * pp->curve.efs;
-    unsigned char *buf_point = (unsigned char *)malloc(buf_len);
-    if (buf_point == NULL)
+    init_point(&S);
+
+    // C1 = kG, S = kY with k in [1, r)
+    cc_status_t status = rand_int_nonzero(k, state, pp->curve.r);
+    if (status == CC_OK)
     {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
+        generator(&C1, pp->curve);
+        mul(&C1, C1, k, pp->curve);
+        status = point_to_bytes(c1, C1, pp->curve);
     }
-
-    // Generate random k
-    gmp_randstate_t state;
-    rng_init(state);
-    rand_int_m(k, state, pp->curve.r);
-
-    // C1 = k * G
-    generator(&tmp, pp->curve);
-    mpz_urandomm(k, state, pp->curve.r);
-    mul(&C1, tmp, k, pp->curve);
-    point_to_bytes(buf_point, C1, pp->curve);
-    bytes_to_bigint(c1, buf_point, buf_len, BIG);
-
-    unsigned char *buf_m = (unsigned char *)malloc(m_len);
-    if (buf_m == NULL)
+    if (status == CC_OK)
     {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
+        mul(&S, pk->Y, k, pp->curve);
+        status = shared_mask(h, S, pp, hash);
     }
-    bigint_to_bytes(buf_m, &m_len, m, BIG);
-
-    // k * Y
-    mul(&tmp, pk->Y, k, pp->curve);
-    point_to_bytes(buf_point, tmp, pp->curve);
-
-    unsigned char *h = (unsigned char *)malloc(md_len);
-    if (h == NULL)
+    if (status == CC_OK)
     {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
+        for (size_t i = 0; i < m_len; i++)
+            c2[i] = m[i] ^ h[i];
     }
-    hash(buf_point, buf_len, h, md_len);
-
-    for (size_t i = 0; i < m_len; i++)
-    {
-        buf_m[i] = buf_m[i] ^ h[i];
-    }
-    bytes_to_bigint(c2, buf_m, m_len, BIG);
 
     gmp_randclear(state);
     mpz_clear(k);
     free_point(&C1);
-    free_point(&tmp);
-    free(buf_m);
-    free(buf_point);
-    free(h);
+    free_point(&S);
+    return status;
 }
 
-void crypto_decrypt(mpz_t m, const mpz_t c1, const mpz_t c2, const priv_key_t *sk, const public_params_t *pp, hash_func_t hash_function)
+cc_status_t ecelgamal_decrypt(unsigned char *m, const unsigned char *c1, size_t c1_len, const unsigned char *c2, size_t c2_len,
+                              const priv_key_t *sk, const public_params_t *pp, hash_func_t hash_function)
 {
     void *(*hash)(const void *, size_t, void *, size_t);
-    size_t md_len = pp->curve.md_len;
+    CC_TRY(ec_hash_function(hash_function, &hash));
+    if (c1_len != point_size(pp->curve) || c2_len > pp->curve.md_len)
+        return CC_ERR_INVALID_INPUT;
 
-    switch (hash_function)
+    point_t S;
+    unsigned char h[MAX_MD_LEN];
+    init_point(&S);
+
+    // S = x * C1, with C1 a valid point
+    cc_status_t status = CC_OK;
+    point_from_bytes(&S, c1, pp->curve);
+    if (!is_valid_point(S, pp->curve))
+        status = CC_ERR_INVALID_INPUT;
+    if (status == CC_OK)
     {
-    case SHA2:
-        hash = &sha2;
-        break;
-    case SHA3:
-        hash = &sha3;
-        break;
-    default:
-        fprintf(stderr, "Invalid hash function\n");
-        exit(EXIT_FAILURE);
+        mul(&S, S, sk->x, pp->curve);
+        status = shared_mask(h, S, pp, hash);
+    }
+    if (status == CC_OK)
+    {
+        for (size_t i = 0; i < c2_len; i++)
+            m[i] = c2[i] ^ h[i];
     }
 
-    point_t tmp;
-    init_point(&tmp);
-    size_t buf_len = 2 * pp->curve.efs;
-    unsigned char *buf_point = (unsigned char *)malloc(buf_len);
-    if (buf_point == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
-
-    bigint_to_bytes(buf_point, &buf_len, c1, BIG);
-    point_from_bytes(&tmp, buf_point, pp->curve);
-    mul(&tmp, tmp, sk->x, pp->curve);
-    point_to_bytes(buf_point, tmp, pp->curve);
-
-    unsigned char *h = (unsigned char *)malloc(md_len);
-    if (h == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
-    hash(buf_point, buf_len, h, md_len);
-
-    size_t m_len = count_bytes(c2);
-    unsigned char *buf_m = (unsigned char *)malloc(m_len);
-    if (buf_m == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
-    bigint_to_bytes(buf_m, &m_len, c2, BIG);
-
-    for (size_t i = 0; i < m_len; i++)
-    {
-        buf_m[i] = buf_m[i] ^ h[i];
-    }
-    bytes_to_bigint(m, buf_m, m_len, BIG);
-
-    free_point(&tmp);
-    free(buf_m);
-    free(buf_point);
-    free(h);
+    free_point(&S);
+    return status;
 }

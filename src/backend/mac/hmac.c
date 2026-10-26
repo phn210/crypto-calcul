@@ -1,108 +1,98 @@
 #include "hmac.h"
+#include "file_io.h"
 #include "md5.h"
 #include "sha1.h"
 #include "sha2.h"
 #include "sha3.h"
 
-void hmac_init(hmac_ctx_t *ctx, const void *key, size_t key_len, sec_level_t sec_level, hash_func_t hash_function)
+// Block size b and output length l of the underlying hash
+static cc_status_t hmac_params(sec_level_t sec_level, hash_func_t hash_function, size_t *b, size_t *l,
+                               void *(**hash)(const void *, size_t, void *, size_t))
 {
+    static const size_t sha2_b[] = {64, 64, 128, 128};
+    static const size_t sha3_b[] = {144, 136, 104, 72};
+    static const size_t lengths[] = {28, 32, 48, 64};
+
+    int level;
+    switch (sec_level)
+    {
+    case L0:
+        level = 0;
+        break;
+    case L1:
+        level = 1;
+        break;
+    case L2:
+        level = 2;
+        break;
+    case L3:
+        level = 3;
+        break;
+    default:
+        level = -1;
+    }
+
     switch (hash_function)
     {
     case MD5:
-        ctx->b = 64;
-        ctx->l = 16;
-        ctx->hash = &md5;
-        break;
-
+        *b = 64;
+        *l = 16;
+        *hash = &md5;
+        return CC_OK;
     case SHA1:
-        ctx->b = 64;
-        ctx->l = 20;
-        ctx->hash = &sha1;
-        break;
-
+        *b = 64;
+        *l = 20;
+        *hash = &sha1;
+        return CC_OK;
     case SHA2:
-        switch (sec_level)
-        {
-        case L0:
-            ctx->b = 64;
-            ctx->l = 28;
-            break;
-        case L1:
-            ctx->b = 64;
-            ctx->l = 32;
-            break;
-        case L2:
-            ctx->b = 128;
-            ctx->l = 48;
-            break;
-        case L3:
-            ctx->b = 128;
-            ctx->l = 64;
-            break;
-        default:
-            break;
-        }
-        ctx->hash = &sha2;
-        break;
-
+        if (level < 0)
+            return CC_ERR_INVALID_ARG;
+        *b = sha2_b[level];
+        *l = lengths[level];
+        *hash = &sha2;
+        return CC_OK;
     case SHA3:
-        switch (sec_level)
-        {
-        case L0:
-            ctx->b = 144;
-            ctx->l = 28;
-            break;
-        case L1:
-            ctx->b = 136;
-            ctx->l = 32;
-            break;
-        case L2:
-            ctx->b = 104;
-            ctx->l = 48;
-            break;
-        case L3:
-            ctx->b = 72;
-            ctx->l = 64;
-            break;
-        default:
-            break;
-        }
-        ctx->hash = &sha3;
-        break;
-
+        if (level < 0)
+            return CC_ERR_INVALID_ARG;
+        *b = sha3_b[level];
+        *l = lengths[level];
+        *hash = &sha3;
+        return CC_OK;
     default:
-        fprintf(stderr, "Invalid hash function\n");
-        exit(EXIT_FAILURE);
+        return CC_ERR_INVALID_ARG;
     }
+}
+
+int ct_memcmp(const void *a, const void *b, size_t len)
+{
+    const unsigned char *x = a, *y = b;
+    unsigned char diff = 0;
+    for (size_t i = 0; i < len; i++)
+        diff |= x[i] ^ y[i];
+    return diff;
+}
+
+cc_status_t hmac_length(sec_level_t sec_level, hash_func_t hash_function, size_t *mac_len)
+{
+    size_t b;
+    void *(*hash)(const void *, size_t, void *, size_t);
+    return hmac_params(sec_level, hash_function, &b, mac_len, &hash);
+}
+
+cc_status_t hmac_init(hmac_ctx_t *ctx, const void *key, size_t key_len, sec_level_t sec_level, hash_func_t hash_function)
+{
+    CC_TRY(hmac_params(sec_level, hash_function, &ctx->b, &ctx->l, &ctx->hash));
     const size_t BLOCK_SIZE = ctx->b;
 
-    ctx->key = malloc(BLOCK_SIZE);
-    if (ctx->key == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
+    ctx->key = calloc(BLOCK_SIZE, 1);
     ctx->i_key_pad = malloc(BLOCK_SIZE);
-    if (ctx->i_key_pad == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
     ctx->o_key_pad = malloc(BLOCK_SIZE);
-    if (ctx->o_key_pad == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
     ctx->out = malloc(ctx->l);
-    if (ctx->out == NULL)
+    if (ctx->key == NULL || ctx->i_key_pad == NULL || ctx->o_key_pad == NULL || ctx->out == NULL)
     {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
+        hmac_free(ctx);
+        return CC_ERR_NOMEM;
     }
-    memset(ctx->key, 0, BLOCK_SIZE);
-    memset(ctx->i_key_pad, 0, BLOCK_SIZE);
-    memset(ctx->o_key_pad, 0, BLOCK_SIZE);
 
     if (key_len > BLOCK_SIZE)
     {
@@ -117,9 +107,10 @@ void hmac_init(hmac_ctx_t *ctx, const void *key, size_t key_len, sec_level_t sec
         ctx->i_key_pad[i] = ctx->key[i] ^ 0x36;
         ctx->o_key_pad[i] = ctx->key[i] ^ 0x5c;
     }
+    return CC_OK;
 }
 
-void hmac_update(hmac_ctx_t *ctx, const void *data, size_t data_len)
+cc_status_t hmac_update(hmac_ctx_t *ctx, const void *data, size_t data_len)
 {
     size_t inner_len = ctx->b + data_len;
     size_t outer_len = ctx->b + ctx->l;
@@ -127,8 +118,9 @@ void hmac_update(hmac_ctx_t *ctx, const void *data, size_t data_len)
     unsigned char *outer = malloc(outer_len);
     if (inner == NULL || outer == NULL)
     {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(1);
+        free(inner);
+        free(outer);
+        return CC_ERR_NOMEM;
     }
 
     memcpy(inner, ctx->i_key_pad, ctx->b);
@@ -139,6 +131,7 @@ void hmac_update(hmac_ctx_t *ctx, const void *data, size_t data_len)
 
     free(inner);
     free(outer);
+    return CC_OK;
 }
 
 void hmac_final(hmac_ctx_t *ctx, void *mac)
@@ -152,91 +145,54 @@ void hmac_free(hmac_ctx_t *ctx)
     free(ctx->i_key_pad);
     free(ctx->o_key_pad);
     free(ctx->out);
+    ctx->key = ctx->i_key_pad = ctx->o_key_pad = ctx->out = NULL;
 }
 
-void *hmac(const void *key, size_t keysize, const void *data, size_t data_len,
-           void *mac, sec_level_t sec_level, hash_func_t hash_function)
+cc_status_t hmac(const void *key, size_t keysize, const void *data, size_t data_len,
+                 void *mac, sec_level_t sec_level, hash_func_t hash_function)
 {
     hmac_ctx_t ctx;
-    hmac_init(&ctx, key, keysize, sec_level, hash_function);
-    hmac_update(&ctx, data, data_len);
-    hmac_final(&ctx, mac);
+    CC_TRY(hmac_init(&ctx, key, keysize, sec_level, hash_function));
+    cc_status_t status = hmac_update(&ctx, data, data_len);
+    if (status == CC_OK)
+        hmac_final(&ctx, mac);
     hmac_free(&ctx);
-    return mac;
+    return status;
 }
 
-int hmac_verify(const void *key, size_t keysize, const void *data, size_t data_len,
-                const void *mac, sec_level_t sec_level, hash_func_t hash_function)
+cc_status_t hmac_verify(const void *key, size_t keysize, const void *data, size_t data_len,
+                        const void *mac, size_t mac_len, sec_level_t sec_level, hash_func_t hash_function)
 {
-    hmac_ctx_t ctx;
-    hmac_init(&ctx, key, keysize, sec_level, hash_function);
-    unsigned char *mac_check = malloc(ctx.l);
-    if (mac_check == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(1);
-    }
-    hmac(key, keysize, data, data_len, mac_check, sec_level, hash_function);
-    int result = memcmp(mac, mac_check, ctx.l);
-    free(mac_check);
-    hmac_free(&ctx);
-    return result;
+    size_t expected_len;
+    CC_TRY(hmac_length(sec_level, hash_function, &expected_len));
+    if (mac_len != expected_len)
+        return CC_ERR_VERIFY;
+
+    unsigned char mac_check[64];
+    CC_TRY(hmac(key, keysize, data, data_len, mac_check, sec_level, hash_function));
+    return ct_memcmp(mac, mac_check, mac_len) == 0 ? CC_OK : CC_ERR_VERIFY;
 }
 
-void *hmac_file(const char *filename, const void *key, size_t keysize,
-                void *mac, sec_level_t sec_level, hash_func_t hash_function)
+cc_status_t hmac_file(const char *filename, const void *key, size_t keysize,
+                      void *mac, sec_level_t sec_level, hash_func_t hash_function)
 {
-    FILE *file = fopen(filename, "r");
-    if (file == NULL)
-    {
-        printf("Error opening file\n");
-        exit(EXIT_FAILURE);
-    }
+    unsigned char *file_contents;
+    size_t file_size;
+    CC_TRY(read_file(filename, &file_contents, &file_size));
 
-    fseek(file, 0, SEEK_END);
-    size_t file_size = ftell(file);
-    fseek(file, 0, SEEK_SET);
-
-    unsigned char *file_contents = malloc(file_size);
-    if (file_contents == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
-    fread(file_contents, 1, file_size, file);
-
-    hmac(key, keysize, file_contents, file_size, mac, sec_level, hash_function);
-
-    fclose(file);
+    cc_status_t status = hmac(key, keysize, file_contents, file_size, mac, sec_level, hash_function);
     free(file_contents);
-    return mac;
+    return status;
 }
 
-int hmac_file_verify(const char *filename, const void *key, size_t keysize,
-                     const void *mac, sec_level_t sec_level, hash_func_t hash_function)
+cc_status_t hmac_file_verify(const char *filename, const void *key, size_t keysize,
+                             const void *mac, size_t mac_len, sec_level_t sec_level, hash_func_t hash_function)
 {
-    FILE *file = fopen(filename, "r");
-    if (file == NULL)
-    {
-        printf("Error opening file\n");
-        exit(EXIT_FAILURE);
-    }
+    unsigned char *file_contents;
+    size_t file_size;
+    CC_TRY(read_file(filename, &file_contents, &file_size));
 
-    fseek(file, 0, SEEK_END);
-    size_t file_size = ftell(file);
-    fseek(file, 0, SEEK_SET);
-
-    unsigned char *file_contents = malloc(file_size);
-    if (file_contents == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
-    fread(file_contents, 1, file_size, file);
-
-    int result = hmac_verify(key, keysize, file_contents, file_size, mac, sec_level, hash_function);
-
-    fclose(file);
+    cc_status_t status = hmac_verify(key, keysize, file_contents, file_size, mac, mac_len, sec_level, hash_function);
     free(file_contents);
-    return result;
+    return status;
 }

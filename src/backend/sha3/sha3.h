@@ -3,10 +3,8 @@
 
 #include "common.h"
 
-#define L 6
-#define W 64
-#define B 1600
-#define Nr 24
+#define SHA3_STATE_BITS 1600
+#define SHA3_ROUNDS 24
 
 #define SHA3_224_DIGEST_SIZE 28
 #define SHA3_256_DIGEST_SIZE 32
@@ -17,7 +15,7 @@ typedef struct sha_3_ctx
 {
     union
     {
-        uint8_t b[B / 8]; // in 8-bit bytes
+        uint8_t b[SHA3_STATE_BITS / 8]; // in 8-bit bytes
         uint64_t q[25];   // in 64-bit words
     } state;
     unsigned int cnt;  // byte counter

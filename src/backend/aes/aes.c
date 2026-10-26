@@ -1,4 +1,5 @@
 #include "aes.h"
+#include "file_io.h"
 #include "conversion.h"
 
 unsigned char xtime(unsigned char x)
@@ -315,19 +316,30 @@ AES_ROUNDS get_rounds(AES_KEY_SIZE key_size)
     case AES_KEY_SIZE_256:
         return AES_ROUNDS_256;
     }
+    return 0;
 }
 
-void aes_encrypt_ecb(unsigned char *input, unsigned char *output, unsigned char *key, size_t len, AES_KEY_SIZE key_size)
+// Validates the key size and data length, then expands the key; *w must be freed by the caller
+static cc_status_t aes_prepare(unsigned char *key, AES_KEY_SIZE key_size, size_t len, unsigned char **w, AES_ROUNDS *rounds)
 {
-    AES_ROUNDS rounds = get_rounds(key_size);
+    *rounds = get_rounds(key_size);
+    if (*rounds == 0)
+        return CC_ERR_INVALID_ARG;
+    if (len % AES_BLOCK_SIZE != 0)
+        return CC_ERR_INVALID_INPUT;
 
-    unsigned char *w = malloc(AES_BLOCK_SIZE * (rounds + 1));
-    if (w == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
-    aes_key_expansion(key, w, key_size, rounds);
+    *w = malloc(AES_BLOCK_SIZE * (*rounds + 1));
+    if (*w == NULL)
+        return CC_ERR_NOMEM;
+    aes_key_expansion(key, *w, key_size, *rounds);
+    return CC_OK;
+}
+
+cc_status_t aes_encrypt_ecb(unsigned char *input, unsigned char *output, unsigned char *key, size_t len, AES_KEY_SIZE key_size)
+{
+    unsigned char *w;
+    AES_ROUNDS rounds;
+    CC_TRY(aes_prepare(key, key_size, len, &w, &rounds));
 
     for (size_t i = 0; i < len; i += AES_BLOCK_SIZE)
     {
@@ -336,19 +348,14 @@ void aes_encrypt_ecb(unsigned char *input, unsigned char *output, unsigned char 
     }
 
     free(w);
+    return CC_OK;
 }
 
-void aes_decrypt_ecb(unsigned char *input, unsigned char *output, unsigned char *key, size_t len, AES_KEY_SIZE key_size)
+cc_status_t aes_decrypt_ecb(unsigned char *input, unsigned char *output, unsigned char *key, size_t len, AES_KEY_SIZE key_size)
 {
-    AES_ROUNDS rounds = get_rounds(key_size);
-
-    unsigned char *w = malloc(AES_BLOCK_SIZE * (rounds + 1));
-    if (w == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
-    aes_key_expansion(key, w, key_size, rounds);
+    unsigned char *w;
+    AES_ROUNDS rounds;
+    CC_TRY(aes_prepare(key, key_size, len, &w, &rounds));
 
     for (size_t i = 0; i < len; i += AES_BLOCK_SIZE)
     {
@@ -357,19 +364,14 @@ void aes_decrypt_ecb(unsigned char *input, unsigned char *output, unsigned char 
     }
 
     free(w);
+    return CC_OK;
 }
 
-void aes_encrypt_cbc(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size)
+cc_status_t aes_encrypt_cbc(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size)
 {
-    AES_ROUNDS rounds = get_rounds(key_size);
-
-    unsigned char *w = malloc(AES_BLOCK_SIZE * (rounds + 1));
-    if (w == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
-    aes_key_expansion(key, w, key_size, rounds);
+    unsigned char *w;
+    AES_ROUNDS rounds;
+    CC_TRY(aes_prepare(key, key_size, len, &w, &rounds));
 
     unsigned char last_block[AES_BLOCK_SIZE];
     memcpy(last_block, iv, AES_BLOCK_SIZE);
@@ -388,19 +390,14 @@ void aes_encrypt_cbc(unsigned char *input, unsigned char *output, unsigned char 
     }
 
     free(w);
+    return CC_OK;
 }
 
-void aes_decrypt_cbc(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size)
+cc_status_t aes_decrypt_cbc(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size)
 {
-    AES_ROUNDS rounds = get_rounds(key_size);
-
-    unsigned char *w = malloc(AES_BLOCK_SIZE * (rounds + 1));
-    if (w == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
-    aes_key_expansion(key, w, key_size, rounds);
+    unsigned char *w;
+    AES_ROUNDS rounds;
+    CC_TRY(aes_prepare(key, key_size, len, &w, &rounds));
 
     unsigned char last_block[AES_BLOCK_SIZE];
     memcpy(last_block, iv, AES_BLOCK_SIZE);
@@ -421,19 +418,14 @@ void aes_decrypt_cbc(unsigned char *input, unsigned char *output, unsigned char 
     }
 
     free(w);
+    return CC_OK;
 }
 
-void aes_encrypt_cfb(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size)
+cc_status_t aes_encrypt_cfb(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size)
 {
-    AES_ROUNDS rounds = get_rounds(key_size);
-
-    unsigned char *w = malloc(AES_BLOCK_SIZE * (rounds + 1));
-    if (w == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
-    aes_key_expansion(key, w, key_size, rounds);
+    unsigned char *w;
+    AES_ROUNDS rounds;
+    CC_TRY(aes_prepare(key, key_size, len, &w, &rounds));
 
     unsigned char last_block[AES_BLOCK_SIZE];
     memcpy(last_block, iv, AES_BLOCK_SIZE);
@@ -451,19 +443,14 @@ void aes_encrypt_cfb(unsigned char *input, unsigned char *output, unsigned char 
     }
 
     free(w);
+    return CC_OK;
 }
 
-void aes_decrypt_cfb(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size)
+cc_status_t aes_decrypt_cfb(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size)
 {
-    AES_ROUNDS rounds = get_rounds(key_size);
-
-    unsigned char *w = malloc(AES_BLOCK_SIZE * (rounds + 1));
-    if (w == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
-    aes_key_expansion(key, w, key_size, rounds);
+    unsigned char *w;
+    AES_ROUNDS rounds;
+    CC_TRY(aes_prepare(key, key_size, len, &w, &rounds));
 
     unsigned char last_block[AES_BLOCK_SIZE];
     memcpy(last_block, iv, AES_BLOCK_SIZE);
@@ -481,19 +468,14 @@ void aes_decrypt_cfb(unsigned char *input, unsigned char *output, unsigned char 
     }
 
     free(w);
+    return CC_OK;
 }
 
-void aes_encrypt_ofb(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size)
+cc_status_t aes_encrypt_ofb(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size)
 {
-    AES_ROUNDS rounds = get_rounds(key_size);
-
-    unsigned char *w = malloc(AES_BLOCK_SIZE * (rounds + 1));
-    if (w == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
-    aes_key_expansion(key, w, key_size, rounds);
+    unsigned char *w;
+    AES_ROUNDS rounds;
+    CC_TRY(aes_prepare(key, key_size, len, &w, &rounds));
 
     unsigned char last_block[AES_BLOCK_SIZE];
     memcpy(last_block, iv, AES_BLOCK_SIZE);
@@ -509,47 +491,20 @@ void aes_encrypt_ofb(unsigned char *input, unsigned char *output, unsigned char 
     }
 
     free(w);
+    return CC_OK;
 }
 
-void aes_decrypt_ofb(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size)
+cc_status_t aes_decrypt_ofb(unsigned char *input, unsigned char *output, unsigned char *iv, unsigned char *key, size_t len, AES_KEY_SIZE key_size)
 {
-    AES_ROUNDS rounds = get_rounds(key_size);
-
-    unsigned char *w = malloc(AES_BLOCK_SIZE * (rounds + 1));
-    if (w == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
-    aes_key_expansion(key, w, key_size, rounds);
-
-    unsigned char last_block[AES_BLOCK_SIZE];
-    memcpy(last_block, iv, AES_BLOCK_SIZE);
-
-    for (size_t i = 0; i < len; i += AES_BLOCK_SIZE)
-    {
-        aes_block_encrypt(last_block, w, rounds);
-
-        for (int j = 0; j < AES_BLOCK_SIZE; j++)
-        {
-            output[i + j] = input[i + j] ^ last_block[j];
-        }
-    }
-
-    free(w);
+    // OFB is symmetric
+    return aes_encrypt_ofb(input, output, iv, key, len, key_size);
 }
 
-void aes_ctr(unsigned char *input, unsigned char *output, unsigned char *nonce, unsigned char *key, size_t len, AES_KEY_SIZE key_size)
+cc_status_t aes_ctr(unsigned char *input, unsigned char *output, unsigned char *nonce, unsigned char *key, size_t len, AES_KEY_SIZE key_size)
 {
-    AES_ROUNDS rounds = get_rounds(key_size);
-
-    unsigned char *w = malloc(AES_BLOCK_SIZE * (rounds + 1));
-    if (w == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
-    aes_key_expansion(key, w, key_size, rounds);
+    unsigned char *w;
+    AES_ROUNDS rounds;
+    CC_TRY(aes_prepare(key, key_size, len, &w, &rounds));
 
     // Initialize the 16-byte counter block with the nonce
     unsigned char counter_block[AES_BLOCK_SIZE];
@@ -579,135 +534,67 @@ void aes_ctr(unsigned char *input, unsigned char *output, unsigned char *nonce, 
     }
 
     free(w);
+    return CC_OK;
 }
 
-void aes_file_encrypt(const char *input_file, const char *output_file, unsigned char *key, unsigned char *iv, AES_KEY_SIZE key_size, AES_MODE mode)
+static cc_status_t aes_crypt(unsigned char *input, unsigned char *output, unsigned char *key, unsigned char *iv, size_t len, AES_KEY_SIZE key_size, AES_MODE mode, int encrypt)
 {
-    FILE *input = fopen(input_file, "rb");
-    FILE *output = fopen(output_file, "wb");
-
-    if (input == NULL || output == NULL)
-    {
-        printf("Error opening files\n");
-        return;
-    }
-
-    fseek(input, 0, SEEK_END);
-    size_t len = ftell(input);
-    fseek(input, 0, SEEK_SET);
-
-    unsigned char *input_data = malloc(len);
-    if (input_data == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
-    fread(input_data, 1, len, input);
-
-    unsigned char *padded_data = pkcs7_padding(input_data, len, &len, AES_BLOCK_SIZE);
-    unsigned char *output_data = malloc(len);
-    if (output_data == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
-
     switch (mode)
     {
     case AES_MODE_ECB:
-        aes_encrypt_ecb(padded_data, output_data, key, len, key_size);
-        break;
+        return encrypt ? aes_encrypt_ecb(input, output, key, len, key_size) : aes_decrypt_ecb(input, output, key, len, key_size);
     case AES_MODE_CBC:
-        aes_encrypt_cbc(padded_data, output_data, iv, key, len, key_size);
-        break;
+        return encrypt ? aes_encrypt_cbc(input, output, iv, key, len, key_size) : aes_decrypt_cbc(input, output, iv, key, len, key_size);
     case AES_MODE_CFB:
-        aes_encrypt_cfb(padded_data, output_data, iv, key, len, key_size);
-        break;
+        return encrypt ? aes_encrypt_cfb(input, output, iv, key, len, key_size) : aes_decrypt_cfb(input, output, iv, key, len, key_size);
     case AES_MODE_OFB:
-        aes_encrypt_ofb(padded_data, output_data, iv, key, len, key_size);
-        break;
+        return encrypt ? aes_encrypt_ofb(input, output, iv, key, len, key_size) : aes_decrypt_ofb(input, output, iv, key, len, key_size);
     case AES_MODE_CTR:
-        aes_ctr(padded_data, output_data, iv, key, len, key_size);
-        break;
+        return aes_ctr(input, output, iv, key, len, key_size);
     case AES_MODE_GCM:
-        printf("AES-GCM not implemented\n");
-        exit(EXIT_FAILURE);
-    default:
-        printf("Invalid AES mode\n");
-        exit(EXIT_FAILURE);
+        return CC_ERR_UNSUPPORTED;
     }
+    return CC_ERR_INVALID_ARG;
+}
 
-    fwrite(output_data, 1, len, output);
+cc_status_t aes_file_encrypt(const char *input_file, const char *output_file, unsigned char *key, unsigned char *iv, AES_KEY_SIZE key_size, AES_MODE mode)
+{
+    unsigned char *input_data, *padded_data = NULL, *output_data = NULL;
+    size_t len, padded_len;
+    CC_TRY(read_file(input_file, &input_data, &len));
 
-    fclose(input);
-    fclose(output);
+    cc_status_t status = pkcs7_padding(input_data, len, &padded_data, &padded_len, AES_BLOCK_SIZE);
+    if (status == CC_OK && (output_data = malloc(padded_len)) == NULL)
+        status = CC_ERR_NOMEM;
+    if (status == CC_OK)
+        status = aes_crypt(padded_data, output_data, key, iv, padded_len, key_size, mode, 1);
+    if (status == CC_OK)
+        status = write_file(output_file, output_data, padded_len);
 
     free(input_data);
-    free(output_data);
     free(padded_data);
+    free(output_data);
+    return status;
 }
 
-void aes_file_decrypt(const char *input_file, const char *output_file, unsigned char *key, unsigned char *iv, AES_KEY_SIZE key_size, AES_MODE mode)
+cc_status_t aes_file_decrypt(const char *input_file, const char *output_file, unsigned char *key, unsigned char *iv, AES_KEY_SIZE key_size, AES_MODE mode)
 {
-    FILE *input = fopen(input_file, "rb");
-    FILE *output = fopen(output_file, "wb");
+    unsigned char *input_data, *output_data = NULL, *unpadded_data = NULL;
+    size_t len, unpadded_len;
+    CC_TRY(read_file(input_file, &input_data, &len));
 
-    if (input == NULL || output == NULL)
-    {
-        printf("Error opening files\n");
-        return;
-    }
-
-    fseek(input, 0, SEEK_END);
-    size_t len = ftell(input);
-    fseek(input, 0, SEEK_SET);
-
-    unsigned char *input_data = malloc(len);
-    if (input_data == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
-    fread(input_data, 1, len, input);
-    unsigned char *output_data = malloc(len);
-    if (output_data == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
-
-    switch (mode)
-    {
-    case AES_MODE_ECB:
-        aes_decrypt_ecb(input_data, output_data, key, len, key_size);
-        break;
-    case AES_MODE_CBC:
-        aes_decrypt_cbc(input_data, output_data, iv, key, len, key_size);
-        break;
-    case AES_MODE_CFB:
-        aes_decrypt_cfb(input_data, output_data, iv, key, len, key_size);
-        break;
-    case AES_MODE_OFB:
-        aes_decrypt_ofb(input_data, output_data, iv, key, len, key_size);
-        break;
-    case AES_MODE_CTR:
-        aes_ctr(input_data, output_data, iv, key, len, key_size);
-        break;
-    case AES_MODE_GCM:
-        printf("AES-GCM not implemented\n");
-        exit(EXIT_FAILURE);
-    default:
-        printf("Invalid AES mode\n");
-        exit(EXIT_FAILURE);
-    }
-
-    unsigned char *unpadded_data = pkcs7_unpadding(output_data, len, &len, AES_BLOCK_SIZE);
-    fwrite(unpadded_data, 1, len, output);
-
-    fclose(input);
-    fclose(output);
+    cc_status_t status = CC_OK;
+    if ((output_data = malloc(len + 1)) == NULL)
+        status = CC_ERR_NOMEM;
+    if (status == CC_OK)
+        status = aes_crypt(input_data, output_data, key, iv, len, key_size, mode, 0);
+    if (status == CC_OK)
+        status = pkcs7_unpadding(output_data, len, &unpadded_data, &unpadded_len, AES_BLOCK_SIZE);
+    if (status == CC_OK)
+        status = write_file(output_file, unpadded_data, unpadded_len);
 
     free(input_data);
     free(output_data);
     free(unpadded_data);
+    return status;
 }

@@ -2,6 +2,7 @@ import cython
 from enum import Enum
 from wrappers.enums import SecurityLevel
 from wrappers.gmp import GMPInteger
+from wrappers.enums import CryptoError
 
 class RSAAlgo(Enum):
     STANDARD = RSA_STANDARD
@@ -35,9 +36,16 @@ class RSAPrivateKey:
 @cython.cclass
 class RSA:
     def __init__(self, sec_level: SecurityLevel, variant: RSAVariant):
-        setup(cython.address(self.pp), sec_level.value)
+        check(rsa_setup(cython.address(self.pp), sec_level.value))
+        self.has_params = True
         self.sec_level = sec_level.value
         self.variant = variant.value
+
+    def __dealloc__(self):
+        if self.has_key:
+            rsa_free_keys(cython.address(self.sk), cython.address(self.pk))
+        if self.has_params:
+            rsa_free_params(cython.address(self.pp))
 
     @property
     def params(self) -> RSAPublicParams:
@@ -73,108 +81,94 @@ class RSA:
 
     @cython.ccall
     def keygen(self) -> cython.void:
-        keygen(cython.address(self.sk), cython.address(self.pk), self.pp)
+        if self.has_key:
+            rsa_free_keys(cython.address(self.sk), cython.address(self.pk))
+            self.has_key = False
+        check(rsa_keygen(cython.address(self.sk), cython.address(self.pk), cython.address(self.pp)))
+        self.has_key = True
+
+    def _require_key(self):
+        if not self.has_key:
+            raise CryptoError(0, "Generate a key first")
 
     @cython.ccall
     def encrypt(self, m: bytes) -> bytes:
-        tmp = GMPInteger()
-
-        buf = cython.cast(cython.p_uchar, m)
-        buf_len = len(m)
-        bytes_to_bigint(tmp.value, buf, buf_len, BIG)
-
+        self._require_key()
         if self.variant == RSAVariant.TEXTBOOK.value:
-            crypto_encrypt(tmp.value, tmp.value, cython.address(self.pk))
-        elif self.variant == RSAVariant.PKCS1.value:
-            crypto_encrypt_pkcs1(tmp.value, tmp.value, cython.address(self.pk))
-        elif self.variant == RSAVariant.SECURE.value:
-            crypto_encrypt_oaep(tmp.value, tmp.value, cython.address(self.pk), self.sec_level)
+            tmp = GMPInteger()
+            bytes_to_bigint(tmp.value, cython.cast(cython.p_uchar, m), len(m), BIG)
+            check(rsa_encrypt(tmp.value, tmp.value, cython.address(self.pk)))
+            return _to_bytes(tmp)
+
+        k = rsa_modulus_size(self.pk.n)
+        c = cython.cast(cython.p_uchar, malloc(k))
+        if self.variant == RSAVariant.PKCS1.value:
+            status = rsa_encrypt_pkcs1(c, cython.cast(cython.p_uchar, m), len(m), cython.address(self.pk))
         else:
-            raise ValueError("Invalid RSA variant")
-
-        c = cython.cast(cython.p_uchar, malloc(count_bytes(tmp.value)))
-        c_len: cython.size_t = 0
-        bigint_to_bytes(c, cython.address(c_len), tmp.value, BIG)
-
-        result = cython.declare(bytes, c[:c_len])
-        del tmp
+            status = rsa_encrypt_oaep(c, cython.cast(cython.p_uchar, m), len(m), cython.address(self.pk), self.sec_level)
+        result = cython.declare(bytes, c[:k])
         free(c)
+        check(status)
         return result
-    
+
     @cython.ccall
     def decrypt(self, c: bytes, algo: RSAAlgo) -> bytes:
-        tmp = GMPInteger()
-
-        buf = cython.cast(cython.p_uchar, c)
-        buf_len = len(c)
-        bytes_to_bigint(tmp.value, buf, buf_len, BIG)
-
+        self._require_key()
         if self.variant == RSAVariant.TEXTBOOK.value:
-            crypto_decrypt(tmp.value, tmp.value, cython.address(self.sk), algo.value)
-        elif self.variant == RSAVariant.PKCS1.value:
-            crypto_decrypt_pkcs1(tmp.value, tmp.value, cython.address(self.sk), algo.value)
-        elif self.variant == RSAVariant.SECURE.value:
-            crypto_decrypt_oaep(tmp.value, tmp.value, cython.address(self.sk), algo.value, self.sec_level)
-        else:
-            raise ValueError("Invalid RSA variant")
+            tmp = GMPInteger()
+            bytes_to_bigint(tmp.value, cython.cast(cython.p_uchar, c), len(c), BIG)
+            check(rsa_decrypt(tmp.value, tmp.value, cython.address(self.sk), algo.value))
+            return _to_bytes(tmp)
 
-        m = cython.cast(cython.p_uchar, malloc(count_bytes(tmp.value)))
+        k = rsa_modulus_size(self.sk.n)
+        m = cython.cast(cython.p_uchar, malloc(k))
         m_len: cython.size_t = 0
-        bigint_to_bytes(m, cython.address(m_len), tmp.value, BIG)
-
+        if self.variant == RSAVariant.PKCS1.value:
+            status = rsa_decrypt_pkcs1(m, cython.address(m_len), cython.cast(cython.p_uchar, c), len(c), cython.address(self.sk), algo.value)
+        else:
+            status = rsa_decrypt_oaep(m, cython.address(m_len), cython.cast(cython.p_uchar, c), len(c), cython.address(self.sk), algo.value, self.sec_level)
         result = cython.declare(bytes, m[:m_len])
-        del tmp
         free(m)
+        check(status)
         return result
-    
+
     @cython.ccall
     def sign(self, m: bytes, algo: RSAAlgo) -> bytes:
-        tmp = GMPInteger()
-
-        buf = cython.cast(cython.p_uchar, m)
-        buf_len = len(m)
-        bytes_to_bigint(tmp.value, buf, buf_len, BIG)
-
+        self._require_key()
         if self.variant == RSAVariant.TEXTBOOK.value:
-            crypto_sign(tmp.value, tmp.value, cython.address(self.sk), algo.value)
-        elif self.variant == RSAVariant.PKCS1.value:
-            crypto_sign_pkcs1(tmp.value, tmp.value, cython.address(self.sk), algo.value, self.sec_level)
-        elif self.variant == RSAVariant.SECURE.value:
-            crypto_sign_pss(tmp.value, tmp.value, cython.address(self.sk), algo.value, self.sec_level)
+            tmp = GMPInteger()
+            bytes_to_bigint(tmp.value, cython.cast(cython.p_uchar, m), len(m), BIG)
+            check(rsa_sign(tmp.value, tmp.value, cython.address(self.sk), algo.value))
+            return _to_bytes(tmp)
+
+        k = rsa_modulus_size(self.sk.n)
+        s = cython.cast(cython.p_uchar, malloc(k))
+        if self.variant == RSAVariant.PKCS1.value:
+            status = rsa_sign_pkcs1(s, cython.cast(cython.p_uchar, m), len(m), cython.address(self.sk), algo.value, self.sec_level)
         else:
-            raise ValueError("Invalid RSA variant")
-
-        s = cython.cast(cython.p_uchar, malloc(count_bytes(tmp.value)))
-        s_len: cython.size_t = 0
-        bigint_to_bytes(s, cython.address(s_len), tmp.value, BIG)
-
-        result = cython.declare(bytes, s[:s_len])
-        del tmp
+            status = rsa_sign_pss(s, cython.cast(cython.p_uchar, m), len(m), cython.address(self.sk), algo.value, self.sec_level)
+        result = cython.declare(bytes, s[:k])
         free(s)
+        check(status)
         return result
-    
+
     @cython.ccall
     def verify(self, m: bytes, s: bytes):
-        tmp_m = GMPInteger()
-        tmp_s = GMPInteger()
-
-        buf = cython.cast(cython.p_uchar, m)
-        buf_len = len(m)
-        bytes_to_bigint(tmp_m.value, buf, buf_len, BIG)
-
-        buf = cython.cast(cython.p_uchar, s)
-        buf_len = len(s)
-        bytes_to_bigint(tmp_s.value, buf, buf_len, BIG)
-        
-        result = 0
+        self._require_key()
         if self.variant == RSAVariant.TEXTBOOK.value:
-            result = crypto_verify(tmp_m.value, tmp_s.value, cython.address(self.pk))
-        elif self.variant == RSAVariant.PKCS1.value:
-            result = crypto_verify_pkcs1(tmp_m.value, tmp_s.value, cython.address(self.pk), self.sec_level)
-        elif self.variant == RSAVariant.SECURE.value:
-            result = crypto_verify_pss(tmp_m.value, tmp_s.value, cython.address(self.pk), self.sec_level)
+            tmp_m = GMPInteger()
+            tmp_s = GMPInteger()
+            bytes_to_bigint(tmp_m.value, cython.cast(cython.p_uchar, m), len(m), BIG)
+            bytes_to_bigint(tmp_s.value, cython.cast(cython.p_uchar, s), len(s), BIG)
+            return bool(check_verify(rsa_verify(tmp_m.value, tmp_s.value, cython.address(self.pk))))
+
+        if self.variant == RSAVariant.PKCS1.value:
+            status = rsa_verify_pkcs1(cython.cast(cython.p_uchar, m), len(m), cython.cast(cython.p_uchar, s), len(s), cython.address(self.pk), self.sec_level)
         else:
-            raise ValueError("Invalid RSA variant")
-        
-        del tmp_m, tmp_s
-        return bool(result)
+            status = rsa_verify_pss(cython.cast(cython.p_uchar, m), len(m), cython.cast(cython.p_uchar, s), len(s), cython.address(self.pk), self.sec_level)
+        return bool(check_verify(status))
+
+def _to_bytes(n: GMPInteger) -> bytes:
+    """Minimal big-endian encoding of a GMP integer."""
+    value = int(n.get_value(16), 16)
+    return value.to_bytes(max(1, (value.bit_length() + 7) // 8), 'big')

@@ -39,7 +39,7 @@ void md5_transform(md5_ctx *ctx, const BYTE data[])
     uint32_t a, b, c, d, m[16], i, j;
     for (i = 0, j = 0; i < 16; ++i, j += 4)
     {
-        m[i] = (data[j]) + (data[j + 1] << 8) + (data[j + 2] << 16) + (data[j + 3] << 24);
+        m[i] = (data[j]) + (data[j + 1] << 8) + (data[j + 2] << 16) + ((uint32_t)data[j + 3] << 24);
     }
     a = ctx->state[0];
     b = ctx->state[1];

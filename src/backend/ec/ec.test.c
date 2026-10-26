@@ -1,11 +1,16 @@
 #include "ec.h"
+#include "test_util.h"
 
 void test_weierstrass_curve(weierstrass_curve_t curve_id)
 {
     int check = 1, eq = 0, on_curve = 0, inf = 0;
 
     curve_t curve;
-    init_curve(&curve, WEIERSTRASS, curve_id);
+    if (init_curve(&curve, WEIERSTRASS, curve_id) != CC_OK)
+    {
+        printf("[%d] Curve init:\t FAILED\n", curve_id);
+        return;
+    }
 
     // gmp_printf("Curve's p: %Zd\n", curve.p);
     // gmp_printf("Curve's r: %Zd\n", curve.r);
@@ -60,7 +65,7 @@ void test_weierstrass_curve(weierstrass_curve_t curve_id)
 
     // Test point serialization
     unsigned char buf[2 * curve.efs];
-    point_to_bytes(buf, p, curve);
+    EXPECT_OK(point_to_bytes(buf, p, curve));
     point_from_bytes(&r, buf, curve);
     eq = equals(p, r, curve);
     check &= eq;
@@ -89,7 +94,11 @@ void test_edwards_curve(edwards_curve_t curve_id)
     int check = 1, eq = 0, on_curve = 0, inf = 0;
 
     curve_t curve;
-    init_curve(&curve, EDWARDS, curve_id);
+    if (init_curve(&curve, EDWARDS, curve_id) != CC_OK)
+    {
+        printf("[%d] Curve init:\t FAILED\n", curve_id);
+        return;
+    }
 
     // gmp_printf("Curve's p: %Zd\n", curve.p);
     // gmp_printf("Curve's r: %Zd\n", curve.r);
@@ -144,7 +153,7 @@ void test_edwards_curve(edwards_curve_t curve_id)
 
     // Test point serialization
     unsigned char buf[2 * curve.efs];
-    point_to_bytes(buf, p, curve);
+    EXPECT_OK(point_to_bytes(buf, p, curve));
     point_from_bytes(&r, buf, curve);
     eq = equals(p, r, curve);
     check &= eq;
@@ -173,7 +182,11 @@ void test_montgomery_curve(montgomery_curve_t curve_id)
     int check = 1, eq = 0, on_curve = 0, inf = 0;
 
     curve_t curve;
-    init_curve(&curve, MONTGOMERY, curve_id);
+    if (init_curve(&curve, MONTGOMERY, curve_id) != CC_OK)
+    {
+        printf("[%d] Curve init:\t FAILED\n", curve_id);
+        return;
+    }
 
     // gmp_printf("Curve's p: %Zd\n", curve.p);
     // gmp_printf("Curve's r: %Zd\n", curve.r);
@@ -236,7 +249,7 @@ void test_montgomery_curve(montgomery_curve_t curve_id)
 
     // Test point serialization
     unsigned char buf[curve.efs];
-    point_to_bytes(buf, p, curve);
+    EXPECT_OK(point_to_bytes(buf, p, curve));
     point_from_bytes(&r, buf, curve);
     eq = equals(p, r, curve);
     check &= eq;
@@ -280,6 +293,21 @@ int main()
     test_edwards_curve(ED25519);
     test_edwards_curve(ED448);
     test_edwards_curve(E448);
+
+    printf("\n===================== EC ERRORS TEST =====================\n\n");
+    curve_t curve;
+    point_t p;
+    int passed = init_curve(&curve, WEIERSTRASS, 42) == CC_ERR_INVALID_ARG &&
+                 init_curve(&curve, (ec_t)42, P256) == CC_ERR_INVALID_ARG;
+    if (init_curve(&curve, MONTGOMERY, C25519) == CC_OK)
+    {
+        init_point(&p);
+        generator(&p, curve);
+        passed &= add(&p, p, p, curve) == CC_ERR_UNSUPPORTED && neg(&p, p, curve) == CC_ERR_UNSUPPORTED;
+        free_point(&p);
+        free_curve(&curve);
+    }
+    printf("EC Errors:\t%s\n", passed ? "PASSED" : "FAILED");
 
     return 0;
 }

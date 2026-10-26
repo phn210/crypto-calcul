@@ -4,15 +4,8 @@
 #include "sha2.h"
 #include "sha3.h"
 
-void mgf1(unsigned char *mask, size_t mask_len, const unsigned char *seed, size_t seed_len, hash_func_t hash_function, sec_level_t sec_level)
+cc_status_t mgf1(unsigned char *mask, size_t mask_len, const unsigned char *seed, size_t seed_len, hash_func_t hash_function, sec_level_t sec_level)
 {
-    unsigned char *buf = malloc(seed_len + 4);
-    if (buf == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
-    memcpy(buf, seed, seed_len);
     size_t hash_len;
     void *(*hash)(const void *, size_t, void *, size_t);
 
@@ -42,9 +35,7 @@ void mgf1(unsigned char *mask, size_t mask_len, const unsigned char *seed, size_
             hash_len = SHA512_DIGEST_SIZE;
             break;
         default:
-            fprintf(stderr, "Invalid security level\n");
-            free(buf);
-            exit(EXIT_FAILURE);
+            return CC_ERR_INVALID_ARG;
         }
         hash = &sha2;
         break;
@@ -64,36 +55,30 @@ void mgf1(unsigned char *mask, size_t mask_len, const unsigned char *seed, size_
             hash_len = SHA3_512_DIGEST_SIZE;
             break;
         default:
-            fprintf(stderr, "Invalid security level\n");
-            free(buf);
-            exit(EXIT_FAILURE);
+            return CC_ERR_INVALID_ARG;
         }
         hash = &sha3;
         break;
     default:
-        fprintf(stderr, "Invalid hash function\n");
-        free(buf);
-        exit(EXIT_FAILURE);
+        return CC_ERR_INVALID_ARG;
     }
 
-    if (mask_len > (hash_len << 32))
-    {
-        fprintf(stderr, "Mask too long\n");
-        free(buf);
-        exit(EXIT_FAILURE);
-    }
+    // The counter is 32 bits wide
+    size_t num_blocks = (mask_len + hash_len - 1) / hash_len;
+    if (num_blocks > 0xFFFFFFFFu)
+        return CC_ERR_INVALID_ARG;
 
-    int num_blocks = (mask_len + hash_len - 1) / hash_len;
-
+    unsigned char *buf = malloc(seed_len + 4);
     unsigned char *md = malloc(hash_len);
-    if (md == NULL)
+    if (buf == NULL || md == NULL)
     {
-        fprintf(stderr, "Memory allocation failed\n");
         free(buf);
-        exit(EXIT_FAILURE);
+        free(md);
+        return CC_ERR_NOMEM;
     }
+    memcpy(buf, seed, seed_len);
 
-    for (int i = 0; i < num_blocks; i++)
+    for (size_t i = 0; i < num_blocks; i++)
     {
         buf[seed_len] = (i >> 24) & 0xFF;
         buf[seed_len + 1] = (i >> 16) & 0xFF;
@@ -106,4 +91,5 @@ void mgf1(unsigned char *mask, size_t mask_len, const unsigned char *seed, size_
 
     free(buf);
     free(md);
+    return CC_OK;
 }

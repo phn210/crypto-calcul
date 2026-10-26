@@ -1,7 +1,9 @@
 #include "cbc_mac.h"
+#include "hmac.h"
 #include "conversion.h"
+#include "file_io.h"
 
-void cbc_mac(const void *key, size_t keysize, const void *data, size_t data_len, void *mac, sec_level_t sec_level)
+cc_status_t cbc_mac(const void *key, size_t keysize, const void *data, size_t data_len, void *mac, sec_level_t sec_level)
 {
     size_t key_len;
     switch (sec_level)
@@ -16,102 +18,62 @@ void cbc_mac(const void *key, size_t keysize, const void *data, size_t data_len,
         key_len = AES_KEY_SIZE_256;
         break;
     default:
-        printf("Invalid security level\n");
-        exit(EXIT_FAILURE);
+        return CC_ERR_INVALID_ARG;
     }
 
-    size_t padded_len;
-    unsigned char *padded_message = pkcs7_padding((unsigned char *)data, data_len, &padded_len, AES_BLOCK_SIZE);
-
-    unsigned char key_block[AES_BLOCK_SIZE];
-    memset(key_block, 0, AES_BLOCK_SIZE);
-    memcpy(key_block, key, keysize < AES_BLOCK_SIZE ? keysize : AES_BLOCK_SIZE);
+    unsigned char key_block[AES_KEY_SIZE_256];
+    memset(key_block, 0, sizeof(key_block));
+    memcpy(key_block, key, keysize < key_len ? keysize : key_len);
 
     unsigned char iv[AES_BLOCK_SIZE];
     memset(iv, 0, AES_BLOCK_SIZE);
 
-    unsigned char *input_blocks = malloc(padded_len);
-    unsigned char *encrypted_ecb = malloc(padded_len);
-    if (input_blocks == NULL || encrypted_ecb == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
+    // aes_encrypt_cbc works in place on its input, so it gets the padded copy
+    unsigned char *padded_message;
+    size_t padded_len;
+    CC_TRY(pkcs7_padding(data, data_len, &padded_message, &padded_len, AES_BLOCK_SIZE));
 
-    for (size_t i = 0; i < padded_len; i++)
-    {
-        input_blocks[i] = padded_message[i];
-    }
-
-    aes_encrypt_cbc(input_blocks, encrypted_ecb, iv, key_block, padded_len, key_len);
-
-    memcpy(mac, encrypted_ecb + padded_len - AES_BLOCK_SIZE, AES_BLOCK_SIZE);
+    cc_status_t status = CC_OK;
+    unsigned char *encrypted = malloc(padded_len);
+    if (encrypted == NULL)
+        status = CC_ERR_NOMEM;
+    if (status == CC_OK)
+        status = aes_encrypt_cbc(padded_message, encrypted, iv, key_block, padded_len, key_len);
+    if (status == CC_OK)
+        memcpy(mac, encrypted + padded_len - AES_BLOCK_SIZE, AES_BLOCK_SIZE);
 
     free(padded_message);
-    free(input_blocks);
-    free(encrypted_ecb);
+    free(encrypted);
+    return status;
 }
 
-int cbc_mac_verify(const void *key, size_t keysize, const void *data, size_t data_len, const void *mac, sec_level_t sec_level)
+cc_status_t cbc_mac_verify(const void *key, size_t keysize, const void *data, size_t data_len, const void *mac, size_t mac_len, sec_level_t sec_level)
 {
     unsigned char mac_check[AES_BLOCK_SIZE];
-    cbc_mac(key, keysize, data, data_len, mac_check, sec_level);
-    int result = memcmp(mac, mac_check, AES_BLOCK_SIZE);
-    return result;
+    CC_TRY(cbc_mac(key, keysize, data, data_len, mac_check, sec_level));
+    if (mac_len != AES_BLOCK_SIZE)
+        return CC_ERR_VERIFY;
+    return ct_memcmp(mac, mac_check, AES_BLOCK_SIZE) == 0 ? CC_OK : CC_ERR_VERIFY;
 }
 
-void cbc_mac_file(const char *filename, const void *key, size_t keysize, void *mac, sec_level_t sec_level)
+cc_status_t cbc_mac_file(const char *filename, const void *key, size_t keysize, void *mac, sec_level_t sec_level)
 {
-    FILE *file = fopen(filename, "r");
-    if (file == NULL)
-    {
-        printf("Error opening file\n");
-        exit(EXIT_FAILURE);
-    }
+    unsigned char *file_contents;
+    size_t file_size;
+    CC_TRY(read_file(filename, &file_contents, &file_size));
 
-    fseek(file, 0, SEEK_END);
-    size_t file_size = ftell(file);
-    fseek(file, 0, SEEK_SET);
-
-    unsigned char *file_contents = malloc(file_size);
-    if (file_contents == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
-    fread(file_contents, 1, file_size, file);
-
-    cbc_mac(key, keysize, file_contents, file_size, mac, sec_level);
-
-    fclose(file);
+    cc_status_t status = cbc_mac(key, keysize, file_contents, file_size, mac, sec_level);
     free(file_contents);
+    return status;
 }
 
-int cbc_mac_file_verify(const char *filename, const void *key, size_t keysize, const void *mac, sec_level_t sec_level)
+cc_status_t cbc_mac_file_verify(const char *filename, const void *key, size_t keysize, const void *mac, size_t mac_len, sec_level_t sec_level)
 {
-    FILE *file = fopen(filename, "r");
-    if (file == NULL)
-    {
-        printf("Error opening file\n");
-        exit(EXIT_FAILURE);
-    }
+    unsigned char *file_contents;
+    size_t file_size;
+    CC_TRY(read_file(filename, &file_contents, &file_size));
 
-    fseek(file, 0, SEEK_END);
-    size_t file_size = ftell(file);
-    fseek(file, 0, SEEK_SET);
-
-    unsigned char *file_contents = malloc(file_size);
-    if (file_contents == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(EXIT_FAILURE);
-    }
-    fread(file_contents, 1, file_size, file);
-
-    int result = cbc_mac_verify(key, keysize, file_contents, file_size, mac, sec_level);
-
-    fclose(file);
+    cc_status_t status = cbc_mac_verify(key, keysize, file_contents, file_size, mac, mac_len, sec_level);
     free(file_contents);
-
-    return result;
+    return status;
 }

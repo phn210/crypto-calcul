@@ -28,11 +28,17 @@ typedef struct priv_key
     mpz_t x;
 } priv_key_t;
 
-void setup(public_params_t *pp, sec_level_t level);
-void keygen(priv_key_t *sk, pub_key_t *pk, const public_params_t *pp);
-void crypto_encrypt(mpz_t c1, mpz_t c2, const mpz_t m, const pub_key_t *pk, const public_params_t *pp);
-void crypto_decrypt(mpz_t m, const mpz_t c1, const mpz_t c2, const priv_key_t *sk, const public_params_t *pp);
-void crypto_sign(mpz_t r, mpz_t s, const unsigned char *m, size_t m_len, const priv_key_t *sk, const public_params_t *pp, sec_level_t sec_level);
-int crypto_verify(const mpz_t r, const mpz_t s, const unsigned char *m, size_t m_len, const pub_key_t *pk, const public_params_t *pp, sec_level_t sec_level);
+// Setup and key generation initialize their outputs only on success (levels L0 and L1)
+CC_NODISCARD cc_status_t elgamal_setup(public_params_t *pp, sec_level_t level);
+CC_NODISCARD cc_status_t elgamal_keygen(priv_key_t *sk, pub_key_t *pk, const public_params_t *pp);
+void elgamal_free_params(public_params_t *pp);
+void elgamal_free_keys(priv_key_t *sk, pub_key_t *pk);
+
+// Multiplicative ElGamal on integers m in [0, p); outputs must be initialized
+CC_NODISCARD cc_status_t elgamal_encrypt(mpz_t c1, mpz_t c2, const mpz_t m, const pub_key_t *pk, const public_params_t *pp);
+CC_NODISCARD cc_status_t elgamal_decrypt(mpz_t m, const mpz_t c1, const mpz_t c2, const priv_key_t *sk, const public_params_t *pp);
+CC_NODISCARD cc_status_t elgamal_sign(mpz_t r, mpz_t s, const unsigned char *m, size_t m_len, const priv_key_t *sk, const public_params_t *pp, sec_level_t sec_level);
+// Returns CC_OK if the signature is valid, CC_ERR_VERIFY otherwise
+CC_NODISCARD cc_status_t elgamal_verify(const mpz_t r, const mpz_t s, const unsigned char *m, size_t m_len, const pub_key_t *pk, const public_params_t *pp, sec_level_t sec_level);
 
 #endif

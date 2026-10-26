@@ -1,5 +1,6 @@
 from libc.stdlib cimport malloc, free
 from libc.stdint cimport uint64_t
+from wrappers.enums cimport cc_status_t, check
 
 cdef extern from "des.h":
     ctypedef enum des_mode_t:
@@ -9,11 +10,11 @@ cdef extern from "des.h":
     cdef const size_t _DES_BLOCK_SIZE "DES_BLOCK_SIZE"
 
     void des(uint64_t *, uint64_t *, const uint64_t, int, des_mode_t)
-    void des_file(const char *, const char *, const uint64_t, des_mode_t)
+    cc_status_t des_file(const char *, const char *, const uint64_t, des_mode_t)
 
 cdef extern from "conversion.h":
-    unsigned char *pkcs7_padding(unsigned char *, size_t, size_t *, size_t)
-    unsigned char *pkcs7_unpadding(unsigned char *, size_t, size_t *, size_t)
+    cc_status_t pkcs7_padding(const unsigned char *, size_t, unsigned char **, size_t *, size_t)
+    cc_status_t pkcs7_unpadding(const unsigned char *, size_t, unsigned char **, size_t *, size_t)
 
 cdef class DES:
     cpdef des(self, bytes data, bytes key, mode)

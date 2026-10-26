@@ -5,12 +5,17 @@ from wrappers.gmp import GMPInteger
 @cython.cclass
 class ECDH:
     def __init__(self, curve: EC):
-        setup(cython.address(self.pp), curve.curve_type.value, curve.curve_id.value)
+        check(ecelgamal_setup(cython.address(self.pp), curve.curve_type.value, curve.curve_id.value))
+        self.has_params = True
+
+    def __dealloc__(self):
+        if self.has_params:
+            ecelgamal_free_params(cython.address(self.pp))
         
     @cython.ccall
     def gen_secret(self) -> bytes:
         s = GMPInteger()
-        gen_secret(s.value, cython.address(self.pp))
+        check(ecdh_gen_secret(s.value, cython.address(self.pp)))
         
         secret = cython.cast(cython.p_uchar, malloc(count_bytes(s.value)))
         secret_len: cython.size_t = 0
@@ -27,7 +32,7 @@ class ECDH:
         p = GMPInteger()
         
         bytes_to_bigint(s.value, cython.cast(cython.p_uchar, secret), len(secret), BIG)
-        gen_public(p.value, s.value, cython.address(self.pp))
+        check(ecdh_gen_public(p.value, s.value, cython.address(self.pp)))
         
         public = cython.cast(cython.p_uchar, malloc(count_bytes(p.value)))
         public_len: cython.size_t = 0
@@ -46,7 +51,7 @@ class ECDH:
         
         bytes_to_bigint(s.value, cython.cast(cython.p_uchar, secret), len(secret), BIG)
         bytes_to_bigint(p.value, cython.cast(cython.p_uchar, public), len(public), BIG)
-        compute_shared_secret(ss.value, s.value, p.value, cython.address(self.pp))
+        check(ecdh_compute_shared_secret(ss.value, s.value, p.value, cython.address(self.pp)))
         
         shared = cython.cast(cython.p_uchar, malloc(count_bytes(ss.value)))
         shared_len: cython.size_t = 0

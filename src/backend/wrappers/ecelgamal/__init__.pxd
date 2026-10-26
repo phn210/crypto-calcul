@@ -1,5 +1,5 @@
-from wrappers.enums cimport hash_func_t
-from wrappers.ec cimport ec_t, curve_t, point_t, copy_point, EC, ECP
+from wrappers.enums cimport hash_func_t, cc_status_t, check, check_verify
+from wrappers.ec cimport ec_t, curve_t, point_t, copy_point, point_size, EC, ECP
 from wrappers.gmp cimport malloc, free, mpz_t, mpz_set, GMPInteger
 
 cdef extern from "conversion.h":
@@ -22,18 +22,21 @@ cdef extern from "ecelgamal.h":
     ctypedef struct priv_key_t:
         mpz_t x
 
-    void setup(public_params_t *pp, ec_t curve_type, unsigned char curve_id)
-    void keygen(priv_key_t *sk, pub_key_t *pk, const public_params_t *pp)
-    void crypto_encrypt(mpz_t c1, mpz_t c2, const mpz_t m, const pub_key_t *pk, const public_params_t *pp, hash_func_t hash_function)
-    void crypto_decrypt(mpz_t m, const mpz_t c1, const mpz_t c2, const priv_key_t *sk, const public_params_t *pp, hash_func_t hash_function)
-    void crypto_sign(mpz_t s1, mpz_t s2, const unsigned char *m, size_t m_len, const priv_key_t *sk, const public_params_t *pp, hash_func_t hash_function)
-    char crypto_verify(const mpz_t s1, const mpz_t s2, const unsigned char *m, size_t m_len, const pub_key_t *pk, const public_params_t *pp, hash_func_t hash_function)
+    cc_status_t ecelgamal_setup(public_params_t *pp, ec_t curve_type, unsigned char curve_id)
+    cc_status_t ecelgamal_keygen(priv_key_t *sk, pub_key_t *pk, const public_params_t *pp)
+    void ecelgamal_free_params(public_params_t *pp)
+    void ecelgamal_free_keys(priv_key_t *sk, pub_key_t *pk)
+    cc_status_t ecelgamal_encrypt(unsigned char *c1, unsigned char *c2, const unsigned char *m, size_t m_len, const pub_key_t *pk, const public_params_t *pp, hash_func_t hash_function)
+    cc_status_t ecelgamal_decrypt(unsigned char *m, const unsigned char *c1, size_t c1_len, const unsigned char *c2, size_t c2_len, const priv_key_t *sk, const public_params_t *pp, hash_func_t hash_function)
+    cc_status_t ecelgamal_sign(mpz_t s1, mpz_t s2, const unsigned char *m, size_t m_len, const priv_key_t *sk, const public_params_t *pp, hash_func_t hash_function)
+    cc_status_t ecelgamal_verify(const mpz_t s1, const mpz_t s2, const unsigned char *m, size_t m_len, const pub_key_t *pk, const public_params_t *pp, hash_func_t hash_function)
 
 cdef class ECElGamal:
     cdef public_params_t pp
     cdef priv_key_t sk
     cdef pub_key_t pk
     cdef EC curve
+    cdef bint has_params, has_key
 
     cpdef void keygen(self)
     cpdef encrypt(self, bytes m, hash_func)

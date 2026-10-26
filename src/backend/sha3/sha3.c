@@ -4,7 +4,7 @@
 #define ROTL64(x, y) (((x) << (y)) | ((x) >> (64 - (y))))
 #endif
 
-static const uint64_t keccakf_rndc[Nr] = {
+static const uint64_t keccakf_rndc[SHA3_ROUNDS] = {
     0x0000000000000001, 0x0000000000008082, 0x800000000000808a,
     0x8000000080008000, 0x000000000000808b, 0x0000000080000001,
     0x8000000080008081, 0x8000000000008009, 0x000000000000008a,
@@ -14,7 +14,7 @@ static const uint64_t keccakf_rndc[Nr] = {
     0x000000000000800a, 0x800000008000000a, 0x8000000080008081,
     0x8000000000008080, 0x0000000080000001, 0x8000000080008008};
 
-static const unsigned keccakf_rotc[Nr] = {
+static const unsigned keccakf_rotc[SHA3_ROUNDS] = {
     1, 3, 6, 10, 15, 21, 28, 36, 45, 55, 2, 14,
     27, 41, 56, 8, 25, 43, 62, 18, 39, 61, 20, 44};
 
@@ -27,7 +27,7 @@ void sha3_keccakf(uint64_t st[25])
     int i, j, r;
     uint64_t t, bc[5];
 
-    for (r = 0; r < Nr; r++)
+    for (r = 0; r < SHA3_ROUNDS; r++)
     {
         // Theta
         for (i = 0; i < 5; i++)

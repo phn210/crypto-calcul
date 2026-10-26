@@ -1,68 +1,64 @@
 #include "ecelgamal.h"
 
-void test_setup(public_params_t *pp, ec_t curve_type, unsigned char curve_id)
+static int test_sign_verify(ec_t curve_type, unsigned char curve_id, hash_func_t hash_function, char *name, size_t name_len)
 {
-    setup(pp, curve_type, curve_id);
-    // Print parameters for debugging
-    // gmp_printf("Curve Parameters (p): %Zd\n", pp->curve.p);
-    // gmp_printf("Curve Parameters (a): %Zd\n", pp->curve.a);
-    // gmp_printf("Curve Parameters (b): %Zd\n", pp->curve.b);
-    // gmp_printf("Curve Parameters (Gx): %Zd\n", pp->curve.Gx);
-    // gmp_printf("Curve Parameters (Gy): %Zd\n", pp->curve.Gy);
-    // gmp_printf("Curve Parameters (n): %Zd\n", pp->curve.n);
-}
+    public_params_t pp;
+    priv_key_t sk;
+    pub_key_t pk;
+    if (ecelgamal_setup(&pp, curve_type, curve_id) != CC_OK)
+        return 0;
+    snprintf(name, name_len, "%s", pp.curve.name);
+    if (ecelgamal_keygen(&sk, &pk, &pp) != CC_OK)
+    {
+        ecelgamal_free_params(&pp);
+        return 0;
+    }
 
-void test_keygen(priv_key_t *sk, pub_key_t *pk, const public_params_t *pp)
-{
-    keygen(sk, pk, pp);
-
-    // Print keys for debugging
-    // gmp_printf("Private Key (x): %Zd\n", sk->x);
-    // gmp_printf("Public Key (Yx): %Zd\n", pk->Y.x);
-    // gmp_printf("Public Key (Yy): %Zd\n", pk->Y.y);
-}
-
-void test_sign_verify(priv_key_t sk, pub_key_t pk, public_params_t pp, hash_func_t hash_function)
-{
     const unsigned char *m = (unsigned char *)"1234567890";
     size_t m_len = strlen((const char *)m);
     mpz_t s1, s2;
-
     mpz_inits(s1, s2, NULL);
-    crypto_sign(s1, s2, m, m_len, &sk, &pp, hash_function);
-    // gmp_printf("Signature (s1): %Zd\n", s1);
-    // gmp_printf("Signature (s2): %Zd\n", s2);
 
-    printf("EC ElGamal Signature, %s:\t", pp.curve.name);
-    if (crypto_verify(s1, s2, m, m_len, &pk, &pp, hash_function))
-        printf("PASSED\n");
-    else
-        printf("FAILED\n");
+    int passed = ecelgamal_sign(s1, s2, m, m_len, &sk, &pp, hash_function) == CC_OK &&
+                 ecelgamal_verify(s1, s2, m, m_len, &pk, &pp, hash_function) == CC_OK &&
+                 ecelgamal_verify(s1, s2, m, m_len - 1, &pk, &pp, hash_function) == CC_ERR_VERIFY;
+    mpz_set_ui(s2, 0);
+    passed &= ecelgamal_verify(s1, s2, m, m_len, &pk, &pp, hash_function) == CC_ERR_VERIFY;
 
-    mpz_clears(s1, s2, sk.x, NULL);
-    free_curve(&pp.curve);
-    free_point(&pk.Y);
+    mpz_clears(s1, s2, NULL);
+    ecelgamal_free_keys(&sk, &pk);
+    ecelgamal_free_params(&pp);
+    return passed;
 }
 
 int main()
 {
     printf("\n===================== EC ELGAMAL SIGNATURE TEST =====================\n\n");
 
+    char name[32];
+    int passed = test_sign_verify(WEIERSTRASS, P256K1, SHA2, name, sizeof(name));
+    printf("[0] EC ElGamal Signature, %s:\t%s\n", name, passed ? "PASSED" : "FAILED");
+    passed = test_sign_verify(EDWARDS, ED448, SHA3, name, sizeof(name));
+    printf("[1] EC ElGamal Signature, %s:\t%s\n", name, passed ? "PASSED" : "FAILED");
+
+    // Montgomery curves have no point addition: reported instead of exiting
     public_params_t pp;
     priv_key_t sk;
     pub_key_t pk;
-
-    // Test EC ElGamal Signature with P256K1 curve and SHA256 hash function
-    printf("[0] ");
-    test_setup(&pp, WEIERSTRASS, P256K1);
-    test_keygen(&sk, &pk, &pp);
-    test_sign_verify(sk, pk, pp, SHA2);
-
-    // Test EC ElGamal Signature with ED448 curve and SHA3 hash function
-    printf("[1] ");
-    test_setup(&pp, EDWARDS, ED448);
-    test_keygen(&sk, &pk, &pp);
-    test_sign_verify(sk, pk, pp, SHA3);
+    mpz_t s1, s2;
+    mpz_inits(s1, s2, NULL);
+    passed = 0;
+    if (ecelgamal_setup(&pp, MONTGOMERY, C25519) == CC_OK)
+    {
+        if (ecelgamal_keygen(&sk, &pk, &pp) == CC_OK)
+        {
+            passed = ecelgamal_sign(s1, s2, (unsigned char *)"m", 1, &sk, &pp, SHA2) == CC_ERR_UNSUPPORTED;
+            ecelgamal_free_keys(&sk, &pk);
+        }
+        ecelgamal_free_params(&pp);
+    }
+    printf("[2] Montgomery unsupported:\t%s\n", passed ? "PASSED" : "FAILED");
+    mpz_clears(s1, s2, NULL);
 
     return 0;
 }

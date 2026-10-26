@@ -1,10 +1,11 @@
 from wrappers.gmp cimport malloc, free, gmp_randstate_t, mpz_t, GMPInteger
+from wrappers.enums cimport cc_status_t, check
 
 cdef extern from "rng.h":
-    void rng_init(gmp_randstate_t)
+    cc_status_t rng_init(gmp_randstate_t)
     void rng_init_with_seed(gmp_randstate_t, unsigned int)
     void rand_int_b(mpz_t, gmp_randstate_t, unsigned long)
-    void rand_int_m(mpz_t, gmp_randstate_t, mpz_t)
+    cc_status_t rand_int_m(mpz_t, gmp_randstate_t, mpz_t)
     void rand_bytes(char *, gmp_randstate_t, unsigned int)
 
 cdef class GMPState:

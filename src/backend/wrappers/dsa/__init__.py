@@ -1,6 +1,7 @@
 import cython
 from wrappers.enums import SecurityLevel, HashFunction
 from wrappers.gmp import GMPInteger
+from wrappers.enums import CryptoError
 
 class DSAPublicParams:
     def __init__(self, p_bits: int, q_bits: int, p: GMPInteger, q: GMPInteger, g: GMPInteger):
@@ -21,7 +22,18 @@ class DSAPrivateKey:
 @cython.cclass
 class DSA:
     def __init__(self, sec_level: SecurityLevel, hash_function: HashFunction):
-        setup(cython.address(self.pp), sec_level.value, hash_function.value)
+        check(dsa_setup(cython.address(self.pp), sec_level.value, hash_function.value))
+        self.has_params = True
+
+    def __dealloc__(self):
+        if self.has_key:
+            dsa_free_keys(cython.address(self.sk), cython.address(self.pk))
+        if self.has_params:
+            dsa_free_params(cython.address(self.pp))
+
+    def _require_key(self):
+        if not self.has_key:
+            raise CryptoError(0, "Generate a key first")
     
     @property
     def params(self) -> DSAPublicParams:
@@ -47,14 +59,19 @@ class DSA:
     
     @cython.ccall
     def keygen(self) -> cython.void:
-        keygen(cython.address(self.sk), cython.address(self.pk), self.pp)
+        if self.has_key:
+            dsa_free_keys(cython.address(self.sk), cython.address(self.pk))
+            self.has_key = False
+        check(dsa_keygen(cython.address(self.sk), cython.address(self.pk), cython.address(self.pp)))
+        self.has_key = True
     
     @cython.ccall
     def sign(self, m: bytes):
+        self._require_key()
         tmp1 = GMPInteger()
         tmp2 = GMPInteger()
         
-        crypto_sign(tmp1.value, tmp2.value, cython.cast(cython.p_uchar, m), len(m), self.sk, self.pp)
+        check(dsa_sign(tmp1.value, tmp2.value, cython.cast(cython.p_uchar, m), len(m), cython.address(self.sk), cython.address(self.pp)))
 
         s = cython.cast(cython.p_uchar, malloc(count_bytes(tmp1.value)))
         s_len: cython.size_t = 0
@@ -72,12 +89,13 @@ class DSA:
     
     @cython.ccall
     def verify(self, m: bytes, s: bytes, r: bytes):
+        self._require_key()
         tmp1 = GMPInteger()
         tmp2 = GMPInteger()
         
         bytes_to_bigint(tmp1.value, cython.cast(cython.p_uchar, s), len(s), BIG)
         bytes_to_bigint(tmp2.value, cython.cast(cython.p_uchar, r), len(r), BIG)
         
-        result = crypto_verify(tmp1.value, tmp2.value, cython.cast(cython.p_uchar, m), len(m), self.pk, self.pp)
+        result = check_verify(dsa_verify(tmp1.value, tmp2.value, cython.cast(cython.p_uchar, m), len(m), cython.address(self.pk), cython.address(self.pp)))
         del tmp1, tmp2
         return bool(result)

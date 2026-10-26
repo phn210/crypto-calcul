@@ -12,7 +12,7 @@ void print_hex(const unsigned char *data, size_t len)
 void test_mgf1(const unsigned char *seed, size_t seed_len, const unsigned char *expected_mask, size_t mask_len, hash_func_t hash_function, sec_level_t sec_level)
 {
     unsigned char *mask = malloc(mask_len);
-    mgf1(mask, mask_len, seed, seed_len, hash_function, sec_level);
+    cc_status_t status = mgf1(mask, mask_len, seed, seed_len, hash_function, sec_level);
 
     // printf("Generated Mask: ");
     // print_hex(mask, mask_len);
@@ -21,7 +21,8 @@ void test_mgf1(const unsigned char *seed, size_t seed_len, const unsigned char *
     // print_hex(expected_mask, mask_len);
 
     printf("MGF1 Test:\t");
-    if (memcmp(mask, expected_mask, mask_len) == 0)
+    if (status == CC_OK && memcmp(mask, expected_mask, mask_len) == 0 &&
+        mgf1(mask, mask_len, seed, seed_len, (hash_func_t)42, sec_level) == CC_ERR_INVALID_ARG)
     {
         printf("PASSED\n");
     }

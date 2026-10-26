@@ -1,4 +1,4 @@
-from wrappers.enums cimport sec_level_t
+from wrappers.enums cimport sec_level_t, cc_status_t, check, check_verify
 from wrappers.gmp cimport malloc, free, mpz_t, mpz_set, GMPInteger
 
 cdef extern from "conversion.h":
@@ -23,18 +23,21 @@ cdef extern from "elgamal.h":
     ctypedef struct priv_key_t:
         mpz_t x
 
-    void setup(public_params_t *, sec_level_t level)
-    void keygen(priv_key_t *, pub_key_t *, const public_params_t *)
-    void crypto_encrypt(mpz_t, mpz_t, const mpz_t, const pub_key_t *, const public_params_t *)
-    void crypto_decrypt(mpz_t, const mpz_t, const mpz_t, const priv_key_t *, const public_params_t *)
-    void crypto_sign(mpz_t, mpz_t, const unsigned char *, size_t, const priv_key_t *, const public_params_t *, sec_level_t)
-    int crypto_verify(const mpz_t, const mpz_t, const unsigned char *, size_t, const pub_key_t *, const public_params_t *, sec_level_t)
+    cc_status_t elgamal_setup(public_params_t *, sec_level_t level)
+    cc_status_t elgamal_keygen(priv_key_t *, pub_key_t *, const public_params_t *)
+    void elgamal_free_params(public_params_t *)
+    void elgamal_free_keys(priv_key_t *, pub_key_t *)
+    cc_status_t elgamal_encrypt(mpz_t, mpz_t, const mpz_t, const pub_key_t *, const public_params_t *)
+    cc_status_t elgamal_decrypt(mpz_t, const mpz_t, const mpz_t, const priv_key_t *, const public_params_t *)
+    cc_status_t elgamal_sign(mpz_t, mpz_t, const unsigned char *, size_t, const priv_key_t *, const public_params_t *, sec_level_t)
+    cc_status_t elgamal_verify(const mpz_t, const mpz_t, const unsigned char *, size_t, const pub_key_t *, const public_params_t *, sec_level_t)
 
 cdef class ElGamal:
     cdef public_params_t pp
     cdef priv_key_t sk
     cdef pub_key_t pk
     cdef sec_level
+    cdef bint has_params, has_key
 
     cpdef void keygen(self)
     cpdef encrypt(self, bytes m)

@@ -100,6 +100,34 @@ cc_module(<module> DEPS <direct dependencies>)
 
 For a Python wrapper, add `src/backend/wrappers/<module>/__init__.{py,pxd}` and a `cc_wrapper(<module> <module>)` line to [src/backend/wrappers/CMakeLists.txt](src/backend/wrappers/CMakeLists.txt).
 
+## Public C API
+
+`make` also builds `build/lib/libcryptocalc` (`.so`, `.dylib` or `.dll`), a shared library whose only exported symbols are the `cc_*` functions declared in [src/backend/include/cryptocalc.h](src/backend/include/cryptocalc.h). It is the stable interface for programs (and future bindings) that use the library: internal headers, GMP types and module structures are not part of it.
+
+```c
+#include "cryptocalc.h"
+
+cc_rsa_t *rsa;
+uint8_t ct[512];
+size_t ct_len = sizeof(ct);
+
+cc_status_t status = cc_rsa_new(&rsa, CC_SEC_128, CC_RSA_OAEP_PSS);
+if (status == CC_OK)
+    status = cc_rsa_keygen(rsa);
+if (status == CC_OK)
+    status = cc_rsa_encrypt(rsa, msg, msg_len, ct, &ct_len);
+if (status != CC_OK)
+    fprintf(stderr, "RSA failed: %s\n", cc_strerror(status));
+cc_rsa_free(rsa);
+```
+
+- Every function returns a `cc_status_t`; the library never prints or exits.
+- Data is passed as bytes; big integers are big-endian.
+- Outputs take a buffer and a capacity (`*out_len`): if the buffer is too small, the call returns `CC_ERR_BUFFER_TOO_SMALL` and the required size.
+- Verification functions return `CC_OK` or `CC_ERR_VERIFY`.
+
+`cmake --install build --prefix <dir>` installs the library and its header.
+
 ## Running Tests
 
 1. Run the tests of the C library:
@@ -112,7 +140,7 @@ For a Python wrapper, add `src/backend/wrappers/<module>/__init__.{py,pxd}` and 
    make test_<module_name>
    ```
 
-   Tests are registered with CTest, so `ctest --test-dir build -j8` and `ctest --test-dir build -R rsa` also work.
+   Tests are registered with CTest, so `ctest --test-dir build -j8` and `ctest --test-dir build -R rsa` also work. `make test_api` runs the public API test, which links only against `libcryptocalc`.
 
 2. Test the Python library used by the UI:
 

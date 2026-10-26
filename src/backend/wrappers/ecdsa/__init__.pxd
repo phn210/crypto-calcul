@@ -1,4 +1,4 @@
-from wrappers.enums cimport hash_func_t
+from wrappers.enums cimport hash_func_t, cc_status_t, check, check_verify
 from wrappers.ec cimport ec_t, curve_t, point_t, copy_point, EC, ECP
 from wrappers.gmp cimport malloc, free, mpz_t, mpz_set, GMPInteger
 
@@ -22,16 +22,19 @@ cdef extern from "ecdsa.h":
     ctypedef struct priv_key_t:
         mpz_t d
 
-    void setup(public_params_t *pp, ec_t curve_type, unsigned char curve_id)
-    void keygen(priv_key_t *sk, pub_key_t *pk, const public_params_t *pp)
-    void crypto_sign(mpz_t r, mpz_t s, const unsigned char *m, size_t m_len, const priv_key_t *sk, const public_params_t *pp, hash_func_t hash_function)
-    int crypto_verify(const mpz_t r, const mpz_t s, const unsigned char *m, size_t m_len, const pub_key_t *pk, const public_params_t *pp, hash_func_t hash_function)
+    cc_status_t ecdsa_setup(public_params_t *pp, ec_t curve_type, unsigned char curve_id)
+    cc_status_t ecdsa_keygen(priv_key_t *sk, pub_key_t *pk, const public_params_t *pp)
+    void ecdsa_free_params(public_params_t *pp)
+    void ecdsa_free_keys(priv_key_t *sk, pub_key_t *pk)
+    cc_status_t ecdsa_sign(mpz_t r, mpz_t s, const unsigned char *m, size_t m_len, const priv_key_t *sk, const public_params_t *pp, hash_func_t hash_function)
+    cc_status_t ecdsa_verify(const mpz_t r, const mpz_t s, const unsigned char *m, size_t m_len, const pub_key_t *pk, const public_params_t *pp, hash_func_t hash_function)
 
 cdef class ECDSA:
     cdef public_params_t pp
     cdef priv_key_t sk
     cdef pub_key_t pk
     cdef EC curve
+    cdef bint has_params, has_key
 
     cpdef void keygen(self)
     cpdef sign(self, bytes m, hash_func)

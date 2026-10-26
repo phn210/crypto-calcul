@@ -2,6 +2,7 @@ import cython
 from wrappers.ec import EC, ECP
 from wrappers.enums import HashFunction
 from wrappers.gmp import GMPInteger
+from wrappers.enums import CryptoError
 
 class ECDSAPublicParams:
     def __init__(self, curve: EC):
@@ -18,8 +19,19 @@ class ECDSAPrivateKey:
 @cython.cclass
 class ECDSA:
     def __init__(self, curve: EC):
-        setup(cython.address(self.pp), curve.curve_type.value, curve.curve_id.value)
+        check(ecdsa_setup(cython.address(self.pp), curve.curve_type.value, curve.curve_id.value))
+        self.has_params = True
         self.curve = curve
+
+    def __dealloc__(self):
+        if self.has_key:
+            ecdsa_free_keys(cython.address(self.sk), cython.address(self.pk))
+        if self.has_params:
+            ecdsa_free_params(cython.address(self.pp))
+
+    def _require_key(self):
+        if not self.has_key:
+            raise CryptoError(0, "Generate a key first")
     
     @property
     def params(self) -> ECDSAPublicParams:
@@ -39,15 +51,20 @@ class ECDSA:
     
     @cython.ccall
     def keygen(self) -> cython.void:
-        keygen(cython.address(self.sk), cython.address(self.pk), cython.address(self.pp))
+        if self.has_key:
+            ecdsa_free_keys(cython.address(self.sk), cython.address(self.pk))
+            self.has_key = False
+        check(ecdsa_keygen(cython.address(self.sk), cython.address(self.pk), cython.address(self.pp)))
+        self.has_key = True
         
     @cython.ccall
     def sign(self, m: bytes, hash_func: HashFunction):
+        self._require_key()
         tmp1 = GMPInteger()
         tmp2 = GMPInteger()
         
-        crypto_sign(tmp1.value, tmp2.value, cython.cast(cython.p_uchar, m), len(m), \
-            cython.address(self.sk), cython.address(self.pp), hash_func.value)
+        check(ecdsa_sign(tmp1.value, tmp2.value, cython.cast(cython.p_uchar, m), len(m), \
+            cython.address(self.sk), cython.address(self.pp), hash_func.value))
         
         s = cython.cast(cython.p_uchar, malloc(count_bytes(tmp1.value)))
         s_len: cython.size_t = 0
@@ -65,13 +82,14 @@ class ECDSA:
     
     @cython.ccall
     def verify(self, m: bytes, s: bytes, r: bytes, hash_func: HashFunction):
+        self._require_key()
         tmp1 = GMPInteger()
         tmp2 = GMPInteger()
         
         bytes_to_bigint(tmp1.value, cython.cast(cython.p_uchar, s), len(s), BIG)
         bytes_to_bigint(tmp2.value, cython.cast(cython.p_uchar, r), len(r), BIG)
         
-        result = crypto_verify(tmp1.value, tmp2.value, cython.cast(cython.p_uchar, m), \
-            len(m), cython.address(self.pk), cython.address(self.pp), hash_func.value)
+        result = check_verify(ecdsa_verify(tmp1.value, tmp2.value, cython.cast(cython.p_uchar, m), \
+            len(m), cython.address(self.pk), cython.address(self.pp), hash_func.value))
         del tmp1, tmp2
         return bool(result)

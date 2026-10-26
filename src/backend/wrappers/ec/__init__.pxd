@@ -1,4 +1,5 @@
 from wrappers.gmp cimport malloc, free, GMPInteger, mpz_t, mpz_set
+from wrappers.enums cimport cc_status_t, check
 
 cdef extern from "ec.h":
     ctypedef enum ec_t:
@@ -55,7 +56,7 @@ cdef extern from "ec.h":
     void free_affine(point_affine_t *);
     void copy_affine(point_affine_t *, const point_affine_t);
 
-    void init_curve(curve_t *, unsigned char, unsigned char);
+    cc_status_t init_curve(curve_t *, ec_t, unsigned char);
     void free_curve(curve_t *);
 
     void rhs(mpz_t, const mpz_t, const curve_t);
@@ -64,18 +65,20 @@ cdef extern from "ec.h":
     char is_infinity(const point_t, const curve_t);
     char is_on_curve(const point_t, const curve_t);
     char equals(const point_t, const point_t, const curve_t);
-    void neg(point_t *, const point_t, const curve_t);
-    void add(point_t *, const point_t, const point_t, const curve_t);
-    void dadd(point_t *, const point_t, const point_t, const point_t, const curve_t);
+    cc_status_t neg(point_t *, const point_t, const curve_t);
+    cc_status_t add(point_t *, const point_t, const point_t, const curve_t);
+    cc_status_t dadd(point_t *, const point_t, const point_t, const point_t, const curve_t);
     void dbl(point_t *, const point_t, const curve_t);
     void mul(point_t *, const point_t, const mpz_t, const curve_t);
-    void point_to_bytes(unsigned char *, const point_t, const curve_t);
+    size_t point_size(const curve_t);
+    cc_status_t point_to_bytes(unsigned char *, const point_t, const curve_t);
     void point_from_bytes(point_t *, const unsigned char *, const curve_t);
 
 
 cdef class EC:
     cdef curve_t curve
     cdef public curve_type, curve_id
+    cdef bint has_curve
 
     cpdef ECP generator(self)
     cpdef ECP infinity(self)

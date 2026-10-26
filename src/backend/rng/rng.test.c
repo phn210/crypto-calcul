@@ -9,7 +9,12 @@ int main()
     char buf[32];
 
     // Initialize random state
-    rng_init(state);
+    if (rng_init(state) != CC_OK)
+    {
+        printf("RNG:\tFAILED\n");
+        return 1;
+    }
+    int passed = 1;
 
     // Test rand_int_b
     mpz_init(result);
@@ -20,8 +25,11 @@ int main()
     // Test rand_int_m
     mpz_init_set_str(n, "100000000000000000000000000000000000000", 10);
     mpz_init(result);
-    rand_int_m(result, state, n);
-    // gmp_printf("Random integer modulo n: %Zd\n", result);
+    passed &= rand_int_m(result, state, n) == CC_OK && mpz_cmp(result, n) < 0;
+
+    // A zero modulus is rejected instead of dividing by zero
+    mpz_set_ui(n, 0);
+    passed &= rand_int_m(result, state, n) == CC_ERR_INVALID_ARG;
     mpz_clear(result);
     mpz_clear(n);
 
@@ -34,7 +42,7 @@ int main()
     // }
     // printf("\n");
 
-    printf("RNG:\tPASSED\n");
+    printf("RNG:\t%s\n", passed ? "PASSED" : "FAILED");
 
     // Clear random state
     gmp_randclear(state);

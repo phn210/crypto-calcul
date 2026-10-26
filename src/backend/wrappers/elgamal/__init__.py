@@ -1,6 +1,7 @@
 import cython
 from wrappers.enums import SecurityLevel
 from wrappers.gmp import GMPInteger
+from wrappers.enums import CryptoError
 
 class ElGamalPublicParams:
     def __init__(self, n_bits: int, p: GMPInteger, g: GMPInteger):
@@ -19,8 +20,19 @@ class ElGamalPrivateKey:
 @cython.cclass
 class ElGamal:
     def __init__(self, sec_level: SecurityLevel):
-        setup(cython.address(self.pp), sec_level.value)
+        check(elgamal_setup(cython.address(self.pp), sec_level.value))
+        self.has_params = True
         self.sec_level = sec_level.value
+
+    def __dealloc__(self):
+        if self.has_key:
+            elgamal_free_keys(cython.address(self.sk), cython.address(self.pk))
+        if self.has_params:
+            elgamal_free_params(cython.address(self.pp))
+
+    def _require_key(self):
+        if not self.has_key:
+            raise CryptoError(0, "Generate a key first")
 
     @property
     def params(self) -> ElGamalPublicParams:
@@ -44,10 +56,15 @@ class ElGamal:
     
     @cython.ccall
     def keygen(self) -> cython.void:
-        keygen(cython.address(self.sk), cython.address(self.pk), cython.address(self.pp))
+        if self.has_key:
+            elgamal_free_keys(cython.address(self.sk), cython.address(self.pk))
+            self.has_key = False
+        check(elgamal_keygen(cython.address(self.sk), cython.address(self.pk), cython.address(self.pp)))
+        self.has_key = True
 
     @cython.ccall
     def encrypt(self, m: bytes):
+        self._require_key()
         tmp = GMPInteger()
         tmp1 = GMPInteger()
         tmp2 = GMPInteger()
@@ -55,7 +72,7 @@ class ElGamal:
         buf = cython.cast(cython.p_uchar, m)
         buf_len = len(m)
         bytes_to_bigint(tmp.value, buf, buf_len, BIG)
-        crypto_encrypt(tmp1.value, tmp2.value, tmp.value, cython.address(self.pk), cython.address(self.pp))
+        check(elgamal_encrypt(tmp1.value, tmp2.value, tmp.value, cython.address(self.pk), cython.address(self.pp)))
 
         c1 = cython.cast(cython.p_uchar, malloc(count_bytes(tmp1.value)))
         c1_len: cython.size_t = 0
@@ -73,6 +90,7 @@ class ElGamal:
     
     @cython.ccall
     def decrypt(self, c1: bytes, c2: bytes) -> bytes:
+        self._require_key()
         tmp = GMPInteger()
         tmp1 = GMPInteger()
         tmp2 = GMPInteger()
@@ -85,7 +103,7 @@ class ElGamal:
         buf2_len = len(c2)
         bytes_to_bigint(tmp2.value, buf2, buf2_len, BIG)
 
-        crypto_decrypt(tmp.value, tmp1.value, tmp2.value, cython.address(self.sk), cython.address(self.pp))
+        check(elgamal_decrypt(tmp.value, tmp1.value, tmp2.value, cython.address(self.sk), cython.address(self.pp)))
 
         m = cython.cast(cython.p_uchar, malloc(count_bytes(tmp.value)))
         m_len: cython.size_t = 0
@@ -97,13 +115,14 @@ class ElGamal:
     
     @cython.ccall
     def sign(self, m: bytes):
+        self._require_key()
         tmp1 = GMPInteger()
         tmp2 = GMPInteger()
 
         buf = cython.cast(cython.p_uchar, m)
         buf_len = len(m)
         
-        crypto_sign(tmp1.value, tmp2.value, buf, buf_len, cython.address(self.sk), cython.address(self.pp), self.sec_level)
+        check(elgamal_sign(tmp1.value, tmp2.value, buf, buf_len, cython.address(self.sk), cython.address(self.pp), self.sec_level))
 
         s = cython.cast(cython.p_uchar, malloc(count_bytes(tmp1.value)))
         s_len: cython.size_t = 0
@@ -121,6 +140,7 @@ class ElGamal:
     
     @cython.ccall
     def verify(self, m: bytes, s: bytes, r: bytes):
+        self._require_key()
         tmp1 = GMPInteger()
         tmp2 = GMPInteger()
 
@@ -135,6 +155,6 @@ class ElGamal:
         buf2_len = len(r)
         bytes_to_bigint(tmp2.value, buf2, buf2_len, BIG)
 
-        result = crypto_verify(tmp1.value, tmp2.value, buf, buf_len, cython.address(self.pk), cython.address(self.pp), self.sec_level)
+        result = check_verify(elgamal_verify(tmp1.value, tmp2.value, buf, buf_len, cython.address(self.pk), cython.address(self.pp), self.sec_level))
         del tmp1, tmp2
         return bool(result)

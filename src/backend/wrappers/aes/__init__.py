@@ -38,50 +38,44 @@ class AES:
     @cython.ccall
     def aes(self, data: bytes, key: bytes, iv: bytes, nonce: bytes, f: cython.char) -> bytes:
         data_len = cython.cast(cython.size_t, len(data))
-        assert data_len / _AES_BLOCK_SIZE == data_len // _AES_BLOCK_SIZE
+        if self.mode == AES_MODE_GCM:
+            raise NotImplementedError("AES GCM mode is not implemented")
 
-        in_ptr = cython.cast(cython.p_uchar, data)
-        out_ptr = cython.cast(cython.p_uchar, malloc(data_len))
+        # The C functions work in place on their input, so they get a copy
+        in_ptr = cython.cast(cython.p_uchar, malloc(data_len + 1))
+        out_ptr = cython.cast(cython.p_uchar, malloc(data_len + 1))
+        if in_ptr == cython.NULL or out_ptr == cython.NULL:
+            free(in_ptr)
+            free(out_ptr)
+            raise MemoryError()
+        memcpy(in_ptr, cython.cast(cython.p_uchar, data), data_len)
 
         key = key[:self.key_size].ljust(self.key_size, b'\0')
         iv = iv[:_AES_BLOCK_SIZE].ljust(_AES_BLOCK_SIZE, b'\0')
         nonce = nonce[:_AES_BLOCK_SIZE].ljust(_AES_BLOCK_SIZE, b'\0')
-        
+
         key_ptr = cython.cast(cython.p_uchar, key)
         iv_ptr = cython.cast(cython.p_uchar, iv)
         nonce_ptr = cython.cast(cython.p_uchar, nonce)
 
-        if f == 0:
-            if self.mode == AES_MODE_ECB:
-                aes_encrypt_ecb(in_ptr, out_ptr, key_ptr, data_len, self.key_size)
-            elif self.mode == AES_MODE_CBC:
-                aes_encrypt_cbc(in_ptr, out_ptr, iv_ptr, key_ptr, data_len, self.key_size)
-            elif self.mode == AES_MODE_CFB:
-                aes_encrypt_cfb(in_ptr, out_ptr, iv_ptr, key_ptr, data_len, self.key_size)
-            elif self.mode == AES_MODE_OFB:
-                aes_encrypt_ofb(in_ptr, out_ptr, iv_ptr, key_ptr, data_len, self.key_size)
-            elif self.mode == AES_MODE_CTR:
-                aes_ctr(in_ptr, out_ptr, nonce_ptr, key_ptr, data_len, self.key_size)
-            elif self.mode == AES_MODE_GCM:
-                raise NotImplementedError("AES GCM mode is not implemented")
-        elif f == 1:
-            if self.mode == AES_MODE_ECB:
-                aes_decrypt_ecb(in_ptr, out_ptr, key_ptr, data_len, self.key_size)
-            elif self.mode == AES_MODE_CBC:
-                aes_decrypt_cbc(in_ptr, out_ptr, iv_ptr, key_ptr, data_len, self.key_size)
-            elif self.mode == AES_MODE_CFB:
-                aes_decrypt_cfb(in_ptr, out_ptr, iv_ptr, key_ptr, data_len, self.key_size)
-            elif self.mode == AES_MODE_OFB:
-                aes_decrypt_ofb(in_ptr, out_ptr, iv_ptr, key_ptr, data_len, self.key_size)
-            elif self.mode == AES_MODE_CTR:
-                aes_ctr(in_ptr, out_ptr, nonce_ptr, key_ptr, data_len, self.key_size)
-            elif self.mode == AES_MODE_GCM:
-                raise NotImplementedError("AES GCM mode is not implemented")
+        status: cc_status_t
+        if self.mode == AES_MODE_ECB:
+            status = aes_encrypt_ecb(in_ptr, out_ptr, key_ptr, data_len, self.key_size) if f == 0 else aes_decrypt_ecb(in_ptr, out_ptr, key_ptr, data_len, self.key_size)
+        elif self.mode == AES_MODE_CBC:
+            status = aes_encrypt_cbc(in_ptr, out_ptr, iv_ptr, key_ptr, data_len, self.key_size) if f == 0 else aes_decrypt_cbc(in_ptr, out_ptr, iv_ptr, key_ptr, data_len, self.key_size)
+        elif self.mode == AES_MODE_CFB:
+            status = aes_encrypt_cfb(in_ptr, out_ptr, iv_ptr, key_ptr, data_len, self.key_size) if f == 0 else aes_decrypt_cfb(in_ptr, out_ptr, iv_ptr, key_ptr, data_len, self.key_size)
+        elif self.mode == AES_MODE_OFB:
+            status = aes_encrypt_ofb(in_ptr, out_ptr, iv_ptr, key_ptr, data_len, self.key_size) if f == 0 else aes_decrypt_ofb(in_ptr, out_ptr, iv_ptr, key_ptr, data_len, self.key_size)
+        else:
+            status = aes_ctr(in_ptr, out_ptr, nonce_ptr, key_ptr, data_len, self.key_size)
 
         result = cython.declare(bytes, out_ptr[:data_len])
+        free(in_ptr)
         free(out_ptr)
+        check(status)
         return result
-    
+
     @cython.ccall
     def encrypt(self, data: bytes, key: bytes, iv: bytes, nonce: bytes) -> bytes:
         padded_data = self.pad(data, len(data))
@@ -92,7 +86,7 @@ class AES:
         decrypted = self.aes(data, key, iv, nonce, 1)
         result = self.unpad(decrypted, len(decrypted))
         return result
-    
+
     @cython.ccall
     def encrypt_file(self, file_path: str, output_path: str, key: bytes, iv: bytes) -> cython.void:
         infile = file_path.encode('utf-8')
@@ -102,11 +96,11 @@ class AES:
 
         key = key[:self.key_size].ljust(self.key_size, b'\0')
         iv = iv[:_AES_BLOCK_SIZE].ljust(_AES_BLOCK_SIZE, b'\0')
-        
+
         key_ptr = cython.cast(cython.p_uchar, key)
         iv_ptr = cython.cast(cython.p_uchar, iv)
 
-        aes_file_encrypt(in_ptr, out_ptr, key_ptr, iv_ptr, self.key_size, self.mode)
+        check(aes_file_encrypt(in_ptr, out_ptr, key_ptr, iv_ptr, self.key_size, self.mode))
 
     @cython.ccall
     def decrypt_file(self, file_path: str, output_path: str, key: bytes, iv: bytes) -> cython.void:
@@ -117,28 +111,30 @@ class AES:
 
         key = key[:self.key_size].ljust(self.key_size, b'\0')
         iv = iv[:_AES_BLOCK_SIZE].ljust(_AES_BLOCK_SIZE, b'\0')
-        
+
         key_ptr = cython.cast(cython.p_uchar, key)
         iv_ptr = cython.cast(cython.p_uchar, iv)
 
-        aes_file_decrypt(in_ptr, out_ptr, key_ptr, iv_ptr, self.key_size, self.mode)
+        check(aes_file_decrypt(in_ptr, out_ptr, key_ptr, iv_ptr, self.key_size, self.mode))
 
     @cython.ccall
     def pad(self, data: bytes, length: cython.size_t) -> bytes:
-        in_bytes = cython.declare(cython.p_uchar, data)
+        padded_data: cython.p_uchar = cython.NULL
         padded_len: cython.size_t = 0
-        padded_data = pkcs7_padding(in_bytes, length, cython.address(padded_len), _AES_BLOCK_SIZE)
+        check(pkcs7_padding(cython.cast(cython.p_uchar, data), length, cython.address(padded_data), cython.address(padded_len), _AES_BLOCK_SIZE))
         result = cython.declare(bytes, padded_data[:padded_len])
-        return result[:padded_len]
+        free(padded_data)
+        return result
 
     @cython.ccall
     def unpad(self, padded_data: bytes, length: cython.size_t) -> bytes:
-        in_bytes = cython.declare(cython.p_uchar, padded_data)
+        data: cython.p_uchar = cython.NULL
         unpadded_len: cython.size_t = 0
-        data = pkcs7_unpadding(in_bytes, length, cython.address(unpadded_len), _AES_BLOCK_SIZE)
+        check(pkcs7_unpadding(cython.cast(cython.p_uchar, padded_data), length, cython.address(data), cython.address(unpadded_len), _AES_BLOCK_SIZE))
         result = cython.declare(bytes, data[:unpadded_len])
-        return result[:unpadded_len]
-    
+        free(data)
+        return result
+
 class AES_128(AES):
     def __init__(self, mode: AESMode):
         super().__init__(SecurityLevel.L1, mode)
